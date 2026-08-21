@@ -20,7 +20,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 # Exemplo simples de usuário fixo para testes
 USER_MOCK = {USERNAME, PASSWORD}
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login/predict", response_model=TokenResponse)
 def login(credentials: LoginRequest, request: Request):
     client_ip = request.client.host
 
