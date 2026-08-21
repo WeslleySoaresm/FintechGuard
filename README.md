@@ -120,6 +120,9 @@ FINTECHGUARD/
 │   ├── customer_support_tickets.csv    # Dataset base
 │   └── db.py                            # Carregamento do dataset
 │
+├── docs/
+│   └── DiagramaDeFluxoDeDados.png       # Diagrama de Fluxo de Dados (DFD)
+│
 ├── models/
 │   └── model_events.py                  # Mapeamento de entidades
 │
