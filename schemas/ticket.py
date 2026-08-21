@@ -1,9 +1,14 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 # Base com todos os campos compartilhados
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, Field, field_validator
+from utils.helpers import sanitize_field, sanitize_text
+
 class TicketBase(BaseModel):
     customer_name: str
     customer_email: str
@@ -27,10 +32,32 @@ class TicketBase(BaseModel):
         default=None, ge=1.0, le=5.0
     )
 
-
+    @field_validator(
+        "customer_name",
+        "customer_email",
+        "product_purchased",
+        "ticket_type",
+        "ticket_subject",
+        "ticket_description",
+        "resolution",
+        "ticket_priority",
+        "ticket_channel",
+        mode="before"
+    )
+    @classmethod
+    def apply_sanitization(cls, value: Optional[str]) -> Optional[str]:
+        return sanitize_field(value)
+    
 # Schema para recepção de requisições de criação (POST)
 class TicketCreate(TicketBase):
-    ticket_id: Optional[int] = None
+    pass
+
+
+class TicketResponse(TicketBase):
+    ticket_id: int
+
+    class Config:
+        from_attributes = True
 
 
 # Schema para atualização parcial de tickets (PATCH / PUT)

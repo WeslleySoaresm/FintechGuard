@@ -1,370 +1,285 @@
-Aqui está o **README.md** unificado e atualizado com a seção de **Segurança e Modelagem de Ameaças** integrada:
+# FintechGuard 🛡️
+
+Sistema de atendimento bancário com foco em análise de dados, segurança da informação e inteligência artificial, aplicando mecanismos avançados contra fraudes bancárias, ataques de força bruta (*brute-force*) e prevenção contra vazamento de dados (*DLP*).
 
 ---
 
-# FintechGuard
+## 🎯 Objetivo do Projeto
 
-Sistema de atendimento bancário com foco em análise de dados, segurança da informação e inteligência artificial.
+O **FintechGuard** é o projeto desenvolvido para o **Projeto de Bloco: Análise e Segurança de Agentes de IA**, com o objetivo de construir a base de um sistema de atendimento ao cliente inteligente, seguro e escalável utilizando:
 
-## Objetivo
-
-O **FintechGuard** é um projeto acadêmico desenvolvido ao longo de um semestre com o objetivo de construir um sistema de atendimento bancário (foco em detecção de fraudes e prevenção contra vazamento de dados) utilizando:
-
-* Análise Exploratória de Dados (EDA)
-* FastAPI
-* PostgreSQL
-* Autenticação JWT
-* Segurança da informação e Tríade CIA
-* Inteligência Artificial
+* Análise Exploratória de Dados (EDA) rigorosa;
+* API modular com FastAPI;
+* Autenticação e segurança utilizando JWT e OAuth2;
+* Rate Limiting com Redis;
+* Aplicação da Tríade CIA;
+* Containerização via Docker e Docker Compose.
 
 ---
 
-## 🔒 Segurança e Modelagem de Ameaças
+## 📄 Licença e Documentação do Dataset
 
-O foco central da segurança do **FintechGuard** está no combate a **Fraudes Bancárias** e na **Prevenção contra Vazamento de Dados (DLP)**.
-
-* **Garantia da Tríade CIA (Confidencialidade, Integridade e Disponibilidade):** Proteção de dados sensíveis dos clientes (PII) contra acessos não autorizados.
-* **Autenticação Segura:** Emissão de tokens JWT via fluxo OAuth2 com algoritmo de assinatura segura.
-* **Hash de Senhas:** Armazenamento seguro de credenciais utilizando algoritmos de hashing forte (`bcrypt`).
-* **Proteção de Variáveis Sensíveis:** Separação completa de credenciais de banco e chaves de assinatura em arquivos `.env`.
+* **Nome:** Customer Support Ticket Dataset
+* **Fonte:** [Kaggle - Customer Support Ticket Dataset](https://www.kaggle.com/datasets/suraj520/customer-support-ticket-dataset?resource=download)
+* **Licença:** Apache 2.0
+* **Justificativa da Escolha:** O dataset possui 8.470 amostras, superando o requisito mínimo de 500, contendo colunas essenciais de texto (`Ticket Description`, `Ticket Subject`), categorias de intenção (`Ticket Type`), prioridades e métricas de tempo de atendimento, ideais para o treinamento futuro de agentes de IA.
 
 ---
 
-## Dataset
+## 🔒 Segurança, DFD e Modelagem de Ameaças
 
-O projeto utiliza um dataset de atendimento ao cliente contendo informações sobre chamados, clientes, produtos e atendimento.
+### 📐 Diagrama de Fluxo de Dados (DFD) e Trust Boundaries
 
-> 🔗 **Fonte:** [Kaggle - Customer Support Ticket Dataset](https://www.kaggle.com/datasets/suraj520/customer-support-ticket-dataset?resource=download)
+![Diagrama de Fluxo de Dados - FintechGuard](docs/DiagramaDeFluxoDeDados.png)
 
-### Características iniciais
+### 🛡️ Aplicação da Tríade CIA por Componente
 
-Após a análise inicial utilizando Pandas:
+* **Confidencialidade (C):** Proteção de dados sensíveis dos clientes (PII como `Customer Name` e `Customer Email`). Aplicação de JWT OAuth2 e hashing de senhas com `bcrypt`. Separação de segredos via `.env`.
+* **Integridade (I):** Garantia de que os dados de chamados e predições não sejam alterados indevidamente por usuários não autorizados. Validação rígida de esquemas com **Pydantic**.
+* **Disponibilidade (A):** Proteção do sistema contra ataques DoS/força bruta usando **Rate Limiting dinâmico no Redis**, com chave `login_attempts:<ip>:<username>`, expiração TTL de 180 segundos e resposta HTTP 429.
 
-* **8.470 registros (Linhas)**
-* **20 colunas**
-* Dados textuais e numéricos
-* Valores ausentes identificados
-* Nenhuma duplicata identificada
+---
+
+## 📊 Dataset e Análise Exploratória (EDA)
+
+Após a execução da EDA via Pandas (`scripts/eda.py`):
+
+* **Registros:** 8.470 linhas
+* **Colunas:** 20
+* **Duplicatas:** nenhuma identificada.
 
 ### Detalhamento das Colunas
 
-#### Colunas de Texto (`str` / Categóricas)
+| Nome da Coluna                 | Tipo                 | Categoria / Observação                                |
+| ------------------------------ | -------------------- | ----------------------------------------------------- |
+| `Customer Name`                | Texto (`str`)        | PII (Dado Sensível)                                   |
+| `Customer Email`               | Texto (`str`)        | PII (Dado Sensível)                                   |
+| `Customer Gender`              | Texto (`str`)        | Demográfico                                           |
+| `Product Purchased`            | Texto (`str`)        | Produto/Serviço                                       |
+| `Date of Purchase`             | Texto (`str`)        | Data de Compra                                        |
+| `Ticket Type`                  | Texto (`str`)        | Categoria de Intenção                                 |
+| `Ticket Subject`               | Texto (`str`)        | Assunto do Chamado                                    |
+| `Ticket Description`           | Texto (`str`)        | Descrição Textual                                     |
+| `Ticket Status`                | Texto (`str`)        | Estado de Resolução                                   |
+| `Resolution`                   | Texto (`str`)        | Solução Aplicada                                      |
+| `Ticket Priority`              | Texto (`str`)        | Nível de Prioridade                                   |
+| `Ticket Channel`               | Texto (`str`)        | Canal de Atendimento                                  |
+| `First Response Time`          | Texto (`str`)        | Métrica de Tempo                                      |
+| `Time to Resolution`           | Texto (`str`)        | Métrica de Tempo                                      |
+| `Customer Satisfaction Rating` | Numérica (`float64`) | Satisfação (1 a 5)                                    |
+| `Unnamed: 17` a `19`           | Numérica (`float64`) | Inconsistências identificadas para remoção na limpeza |
 
-* `Customer Name` (PII)
-* `Customer Email` (PII)
-* `Customer Gender`
-* `Product Purchased`
-* `Date of Purchase`
-* `Ticket Type`
-* `Ticket Subject`
-* `Ticket Description`
-* `Ticket Status`
-* `Resolution`
-* `Ticket Priority`
-* `Ticket Channel`
-* `First Response Time`
-* `Time to Resolution`
+### 💡 Hipóteses sobre as Intenções dos Usuários
 
-#### Colunas Numéricas
+1. **Predominância de Problemas Técnicos em Produtos Específicos:** A maior frequência de tickets do tipo `"Technical Issue"` está associada a compras recentes, indicando necessidade de autoatendimento via IA.
 
-* `Customer Satisfaction Rating` (`float64`)
-* `Unnamed: 17` (`float64` - Inconsistente/Sujeira)
-* `Unnamed: 18` (`float64` - Inconsistente/Sujeira)
-* `Unnamed: 19` (`float64` - Inconsistente/Sujeira)
+2. **Impacto do Tempo de Primeira Resposta na Satisfação:** Clientes com `First Response Time` elevado tendem a atribuir notas de satisfação mais baixas, sugerindo que a IA deve priorizar a triagem imediata desses casos.
 
-### Diretriz de Limpeza
-
-A etapa de limpeza será realizada após a identificação e análise detalhada dos valores ausentes e inconsistências.
-
-> **Regra Importante:** Não vamos apagar dados simplesmente porque parecem inconvenientes. Cada limpeza terá uma justificativa documentada que entrará diretamente no relatório do TP1.
+3. **Canal Preferencial por Prioridade:** Chamados de prioridade alta entram predominantemente por canais síncronos (chat/telefone), exigindo roteamento prioritário.
 
 ---
 
-## Tecnologias
+## 🛠️ Tecnologias Utilizadas
 
 ### Backend
 
-* Python
+* Python 3.12+
 * FastAPI
 * Uvicorn
+* Pydantic
 * SQLAlchemy
-* PostgreSQL
-* Alembic
-* Pydantic / Pydantic-Settings
 
-### Segurança
+### Segurança e Estado
 
-* JWT (PyJWT / Python-Jose)
-* OAuth2PasswordBearer / HTTPBearer
-* Hash de senhas (`passlib`, `bcrypt`)
-* Variáveis de ambiente (`python-dotenv`)
-* Controle de acesso
-* Logs e auditoria
+* Redis
+* JWT (`python-jose` / `pyjwt`)
+* Passlib (`bcrypt`)
+* OAuth2PasswordBearer
 
-### Análise de dados
+### Análise de Dados
 
 * Pandas
 * NumPy
 * Matplotlib
 * Seaborn
-* Jupyter Notebook
 
-### Testes e qualidade
+### Containers e Testes
 
-* Pytest
-* HTTPX
-* Black
-* isort
-* Flake8
+* Docker
+* Docker Compose
+* Postman
 
 ---
 
-## Estrutura do projeto
+## 📂 Estrutura do Projeto
 
 ```text
 FINTECHGUARD/
 │
 ├── data/
-│   ├── customer_support_tickets.csv    # Dataset do Kaggle
-│   └── db.py                          # Gestão/carregamento da base
+│   ├── customer_support_tickets.csv    # Dataset base
+│   └── db.py                            # Carregamento do dataset
+│
+├── docs/
+│   └── DiagramaDeFluxoDeDados.png       # Diagrama de Fluxo de Dados (DFD)
 │
 ├── models/
-│   └── model_events.py                # Mapeamento de eventos
+│   └── model_events.py                  # Mapeamento de entidades
 │
 ├── router/
-│   ├── auth_router.py                 # Rotas de autenticação
-│   └── ticket_router.py               # Rotas CRUD de tickets
+│   ├── auth_router.py                   # Rota POST /auth/token (e /auth/login)
+│   ├── predict_router.py                # Rota POST /predict (Placeholder)
+│   └── ticket_router.py                 # Rotas CRUD
 │
 ├── schemas/
-│   ├── auth.py                        # Schemas Pydantic de autenticação
-│   └── ticket.py                      # Schemas Pydantic de tickets
+│   ├── auth.py                          # Schemas Pydantic
+│   └── ticket.py                        # Schemas Pydantic
 │
 ├── scripts/
-│   └── eda.py                         # Script de Análise Exploratória
-│
-├── templates/
-│   └── home.html                      # Template HTML simples
+│   └── eda.py                           # Script de Análise Exploratória
 │
 ├── utils/
-│   ├── auth.py                        # Regras e validações JWT
-│   └── helpers.py                     # Funções utilitárias e regras de negócio
+│   ├── auth.py                          # Lógica JWT e OAuth2
+│   ├── rate_limiter.py                  # Controle Redis
+│   └── helpers.py                       # Funções DRY
 │
-├── venv/
-├── .env
-├── .env.example
-├── .gitignore
-├── main.py
-├── README.md
+├── Dockerfile                           # Container da API
+├── docker-compose.yml                   # Orquestração API + Redis
+├── main.py                              # Entrada FastAPI com GET /health
 └── requirements.txt
-
 ```
 
 ---
 
-## Arquitetura e Funções Utilitárias (`utils/`)
+## 🌐 Rotas Principais da API
 
-Para manter a arquitetura da API limpa, modular e alinhada às melhores práticas do **DRY (*Don't Repeat Yourself*)**, centralizamos as regras de negócio repetitivas dentro do módulo `utils/`.
+| Método | Endpoint      | Autenticação           | Descrição                                           |
+| ------ | ------------- | ---------------------- | --------------------------------------------------- |
+| `GET`  | `/health`     | Não                    | Retorna o status de funcionamento da API (`200 OK`) |
+| `POST` | `/auth/token` | Não                    | Autentica o usuário e retorna o JWT Bearer          |
+| `POST` | `/predict`    | **Sim (Bearer Token)** | Endpoint placeholder para o modelo de IA futuro     |
 
-Isso garante que rotas como `GET`, `POST` e `DELETE` consumam funções utilitárias unificadas, evitando duplicação de código e facilitando manutenções futuras.
+---
 
-### 1. `get_next_ticket_id(df)`
+## ⚙️ Como Executar o Projeto
 
-* **Objetivo:** Calcular e autocompletar o próximo identificador único (`Ticket ID`) sequencial para a criação de novos chamados.
-* **Funcionamento:**
-1. Converte a coluna `Ticket ID` do DataFrame para valores numéricos, ignorando dados inconsistentes (`errors="coerce"`).
-2. Identifica o maior ID presente no dataset.
-3. Incrementa `+1` ao valor máximo encontrado.
-4. Caso o DataFrame esteja vazio, inicia a contagem a partir de 1.
+O FintechGuard pode ser executado de duas formas: utilizando **Docker Compose**, recomendado para facilitar a configuração do ambiente, ou diretamente no ambiente Python utilizando **Uvicorn**.
 
+### 🐳 Opção 1: Via Docker Compose
 
-* **Algoritmo:** Algoritmo de Busca de Valor Máximo (Maior Elemento) com coerção de tipos.
-* **Complexidade Computacional:**
-* **Tempo:** $O(n)$, onde $n$ é o número de linhas no DataFrame (precisa ler a coluna para achar o maior valor).
-* **Espaço:** $O(n)$ temporário para armazenar a série convertida durante a checagem.
+Com o Docker instalado e em execução:
 
-
-
-```python
-def get_next_ticket_id(df: pd.DataFrame) -> int:
-    if df.empty or "Ticket ID" not in df.columns:
-        return 1
-    numeric_ids = pd.to_numeric(df["Ticket ID"], errors="coerce")
-    if numeric_ids.isna().all():
-        return 1
-    return int(numeric_ids.max()) + 1
-
+```bash
+docker compose up --build -d
 ```
 
-### 2. `find_ticket_by_id(ticket_id)`
+Para acompanhar os logs:
 
-* **Objetivo:** Centralizar a busca e validação da existência de um registro no DataFrame.
-* **Funcionamento:**
-1. Filtra a base de dados buscando a linha correspondente ao `ticket_id` informado.
-2. Lança automaticamente uma exceção `HTTP 404 Not Found` caso o registro não exista.
-3. Retorna o sub-DataFrame filtrado para ser manipulado pela rota chamadora.
-
-
-
-```python
-def find_ticket_by_id(ticket_id: int) -> pd.DataFrame:
-    numeric_ids = pd.to_numeric(db.df["Ticket ID"], errors="coerce")
-    ticket = db.df[numeric_ids == ticket_id]
-
-    if ticket.empty:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Ticket com ID {ticket_id} não encontrado."
-        )
-    return ticket
-
+```bash
+docker compose logs -f
 ```
 
-### Benefícios da Abordagem
+Para encerrar os serviços:
 
-* **Manutenibilidade:** Se a regra para encontrar um ticket ou gerar um ID mudar, basta alterar a função no `utils/` sem precisar mexer nos arquivos de rotas.
-* **Tratamento de Erros Padronizado:** A validação de inexistência do ID dispara a exceção 404 direto da função utilitária, garantindo respostas padronizadas em todas as rotas.
-* **Separação de Responsabilidades:** O arquivo de rotas (`router/ticket_router.py`) fica focado apenas em receber a requisição e retornar a resposta, enquanto o `utils/` lida com a lógica dos dados.
+```bash
+docker compose down
+```
 
----
+O Docker Compose é responsável por inicializar os serviços necessários para a aplicação, incluindo a API FastAPI e o Redis utilizado pelo sistema de **Rate Limiting**.
 
-## Análise Exploratória de Dados
+### 🐍 Opção 2: Localmente via Uvicorn
 
-A EDA será realizada utilizando Pandas, buscando compreender a estrutura e os padrões existentes no dataset.
+Para executar o projeto diretamente no ambiente Python:
 
-A análise inicial contempla:
-
-1. Dimensão do dataset
-2. Tipos de dados
-3. Valores ausentes
-4. Registros duplicados
-5. Distribuição das categorias
-6. Distribuição das principais variáveis
-7. Identificação de padrões
-8. Formulação de hipóteses sobre as intenções dos usuários
-
----
-
-## TP1
-
-O primeiro TP tem como objetivo:
-
-* Escolher e documentar o dataset;
-* Realizar a EDA inicial;
-* Identificar valores ausentes;
-* Verificar duplicatas;
-* Analisar categorias;
-* Criar gráficos exploratórios;
-* Formular hipóteses sobre as intenções dos usuários;
-* Configurar a estrutura inicial da FastAPI;
-* Implementar autenticação JWT;
-* Configurar PostgreSQL;
-* Elaborar o DFD;
-* Aplicar a tríade CIA;
-* Modelagem de ameaças (Threat Model);
-* Documentar o projeto.
-
----
-
-## Instalação
-
-### 1. Criar o ambiente virtual
+#### 1. Criar e ativar o ambiente virtual
 
 ```bash
 python3 -m venv venv
-
-```
-
-### 2. Ativar o ambiente virtual
-
-```bash
-# Linux / macOS
 source venv/bin/activate
+```
 
-# Windows PowerShell
+No Windows:
+
+```powershell
 .\venv\Scripts\activate
-
 ```
 
-### 3. Instalar as dependências
-
-```bash
-pip install "fastapi[standard]" sqlalchemy psycopg2-binary alembic "python-jose[cryptography]" pyjwt "passlib[bcrypt]" python-multipart python-dotenv pydantic-settings pandas numpy matplotlib seaborn jupyter pytest httpx black isort flake8
-
-```
-
-### 4. Gerar o requirements.txt
-
-```bash
-pip freeze > requirements.txt
-
-```
-
-### 5. Executar a partir do requirements.txt
+#### 2. Instalar as dependências
 
 ```bash
 pip install -r requirements.txt
-
 ```
 
----
+#### 3. Iniciar o servidor Redis
 
-## Execução da EDA
+Como a API utiliza Redis para o controle de tentativas de autenticação e Rate Limiting, o serviço Redis precisa estar ativo.
 
-Com o ambiente virtual ativado:
+Uma opção é executar o Redis utilizando Docker:
+
+```bash
+docker run --name fintech-redis -p 6379:6379 -d redis:alpine
+```
+
+#### 4. Executar a API com Uvicorn
+
+```bash
+uvicorn main:app --reload
+```
+
+#### 5. Executar a Análise Exploratória
 
 ```bash
 python scripts/eda.py
-
 ```
 
 ---
 
-## Execução da API
+## 📌 Execução em uma Nova Máquina
 
-Para iniciar o servidor de desenvolvimento:
+O projeto pode ser executado em outro computador utilizando Docker ou configurando o ambiente Python manualmente.
+
+### Docker
+
+Se a nova máquina possuir Docker, a forma recomendada é:
 
 ```bash
-fastapi dev main.py
-
+docker compose up --build
 ```
 
-Documentação interativa disponível em: `[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)`
+Essa abordagem evita a necessidade de instalar manualmente o Redis e configurar individualmente todas as dependências do ambiente.
+
+### Ambiente Python
+
+Caso o Docker não esteja disponível, é possível utilizar o ambiente Python diretamente, desde que estejam disponíveis:
+
+* Python instalado;
+* Ambiente virtual (`venv`);
+* Dependências instaladas através do `requirements.txt`;
+* Redis em execução;
+* Variáveis de ambiente configuradas conforme o `.env.example`.
 
 ---
 
-## Evolução do projeto
+## 🌐 Links de Acesso
 
-### TP1
+Após iniciar a aplicação:
 
-EDA + FastAPI + JWT + Modelos Pydantic + Funções Utilitárias (`utils/`) + Repositório Git + Readme + Modelagem de ameaças (Threat Model).
-
----
-
-## Apresentação final
-
-Ao final do semestre, será apresentada a solução completa, contemplando:
-
-* Análise de dados
-* Atendimento bancário
-* API
-* PostgreSQL
-* Autenticação
-* Segurança
-* Inteligência Artificial
-* Monitoramento
-* Auditoria
+* **API Health:** `http://localhost:8000/health`
+* **Swagger UI:** `http://localhost:8000/docs`
 
 ---
 
-## Status
+## 🤖 Declaração do Uso de Ferramentas de IA
 
-🚧 **Em desenvolvimento**
+Em conformidade com as diretrizes do curso, declara-se que ferramentas de Inteligência Artificial (**Gemini**) foram utilizadas neste trabalho como auxílio para:
 
-Projeto atualmente na etapa **TP1 - Análise Exploratória de Dados e estrutura inicial da API**.
+* Refatoração e otimização de scripts de teste no Postman;
+* Estruturação e organização visual da documentação técnica e diagramas Mermaid;
+* Revisão de boas práticas na arquitetura de segurança contra força bruta.
 
 ---
 
-## Autores
+## 👥 Autores
 
 * **Weslley Soares**
 * **Bruno Santos**

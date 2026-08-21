@@ -29809,4 +29809,8 @@ I could get a I've reviewed the troubleshooting steps on the official support we
 8470.0,Ana Silva,ana.silva@email.com,34.0,Feminino,Cartão de Crédito Premium,2026-07-15 10:30:00+00:00,Cobrança,Cobrança indevida de anuidade,Foi cobrada a taxa de anuidade no meu cartão mesmo com a isenção prometida no contrato.,Open,Pendência em análise pelo setor financeiro.,High,App Mobile,2026-07-15 11:00:00+00:00,2026-07-15 12:00:00+00:00,5.0
 ,,,,,,,,,,,,,,,,
 8471.0,string,string,120.0,string,string,2026-08-18 21:54:39.287000+00:00,string,string,string,Open,string,string,string,2026-08-18 21:54:39.287000+00:00,2026-08-18 21:54:39.287000+00:00,5.0
-8472,Autorizado,string,120,string,string,2026-08-18 23:16:13.539000+00:00,string,string,string,Open,string,string,string,2026-08-18 23:16:13.539000+00:00,2026-08-18 23:16:13.539000+00:00,5.0
+8472.0,Autorizado,string,120.0,string,string,2026-08-18 23:16:13.539000+00:00,string,string,string,Open,string,string,string,2026-08-18 23:16:13.539000+00:00,2026-08-18 23:16:13.539000+00:00,5.0
+8472.0,Autorizado,string,120.0,string,string,2026-08-18 23:16:13.539000+00:00,string,string,string,Open,string,string,string,2026-08-18 23:16:13.539000+00:00,2026-08-18 23:16:13.539000+00:00,5.0
+8473.0,string,string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8473.0,"<script>alert(""ola mundo"")</script>",string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8474,&lt;script&gt;alert(&quot;ola mundo&quot;)&lt;/script&gt;,string,120,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0

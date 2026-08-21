@@ -2,6 +2,7 @@
 import pandas as pd
 from fastapi import HTTPException, status
 import pandas as pd
+import html
 
 
 # def retorna proximo max id
@@ -33,3 +34,19 @@ def find_ticket_by_id(ticket_id: int) -> pd.DataFrame:
         )
     
     return ticket
+
+
+def sanitize_text(text: str) -> str:
+    """
+    Remove/escapa caracteres especiais de HTML para prevenir Stored XSS.
+    Exemplo: '<script>' vira '&lt;script&gt;'
+    """
+    if not isinstance(text, str):
+        return text
+    return html.escape(text.strip())
+
+def sanitize_field(value: str | None) -> str | None:
+    """Função genérica para ser usada diretamente em validadores do Pydantic."""
+    if isinstance(value, str):
+        return sanitize_text(value)
+    return value
