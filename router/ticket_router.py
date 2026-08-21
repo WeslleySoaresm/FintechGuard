@@ -4,17 +4,20 @@ import pandas as pd
 from data import db
 from data.db import CSV_PATH, df
 from schemas.ticket import TicketCreate
-from utils.helpers  import find_ticket_by_id, get_next_ticket_id
+from utils.helpers  import find_ticket_by_id, get_next_ticket_id, sanitize_text
 from utils.auth import verify_token
 
 
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
 
-@router.post("/{Create_user}", status_code=status.HTTP_201_CREATED)
+@router.post("/{create_user}", status_code=status.HTTP_201_CREATED)
 def create_ticket(ticket: TicketCreate, user_data: dict = Depends(verify_token)):
     global df
     
-   
+   # Sanitização manual de campos específicos, se necessário:
+    clean_name = sanitize_text(ticket.customer_name)
+    clean_description = sanitize_text(ticket.ticket_description)
+    
     # Se não enviou ticket_id, chama a função auxiliar
     #Helpers para calcular o proximo id
     next_id = ticket.ticket_id or get_next_ticket_id(df)
