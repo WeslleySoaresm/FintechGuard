@@ -30,7 +30,7 @@ O **FintechGuard** é o projeto desenvolvido para o **Projeto de Bloco: Análise
 
 ### 📐 Diagrama de Fluxo de Dados (DFD) e Trust Boundaries
 
-![Diagrama de Fluxo de Dados - FintechGuard](docs/dfd_diagram.png)
+![Diagrama de Fluxo de Dados - FintechGuard](docs/DiagramaDeFluxoDeDados.png)
 
 ### 🛡️ Aplicação da Tríade CIA por Componente
 
