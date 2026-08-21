@@ -9,18 +9,22 @@ from utils.rate_limiter import check_login_attempts, register_failed_attempt, re
 
 router = APIRouter(prefix="/auth", tags=["Autenticação"])
 
-load_dotenv()
+load_dotenv(override=True)
 
-USERNAME = os.getenv("USERNAME") #MOCK
-PASSWORD = os.getenv("PASSWORD") #MOCK
+# Carrega as variáveis do .env com fallbacks de segurança para não quebrar o código
+MOCK_USERNAME = os.getenv("USERNAME", "admin")
+MOCK_PASSWORD = os.getenv("PASSWORD", "admin123")
 SECRET_KEY = os.getenv("SECRET_KEY", "your-fallback-secret-key")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
 # Exemplo simples de usuário fixo para testes
-USER_MOCK = {USERNAME, PASSWORD}
+USER_MOCK = {
+    "username": MOCK_USERNAME,
+    "password": MOCK_PASSWORD
+}
 
-@router.post("/login/predict", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse)
 def login(credentials: LoginRequest, request: Request):
     client_ip = request.client.host
 

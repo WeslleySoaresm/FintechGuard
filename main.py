@@ -2,6 +2,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from router.predict_router import router as predict_router
 from router.ticket_router import router as ticket_router
 from router.auth_router import router as auth_router
 
@@ -16,9 +17,15 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 # Inclui as rotas dos módulos
 app.include_router(auth_router)
 app.include_router(ticket_router)
+app.include_router(predict_router)
 
 
-@app.get("/login", response_class=HTMLResponse)
+
+@app.get("/health", tags=["Health Check"])
+def health_check():
+    return {"status": "ok", "service": "FintechGuard API"}
+
+@app.get("/login/predict", response_class=HTMLResponse)
 def render_login(request: Request):
     """Renderiza a página visual de Login."""
     # Sintaxe atualizada mantendo o request no contexto
@@ -34,6 +41,8 @@ def render_dashboard(request: Request):
         request=request, 
         name="home.html"
     )
+    
+    
 
 @app.get("/")
 def root():
