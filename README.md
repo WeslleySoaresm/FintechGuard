@@ -44,6 +44,14 @@ O **FintechGuard** é o projeto desenvolvido para o **Projeto de Bloco: Análise
 
 Após a execução da EDA via Pandas (`scripts/eda.py`):
 
+Para mais detalhes sobre esta seção, consulte o [README da Documentação](scripts/README_EDA.md).
+
+Confira a análise detalhada no [README da Análise Exploratória](graphs/README_GRAPHS.md).
+
+Confira os gráficos gerados durante a análise [GRAPHS](graphs)
+
+Breve explicação:
+
 * **Registros:** 8.470 linhas
 * **Colunas:** 20
 * **Duplicatas:** nenhuma identificada.
@@ -76,6 +84,8 @@ Após a execução da EDA via Pandas (`scripts/eda.py`):
 2. **Impacto do Tempo de Primeira Resposta na Satisfação:** Clientes com `First Response Time` elevado tendem a atribuir notas de satisfação mais baixas, sugerindo que a IA deve priorizar a triagem imediata desses casos.
 
 3. **Canal Preferencial por Prioridade:** Chamados de prioridade alta entram predominantemente por canais síncronos (chat/telefone), exigindo roteamento prioritário.
+
+
 
 ---
 
