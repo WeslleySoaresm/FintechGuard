@@ -4,28 +4,34 @@ import pandas as pd
 from data import db
 from data.db import CSV_PATH, df
 from schemas.ticket import TicketCreate
-from utils.helpers  import find_ticket_by_id, get_next_ticket_id, sanitize_text
+from utils.helpers import find_ticket_by_id, get_next_ticket_id, sanitize_text
 from utils.auth import verify_token
 
 
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
 
-@router.post("/{create_user}", status_code=status.HTTP_201_CREATED)
+
+
+@router.get("/root", status_code=status.HTTP_200_OK)
+def root():
+    return {"message": "API FintechGuard em execução"}
+
+
+
+@router.post("", status_code=status.HTTP_201_CREATED)
 def create_ticket(ticket: TicketCreate, user_data: dict = Depends(verify_token)):
-    global df
-    
-   # Sanitização manual de campos específicos, se necessário:
+    # Sanitização dos textos antes de salvar
     clean_name = sanitize_text(ticket.customer_name)
     clean_description = sanitize_text(ticket.ticket_description)
     
-    # Se não enviou ticket_id, chama a função auxiliar
-    #Helpers para calcular o proximo id
-    next_id = ticket.ticket_id or get_next_ticket_id(df)
+    # Obtém o ticket_id caso exista no schema ou gera o próximo automaticamente
+    ticket_id = getattr(ticket, "ticket_id", None)
+    next_id = ticket_id if ticket_id is not None else get_next_ticket_id(db.df)
 
-    # Mapeamento completo entre o schema e os nomes das colunas no CSV
+    # Mapeamento do schema para as colunas do DataFrame
     new_data = {
         "Ticket ID": next_id,
-        "Customer Name": ticket.customer_name,
+        "Customer Name": clean_name,
         "Customer Email": ticket.customer_email,
         "Customer Age": ticket.customer_age,
         "Customer Gender": ticket.customer_gender,
@@ -33,7 +39,7 @@ def create_ticket(ticket: TicketCreate, user_data: dict = Depends(verify_token))
         "Date of Purchase": ticket.date_of_purchase,
         "Ticket Type": ticket.ticket_type,
         "Ticket Subject": ticket.ticket_subject,
-        "Ticket Description": ticket.ticket_description,
+        "Ticket Description": clean_description,
         "Ticket Status": ticket.ticket_status,
         "Resolution": ticket.resolution,
         "Ticket Priority": ticket.ticket_priority,
@@ -46,38 +52,40 @@ def create_ticket(ticket: TicketCreate, user_data: dict = Depends(verify_token))
     new_df = pd.DataFrame([new_data])
     db.df = pd.concat([db.df, new_df], ignore_index=True)
 
-    # Persiste no arquivo mantendo a limpeza das colunas Unnamed
+    # Persiste no arquivo CSV
     db.df.to_csv(db.CSV_PATH, index=False)
 
     return new_data
 
-@router.get("/")
-def read_tickets(skip: int = 0, limit: int = 100):
-    paginated_df = df.iloc[skip : skip + limit].where(pd.notnull(df), None)
+
+@router.get("")
+def read_tickets(skip: int = 0, limit: Optional[int] = None):
+    
+    # Se limit for informado, corta o DataFrame; caso contrário, retorna todos
+    if limit is not None:
+        paginated_df = db.df.iloc[skip : skip + limit].where(pd.notnull(db.df), None)
+    else:
+        paginated_df = db.df.iloc[skip:].where(pd.notnull(db.df), None)
+        
     return paginated_df.to_dict(orient="records")
 
 
-@router.get("/{ticket_id}")
+@router.get("/{ticket_id}")  # Adicionada a barra antes de {ticket_id}
 def read_ticket(ticket_id: int):
-    # Usa a função auxiliar
     ticket = find_ticket_by_id(ticket_id)
     
-    # Trata valores nulos para o JSON
     ticket_clean = ticket.where(pd.notnull(ticket), None)
     return ticket_clean.to_dict(orient="records")[0]
 
 
 @router.delete("/{ticket_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_ticket(ticket_id: int, user_data: dict = Depends(verify_token)):
-    # Reutiliza a busca (se não existir, já lança o erro 404 automaticamente)
     find_ticket_by_id(ticket_id)
 
-    # Remove o ticket filtrando o DataFrame
     numeric_ids = pd.to_numeric(db.df["Ticket ID"], errors="coerce")
     db.df = db.df[numeric_ids != ticket_id]
 
-    # Salva as alterações no arquivo CSV
     db.df.to_csv(db.CSV_PATH, index=False)
 
     return None
-        
+
