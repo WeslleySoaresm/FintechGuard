@@ -20,27 +20,32 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
 # Exemplo simples de usuário fixo para testes
 USER_MOCK = {
-    "username": MOCK_USERNAME,
-    "password": MOCK_PASSWORD
+    "username": MOCK_USERNAME.strip(),
+    "password": MOCK_PASSWORD.strip()
 }
 
-@router.post("/login", response_model=TokenResponse)
-def login(credentials: LoginRequest, request: Request):
+@router.post("/token", response_model=TokenResponse)
+async def login(credentials: LoginRequest, request: Request):
     client_ip = request.client.host
-
+    # Normaliza o username removendo espaços extras nas pontas
+    clean_username = credentials.username.strip()
+    clean_password = credentials.password.strip()
+    
+    
+    
     # 1. Verifica bloqueio baseado no IP + Usuário
-    check_login_attempts(client_ip, credentials.username)
+    await check_login_attempts(client_ip, clean_username)
 
     # 2. Valida credenciais
-    if credentials.username != USER_MOCK["username"] or credentials.password != USER_MOCK["password"]:
-        register_failed_attempt(client_ip, credentials.username)
+    if clean_username != USER_MOCK["username"] or clean_password != USER_MOCK["password"]:
+        await register_failed_attempt(client_ip, clean_username)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuário ou senha incorretos."
         )
     
     # 3. Reseta contador em caso de sucesso
-    reset_login_attempts(client_ip, credentials.username)
+    await reset_login_attempts(client_ip, clean_username)
 
-    token = create_access_token(data={"sub": credentials.username})
+    token = create_access_token(data={"sub": clean_username})
     return {"access_token": token, "token_type": "bearer"}

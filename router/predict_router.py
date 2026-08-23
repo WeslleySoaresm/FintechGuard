@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel
 # Importe verify_token em vez de create_access_token

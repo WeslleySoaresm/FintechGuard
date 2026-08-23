@@ -4,104 +4,278 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FintechGuard - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { margin-bottom: 1.5rem; color: #1a202c; text-align: center; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; color: #4a5568; }
-        input { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 0.75rem; background: #2b6cb0; color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; }
-        button:hover { background: #2c5282; }
-        .error-msg { color: #e53e3e; margin-top: 1rem; font-size: 0.9rem; display: none; text-align: center; }
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning-bg: #fef3c7;
+            --warning-text: #b45309;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Overlay de Carregamento Elegante */
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-card h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .login-card p {
+            margin: 0 0 24px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: #fff;
+            color: var(--text-main);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Alerta de Caps Lock */
+        .caps-warning {
+            display: none;
+            margin-top: 6px;
+            padding: 6px 10px;
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 4px;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
+<!-- Loader Geral -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Autenticando credenciais...</div>
+</div>
+
 <div class="login-card">
-    <h2>FintechGuard Access</h2>
+    <h2>FintechGuard</h2>
+    <p>Insira suas credenciais para acessar</p>
+
     <form id="loginForm">
         <div class="form-group">
-            <label for="username">Usuário</label>
-            <input type="text" id="username" name="username" required>
+            <label>Usuário</label>
+            <input type="text" id="username" required autocomplete="username">
         </div>
         <div class="form-group">
-            <label for="password">Senha</label>
-            <input type="password" id="password" name="password" required>
+            <label>Senha</label>
+            <input type="password" id="password" required autocomplete="current-password">
+            
+            <!-- Mensagem de Caps Lock -->
+            <div id="capsWarning" class="caps-warning">
+                ⚠️ Atenção: Caps Lock está ativado!
+            </div>
         </div>
-        <button type="submit">Entrar</button>
-        <div id="errorMessage" class="error-msg"></div>
+
+        <button type="submit" id="btnLogin">Entrar</button>
+        <div id="errorMessage" class="error-message"></div>
     </form>
 </div>
 
 <script>
-    let timerInterval = null;
+    const passwordInput = document.getElementById('password');
+    const capsWarning = document.getElementById('capsWarning');
 
-    // Função que inicia a contagem regressiva na tela
-    function startCountdown(seconds) {
-        const submitBtn = document.querySelector('button[type="submit"]');
-        const errorDiv = document.getElementById('errorMessage');
-        
-        submitBtn.disabled = true; // Desabilita o botão
-        let remainingTime = seconds;
+    // Detecta se a tecla Caps Lock está ativa
+    function checkCapsLock(event) {
+        if (event.getModifierState && event.getModifierState('CapsLock')) {
+            capsWarning.style.display = 'flex';
+        } else {
+            capsWarning.style.display = 'none';
+        }
+    }
 
-        clearInterval(timerInterval); // Limpa timers anteriores, se houver
+    passwordInput.addEventListener('keydown', checkCapsLock);
+    passwordInput.addEventListener('keyup', checkCapsLock);
 
-        timerInterval = setInterval(() => {
-            const minutes = Math.floor(remainingTime / 60);
-            const secs = remainingTime % 60;
-            
-            // Formata no padrão 00:00
-            const formattedTime = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            
-            errorDiv.innerText = `Usuário bloqueado por muitas tentativas. Tente novamente em: ${formattedTime}`;
-            errorDiv.style.display = 'block';
+    function showLoader() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
+        setTimeout(() => overlay.style.opacity = '1', 10);
+        document.getElementById('btnLogin').disabled = true;
+    }
 
-            if (remainingTime <= 0) {
-                clearInterval(timerInterval);
-                submitBtn.disabled = false; // Reabilita o botão ao fim do tempo
-                errorDiv.style.display = 'none';
-            }
-
-            remainingTime--;
-        }, 1000);
+    function hideLoader() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.style.display = 'none', 300);
+        document.getElementById('btnLogin').disabled = false;
     }
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        // Interrompe o envio padrão do formulário
         e.preventDefault();
+        e.stopPropagation();
+        
         const errorDiv = document.getElementById('errorMessage');
         errorDiv.style.display = 'none';
+        
+        // Pega os valores exatamente no momento do clique
+        const usernameValue = document.getElementById('username').value.trim();
+        const passwordValue = document.getElementById('password').value.trim();
+
+        showLoader();
 
         const payload = {
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
+            username: usernameValue,
+            password: passwordValue
         };
 
         try {
-            const response = await fetch('/auth/login', {
+            const response = await fetch('/auth/token', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify(payload)
             });
 
-            const data = await response.json();
-
             if (response.ok) {
+                const data = await response.json();
+                
+                // Salva o token no localStorage e nos Cookies
                 localStorage.setItem('access_token', data.access_token);
+                document.cookie = `access_token=${data.access_token}; path=/; SameSite=Lax`;
+                
+                // Redireciona para o dashboard
                 window.location.href = '/dashboard';
-            } else if (response.status === 429) {
-                // Captura o bloqueio (HTTP 429) e inicia o relógio de 3 minutos (180 segundos)
-                startCountdown(180);
             } else {
-                errorDiv.innerText = data.detail || 'Falha na autenticação';
+                const errData = await response.json();
+                errorDiv.innerText = errData.detail || 'Usuário ou senha incorretos.';
                 errorDiv.style.display = 'block';
             }
         } catch (error) {
-            errorDiv.innerText = 'Erro ao conectar com o servidor.';
+            errorDiv.innerText = 'Erro ao conectar ao servidor. Tente novamente.';
             errorDiv.style.display = 'block';
+        } finally {
+            hideLoader();
         }
     });
 </script>
-
 </body>
 </html>
