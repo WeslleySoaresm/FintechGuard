@@ -48,6 +48,8 @@ Para mais detalhes sobre esta seção, consulte o [README da Documentação](scr
 
 Confira a análise detalhada no [README da Análise Exploratória](graphs/README_GRAPHS.md).
 
+Confira os gráficos gerados durante a análise [GRAPHS](graphs)
+
 Breve explicação:
 
 * **Registros:** 8.470 linhas
