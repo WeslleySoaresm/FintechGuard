@@ -1,6 +1,4 @@
-Aqui está o **README.md** unificado e atualizado com a seção de **Segurança e Modelagem de Ameaças** integrada:
 
----
 
 # FintechGuard
 
