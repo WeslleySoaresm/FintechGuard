@@ -1,8 +1,8 @@
+ 
 # FintechGuard 🛡️
-
 Sistema de atendimento bancário com foco em análise de dados, segurança da informação e inteligência artificial, aplicando mecanismos avançados contra fraudes bancárias, ataques de força bruta (*brute-force*) e prevenção contra vazamento de dados (*DLP*).
 
----
+
 
 ## 🎯 Objetivo do Projeto
 
