@@ -1,18 +1,27 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-# Base com todos os campos compartilhados
-from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, Field, field_validator
-from utils.helpers import sanitize_field, sanitize_text
+from utils.helpers import sanitize_field
+
 
 class TicketBase(BaseModel):
+    
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+    
     customer_name: str
     customer_email: str
-    customer_age: Optional[int] = Field(default=None, ge=0, le=120)
+    
+    
+    customer_age: Optional[int] = Field(
+        default=None,
+        ge=0,
+        le=120
+    )
+
     customer_gender: Optional[str] = None
 
     product_purchased: Optional[str] = None
@@ -21,6 +30,7 @@ class TicketBase(BaseModel):
     ticket_type: Optional[str] = None
     ticket_subject: str
     ticket_description: Optional[str] = None
+
     ticket_status: Optional[str] = "Open"
     ticket_priority: Optional[str] = None
     ticket_channel: Optional[str] = None
@@ -28,8 +38,11 @@ class TicketBase(BaseModel):
     first_response_time: Optional[datetime] = None
     time_to_resolution: Optional[datetime] = None
     resolution: Optional[str] = None
+
     customer_satisfaction_rating: Optional[float] = Field(
-        default=None, ge=1.0, le=5.0
+        default=None,
+        ge=1.0,
+        le=5.0
     )
 
     @field_validator(
@@ -45,34 +58,39 @@ class TicketBase(BaseModel):
         mode="before"
     )
     @classmethod
-    def apply_sanitization(cls, value: Optional[str]) -> Optional[str]:
+    def apply_sanitization(
+        cls,
+        value: Optional[str]
+    ) -> Optional[str]:
         return sanitize_field(value)
-    
-# Schema para recepção de requisições de criação (POST)
+
+
+# Schema utilizado para criação de tickets
 class TicketCreate(TicketBase):
-    pass
+    model_config = ConfigDict(extra="forbid")
 
 
-class TicketResponse(TicketBase):
-    ticket_id: int
-
-    class Config:
-        from_attributes = True
-
-
-# Schema para atualização parcial de tickets (PATCH / PUT)
+# Schema utilizado para atualização parcial
 class TicketUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     ticket_status: Optional[str] = None
     ticket_priority: Optional[str] = None
     resolution: Optional[str] = None
-    customer_satisfaction_rating: Optional[float] = None
+
+    customer_satisfaction_rating: Optional[float] = Field(
+        default=None,
+        ge=1.0,
+        le=5.0
+    )
 
 
-# Schema de resposta da API (GET)
+# Schema utilizado nas respostas da API
 class TicketResponse(TicketBase):
     id: int
-    ticket_id: int
+    user_id: int
     created_at: datetime
 
-    # Compatibilidade com Pydantic v2 para leitura direta do SQLAlchemy
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True
+    )

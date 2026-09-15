@@ -1,0 +1,410 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f4f6f8;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.login-container {
+    width: 100%;
+
+    max-width: 420px;
+
+    padding: 20px;
+}
+
+
+.login-card {
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+.logo {
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+
+.logo h1 {
+    color: #1f4e79;
+
+    font-size: 30px;
+
+    margin-bottom: 8px;
+}
+
+
+.logo p {
+    color: #666;
+
+    font-size: 14px;
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+
+label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: bold;
+
+    color: #333;
+}
+
+
+input {
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 6px;
+
+    font-size: 15px;
+}
+
+
+input:focus {
+    outline: none;
+
+    border-color: #1f4e79;
+}
+
+
+button {
+    width: 100%;
+
+    padding: 13px;
+
+    background: #1f4e79;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 6px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+button:hover {
+    background: #173a5c;
+}
+
+
+button:disabled {
+    background: #999;
+
+    cursor: not-allowed;
+}
+
+
+.message {
+    margin-top: 15px;
+
+    padding: 12px;
+
+    border-radius: 6px;
+
+    display: none;
+
+    font-size: 14px;
+}
+
+
+.error {
+    background: #ffe5e5;
+
+    color: #a00000;
+
+    border: 1px solid #ffb3b3;
+}
+
+
+.success {
+    background: #e5f7e5;
+
+    color: #176b17;
+
+    border: 1px solid #a8d8a8;
+}
+
+
+.footer {
+    text-align: center;
+
+    margin-top: 20px;
+
+    font-size: 12px;
+
+    color: #888;
+}
+
+/* =========================================================
+   TICKET DETAILS MODAL
+   ========================================================= */
+
+.ticket-details-modal {
+    max-width: 950px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.ticket-details-modal .modal-header {
+    padding: 25px 30px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.details-label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    color: #1f4e79;
+    margin-bottom: 5px;
+}
+
+.ticket-details-modal .modal-header h2 {
+    margin: 0;
+    color: #172b4d;
+    font-size: 24px;
+}
+
+/* Cabeçalho com resumo */
+
+.ticket-details-header {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    gap: 15px;
+    padding: 25px 30px;
+    background: #f7f9fb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ticket-id-box,
+.ticket-status-box,
+.ticket-priority-box,
+.ticket-rating-box {
+    background: white;
+    border: 1px solid #e4e8ec;
+    border-radius: 10px;
+    padding: 15px;
+    min-height: 75px;
+}
+
+.ticket-id-box span,
+.ticket-status-box span:first-child,
+.ticket-priority-box span:first-child,
+.ticket-rating-box span:first-child {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #7b8794;
+    margin-bottom: 8px;
+}
+
+.ticket-id-box strong,
+.ticket-rating-box strong {
+    font-size: 20px;
+    color: #1f4e79;
+}
+
+/* Seções */
+
+.details-section {
+    padding: 25px 30px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.details-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.details-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef4f9;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+.details-section-title h3 {
+    margin: 0;
+    color: #1f4e79;
+    font-size: 17px;
+}
+
+.details-section-title p {
+    margin-top: 3px;
+    color: #7b8794;
+    font-size: 12px;
+}
+
+/* Grid de informações */
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.detail-item {
+    background: #f8fafc;
+    border: 1px solid #edf0f2;
+    border-radius: 8px;
+    padding: 13px 15px;
+}
+
+.detail-item span,
+.detail-full > span {
+    display: block;
+    color: #7b8794;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.detail-item strong {
+    display: block;
+    color: #263238;
+    font-size: 14px;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Assunto / descrição */
+
+.detail-full {
+    margin-bottom: 16px;
+}
+
+.detail-full:last-child {
+    margin-bottom: 0;
+}
+
+.detail-text {
+    background: #f8fafc;
+    border: 1px solid #edf0f2;
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: #263238;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.description-box {
+    min-height: 90px;
+    white-space: pre-wrap;
+}
+
+/* Botão */
+
+.ticket-details-modal .modal-actions {
+    padding: 20px 30px;
+    margin: 0;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Linhas da tabela clicáveis */
+
+#ticketsTable tbody tr {
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+#ticketsTable tbody tr:hover {
+    background: #eef5fb;
+}
+
+/* Responsividade */
+
+@media (max-width: 800px) {
+
+    .ticket-details-header {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+
+    .ticket-details-modal {
+        width: 100%;
+        max-height: 95vh;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .ticket-details-header {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .details-section {
+        padding: 20px;
+    }
+
+    .ticket-details-modal .modal-header {
+        padding: 20px;
+    }
+
+    .ticket-details-modal .modal-actions {
+        padding: 15px 20px;
+    }
+}

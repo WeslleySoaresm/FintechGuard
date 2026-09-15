@@ -1,19 +1,20 @@
-# data/db.py
 from pathlib import Path
-import pandas as pd
+
+from sqlmodel import Session, create_engine
+
+
+DATABASE_URL = "sqlite:///./fintechguard.db"
 
 BASE_DIR = Path(__file__).resolve().parent
+
 CSV_PATH = BASE_DIR / "customer_support_tickets.csv"
 
-
-def load_data():
-    if not CSV_PATH.exists():
-        return pd.DataFrame()
-    
-    # Carrega e substitui qualquer NaN por string vazia ("")
-    data = pd.read_csv(CSV_PATH)
-    data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
-    return data.fillna("")
+engine = create_engine(
+    DATABASE_URL,
+    echo=False
+)
 
 
-df = load_data()
+def get_session():
+    with Session(engine) as session:
+        yield session

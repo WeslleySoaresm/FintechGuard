@@ -1,416 +1,1166 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FintechGuard - Gestão de Atendimento</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --border: #e2e8f0;
-            --danger: #ef4444;
-        }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 24px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        /* Loader de Tela Cheia Elegante */
-        #loadingOverlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(4px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+    <title>FintechGuard - Dashboard</title>
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/dashboard.css') }}"
+    >
 
-        .loading-text {
-            margin-top: 16px;
-            font-weight: 600;
-            color: var(--text-main);
-            font-size: 0.95rem;
-        }
-
-        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 20px 24px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .header h2 { margin: 0; font-size: 1.25rem; font-weight: 700; }
-
-        .card { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-        .card h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
-
-        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
-        .form-group { margin-bottom: 4px; }
-        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.85rem; color: var(--text-muted); }
-        input, select, textarea { width: 100%; padding: 10px 12px; box-sizing: border-box; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; background: #fff; color: var(--text-main); }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
-
-        button { background: var(--primary); color: #fff; border: none; padding: 10px 16px; font-weight: 600; font-size: 0.9rem; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: var(--primary-hover); }
-        .btn-danger { background: #fee2e2; color: var(--danger); }
-        .btn-danger:hover { background: #fca5a5; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
-        .btn-outline:hover { background: #f1f5f9; }
-
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-        th { background: #f8fafc; padding: 12px 16px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-        td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-        tr:hover td { background: #f8fafc; }
-
-        .badge { padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
-        .badge-open { background: #e0f2fe; color: #0369a1; }
-        .badge-pending { background: #fef3c7; color: #b45309; }
-        .badge-closed { background: #dcfce7; color: #15803d; }
-        .badge-high { background: #fee2e2; color: #b91c1c; }
-        .badge-medium { background: #ffedd5; color: #c2410c; }
-        .badge-low { background: #f1f5f9; color: #475569; }
-
-        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
-        .pagination-info { font-size: 0.85rem; color: var(--text-muted); }
-        .pagination-actions { display: flex; gap: 8px; }
-    </style>
 </head>
+
+
 <body>
 
-<!-- Loader Geral -->
-<div id="loadingOverlay">
-    <div class="spinner"></div>
-    <div class="loading-text" id="loadingText">Carregando dados do dataset...</div>
-</div>
 
-<div class="container">
-    <div class="header">
-        <h2>FintechGuard - Gestão de Atendimento</h2>
-        <button class="btn-danger" onclick="logout()">Sair</button>
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
+
+<header>
+
+    <div>
+
+        <h1>
+            FintechGuard
+        </h1>
+
+        <p>
+            Dashboard de Atendimento Bancário
+        </p>
+
     </div>
 
-    <!-- Novo Ticket Form -->
-    <div class="card">
-        <h3>Criar Novo Ticket</h3>
-        <form id="createTicketForm" style="margin-top: 16px;">
-            <div class="form-grid">
-                <div class="form-group"><label>Cliente</label><input type="text" id="customer_name" required></div>
-                <div class="form-group"><label>Email</label><input type="email" id="customer_email" required></div>
-                <div class="form-group"><label>Idade</label><input type="number" id="customer_age" value="30" required></div>
-                <div class="form-group">
-                    <label>Gênero</label>
-                    <select id="customer_gender">
-                        <option value="Male">Masculino</option>
-                        <option value="Female">Feminino</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Produto</label><input type="text" id="product_purchased" value="Cartão de Crédito" required></div>
-                <div class="form-group"><label>Data da Compra</label><input type="date" id="date_of_purchase" required></div>
-                <div class="form-group"><label>Tipo de Ticket</label><input type="text" id="ticket_type" value="Suporte Técnico" required></div>
-                <div class="form-group"><label>Assunto</label><input type="text" id="ticket_subject" required></div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <select id="ticket_status">
-                        <option value="Open">Aberto</option>
-                        <option value="Pending">Pendente</option>
-                        <option value="Closed">Fechado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Prioridade</label>
-                    <select id="ticket_priority">
-                        <option value="Low">Baixa</option>
-                        <option value="Medium">Média</option>
-                        <option value="High">Alta</option>
-                        <option value="Critical">Crítica</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Canal</label>
-                    <select id="ticket_channel">
-                        <option value="Email">Email</option>
-                        <option value="Phone">Telefone</option>
-                        <option value="Web">Web</option>
-                        <option value="Chat">Chat</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Avaliação (1-5)</label><input type="number" id="customer_satisfaction_rating" min="1" max="5" value="5"></div>
+
+    <div class="top-actions">
+
+        <button
+            type="button"
+            class="button button-primary"
+            id="newTicketButton"
+        >
+            + Novo Ticket
+        </button>
+
+
+        <button
+            type="button"
+            class="button button-danger"
+            id="logoutButton"
+        >
+            Sair
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     CONTAINER
+     ========================================================= -->
+
+<main class="container">
+
+
+    <!-- =====================================================
+         ERRO
+         ===================================================== -->
+
+    <div
+        id="errorMessage"
+        class="error-message"
+        role="alert"
+    ></div>
+
+
+    <!-- =====================================================
+         CARDS
+         ===================================================== -->
+
+    <section class="cards">
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total de Tickets
             </div>
-            <div class="form-group" style="margin-top: 12px;"><label>Descrição</label><textarea id="ticket_description" rows="2" required></textarea></div>
-            <div class="form-group"><label>Resolução</label><textarea id="resolution" rows="1">Em atendimento</textarea></div>
-            
-            <input type="hidden" id="first_response_time" value="0">
-            <input type="hidden" id="time_to_resolution" value="0">
 
-            <button type="submit" style="margin-top: 16px;">Salvar Ticket</button>
-        </form>
-    </div>
+            <div
+                class="card-value"
+                id="totalTickets"
+            >
+                0
+            </div>
 
-    <!-- Tabela com Filtros Globais -->
-    <div class="card">
-        <div class="card-header">
-            <h3>Tickets Cadastrados</h3>
-            <button class="btn-outline" onclick="resetFilters()">Limpar Filtros</button>
         </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Tickets Abertos
+            </div>
+
+            <div
+                class="card-value"
+                id="openTickets"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Alta Prioridade
+            </div>
+
+            <div
+                class="card-value"
+                id="highPriorityTickets"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Avaliação Média
+            </div>
+
+            <div
+                class="card-value"
+                id="averageRating"
+            >
+                -
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         FILTROS
+         ===================================================== -->
+
+    <section class="filters">
+
+        <h2>
+            Filtros
+        </h2>
+
 
         <div class="filter-grid">
-            <input type="text" id="filterSearch" placeholder="Buscar Nome, Email ou ID..." oninput="applyFilters()">
-            
-            <select id="filterCategory" onchange="applyFilters()">
-                <option value="">Todas as Categorias</option>
-            </select>
 
-            <select id="filterPriority" onchange="applyFilters()">
-                <option value="">Todas as Prioridades</option>
-                <option value="Low">Baixa</option>
-                <option value="Medium">Média</option>
-                <option value="High">Alta</option>
-                <option value="Critical">Crítica</option>
-            </select>
 
-            <select id="filterRating" onchange="applyFilters()">
-                <option value="">Todas as Avaliações</option>
-                <option value="5">5 Estrelas</option>
-                <option value="4">4 Estrelas</option>
-                <option value="3">3 Estrelas</option>
-                <option value="2">2 Estrelas</option>
-                <option value="1">1 Estrela</option>
-            </select>
-        </div>
+            <div class="filter-group">
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Cliente</th>
-                        <th>Assunto</th>
-                        <th>Categoria</th>
-                        <th>Status</th>
-                        <th>Prioridade</th>
-                        <th>Avaliação</th>
-                    </tr>
-                </thead>
-                <tbody id="ticketsTableBody">
-                    <tr><td colspan="7" style="text-align: center;">Aguardando dados...</td></tr>
-                </tbody>
-            </table>
-        </div>
+                <label for="filterSearch">
+                    Buscar
+                </label>
 
-        <div class="pagination">
-            <span class="pagination-info" id="paginationInfo">Mostrando 0 de 0 tickets</span>
-            <div class="pagination-actions">
-                <button class="btn-outline" id="btnPrev" onclick="changePage(-1)">Anterior</button>
-                <button class="btn-outline" id="btnNext" onclick="changePage(1)">Próximo</button>
+                <input
+                    type="text"
+                    id="filterSearch"
+                    placeholder="ID, nome ou e-mail"
+                >
+
             </div>
+
+
+            <div class="filter-group">
+
+                <label for="filterCategory">
+                    Categoria
+                </label>
+
+                <select id="filterCategory">
+
+                    <option value="">
+                        Todas as Categorias
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="filterPriority">
+                    Prioridade
+                </label>
+
+                <select id="filterPriority">
+
+                    <option value="">
+                        Todas
+                    </option>
+
+                    <option value="High">
+                        Alta
+                    </option>
+
+                    <option value="Medium">
+                        Média
+                    </option>
+
+                    <option value="Low">
+                        Baixa
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="filterStatus">
+                    Status
+                </label>
+
+                <select id="filterStatus">
+
+                    <option value="">
+                        Todos
+                    </option>
+
+                    <option value="Open">
+                        Aberto
+                    </option>
+
+                    <option value="Pending">
+                        Pendente
+                    </option>
+
+                    <option value="Closed">
+                        Fechado
+                    </option>
+
+                </select>
+
+            </div>
+
+
         </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TABELA
+         ===================================================== -->
+
+    <section class="table-container">
+
+
+        <div class="table-header">
+
+            <h2>
+                Tickets
+            </h2>
+
+        </div>
+
+
+        <div class="table-scroll">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Cliente
+                        </th>
+
+                        <th>
+                            Assunto
+                        </th>
+
+                        <th>
+                            Categoria
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Prioridade
+                        </th>
+
+                        <th>
+                            Avaliação
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="ticketsTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="loading"
+                        >
+                            Carregando tickets...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- =========================================================
+     MODAL NOVO TICKET
+     ========================================================= -->
+
+<div
+    id="ticketModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="details-label">
+                    NOVO ATENDIMENTO
+                </span>
+
+                <h2>
+                    Criar Ticket
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="close"
+                id="closeModalButton"
+                aria-label="Fechar"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+        <form id="ticketForm">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="customer_name">
+                        Nome do cliente *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customer_name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_email">
+                        E-mail *
+                    </label>
+
+                    <input
+                        type="email"
+                        id="customer_email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_age">
+                        Idade
+                    </label>
+
+                    <input
+                        type="number"
+                        id="customer_age"
+                        min="0"
+                        max="120"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_gender">
+                        Gênero
+                    </label>
+
+                    <select id="customer_gender">
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                        <option value="Male">
+                            Masculino
+                        </option>
+
+                        <option value="Female">
+                            Feminino
+                        </option>
+
+                        <option value="Other">
+                            Outro
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="product_purchased">
+                        Produto
+                    </label>
+
+                    <input
+                        type="text"
+                        id="product_purchased"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="date_of_purchase">
+                        Data da compra
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date_of_purchase"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_type">
+                        Tipo do ticket
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticket_type"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_channel">
+                        Canal
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticket_channel"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_status">
+                        Status
+                    </label>
+
+                    <select id="ticket_status">
+
+                        <option value="Open">
+                            Aberto
+                        </option>
+
+                        <option value="Pending">
+                            Pendente
+                        </option>
+
+                        <option value="Closed">
+                            Fechado
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_priority">
+                        Prioridade
+                    </label>
+
+                    <select id="ticket_priority">
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                        <option value="High">
+                            Alta
+                        </option>
+
+                        <option value="Medium">
+                            Média
+                        </option>
+
+                        <option value="Low">
+                            Baixa
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="ticket_subject">
+                        Assunto *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticket_subject"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="ticket_description">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="ticket_description"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_satisfaction_rating">
+                        Avaliação
+                    </label>
+
+                    <input
+                        type="number"
+                        id="customer_satisfaction_rating"
+                        min="1"
+                        max="5"
+                        step="0.1"
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="button"
+                    id="cancelModalButton"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                    id="saveTicketButton"
+                >
+                    Salvar Ticket
+                </button>
+
+            </div>
+
+
+        </form>
+
     </div>
+
 </div>
 
-<script>
-    document.getElementById('date_of_purchase').valueAsDate = new Date();
-    const token = localStorage.getItem('access_token');
-    if (!token) window.location.href = '/login';
 
-    let allTickets = [];
-    let filteredTickets = [];
-    let currentPage = 1;
-    const itemsPerPage = 5;
+<!-- =========================================================
+     MODAL DETALHES DO TICKET
+     ========================================================= -->
 
-    function showLoader(msg = "Carregando dados do dataset...") {
-        document.getElementById('loadingText').innerText = msg;
-        document.getElementById('loadingOverlay').style.display = 'flex';
-        document.getElementById('loadingOverlay').style.opacity = '1';
-    }
+<div
+    id="ticketDetailsModal"
+    class="modal"
+>
 
-    function hideLoader() {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.style.display = 'none', 300);
-    }
+    <div class="modal-content ticket-details-modal">
 
-    async function fetchTickets() {
-        showLoader("Buscando todos os registros do dataset...");
-        try {
-            // Requisita a base completa sem limite fixo de 100
-            const response = await fetch('/tickets?limit=100000', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
 
-            if (response.status === 401) {
-                window.location.href = '/login';
-                return;
-            }
+        <!-- HEADER -->
 
-            allTickets = await response.json();
-            populateCategoryFilter();
-            applyFilters();
-        } catch (error) {
-            console.error('Erro ao carregar tickets:', error);
-            alert('Falha ao carregar a base de dados.');
-        } finally {
-            hideLoader();
-        }
-    }
+        <div class="modal-header">
 
-    function populateCategoryFilter() {
-        const categories = [...new Set(allTickets.map(t => t["Ticket Type"] || t.ticket_type).filter(Boolean))];
-        const select = document.getElementById('filterCategory');
-        select.innerHTML = '<option value="">Todas as Categorias</option>';
-        categories.forEach(cat => {
-            select.innerHTML += `<option value="${cat}">${cat}</option>`;
-        });
-    }
+            <div>
 
-    function applyFilters() {
-        const search = document.getElementById('filterSearch').value.toLowerCase().trim();
-        const category = document.getElementById('filterCategory').value;
-        const priority = document.getElementById('filterPriority').value;
-        const rating = document.getElementById('filterRating').value;
+                <span class="details-label">
+                    DETALHES DO TICKET
+                </span>
 
-        // Executa o filtro em 100% da lista 'allTickets'
-        filteredTickets = allTickets.filter(t => {
-            const id = String(t["Ticket ID"] || t.ticket_id || '');
-            const name = String(t["Customer Name"] || t.customer_name || '').toLowerCase();
-            const email = String(t["Customer Email"] || t.customer_email || '').toLowerCase();
-            const type = t["Ticket Type"] || t.ticket_type || '';
-            const prio = t["Ticket Priority"] || t.ticket_priority || '';
-            const rate = String(t["Customer Satisfaction Rating"] || t.customer_satisfaction_rating || '');
+                <h2 id="detailsTicketSubject">
+                    Ticket
+                </h2>
 
-            const matchesSearch = !search || name.includes(search) || email.includes(search) || id.includes(search);
-            const matchesCategory = !category || type === category;
-            const matchesPriority = !priority || prio.toLowerCase() === priority.toLowerCase();
-            const matchesRating = !rating || rate === rating;
+            </div>
 
-            return matchesSearch && matchesCategory && matchesPriority && matchesRating;
-        });
 
-        currentPage = 1;
-        renderTable();
-    }
+            <button
+                type="button"
+                class="close"
+                id="closeTicketDetails"
+                aria-label="Fechar detalhes"
+            >
+                &times;
+            </button>
 
-    function renderTable() {
-        const tbody = document.getElementById('ticketsTableBody');
-        tbody.innerHTML = '';
+        </div>
 
-        const total = filteredTickets.length;
-        const totalPages = Math.ceil(total / itemsPerPage) || 1;
 
-        const start = (currentPage - 1) * itemsPerPage;
-        const paginatedItems = filteredTickets.slice(start, start + itemsPerPage);
+        <!-- RESUMO -->
 
-        if (paginatedItems.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Nenhum ticket encontrado no dataset.</td></tr>';
-        } else {
-            paginatedItems.forEach(ticket => {
-                const status = ticket["Ticket Status"] || ticket.ticket_status || '-';
-                const priority = ticket["Ticket Priority"] || ticket.ticket_priority || '-';
-                
-                const statusClass = status.toLowerCase().includes('open') ? 'badge-open' : status.toLowerCase().includes('pending') ? 'badge-pending' : 'badge-closed';
-                const priorityClass = priority.toLowerCase().includes('high') || priority.toLowerCase().includes('critical') ? 'badge-high' : priority.toLowerCase().includes('medium') ? 'badge-medium' : 'badge-low';
+        <div class="ticket-summary">
 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><strong>#${ticket["Ticket ID"] || ticket.ticket_id || '-'}</strong></td>
-                    <td>${ticket["Customer Name"] || ticket.customer_name || '-'}</td>
-                    <td>${ticket["Ticket Subject"] || ticket.ticket_subject || '-'}</td>
-                    <td>${ticket["Ticket Type"] || ticket.ticket_type || '-'}</td>
-                    <td><span class="badge ${statusClass}">${status}</span></td>
-                    <td><span class="badge ${priorityClass}">${priority}</span></td>
-                    <td>⭐ ${ticket["Customer Satisfaction Rating"] || ticket.customer_satisfaction_rating || '-'}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
 
-        document.getElementById('paginationInfo').innerText = `Mostrando ${paginatedItems.length > 0 ? start + 1 : 0} - ${Math.min(start + itemsPerPage, total)} de ${total} tickets (Filtrados do total de ${allTickets.length})`;
-        document.getElementById('btnPrev').disabled = currentPage === 1;
-        document.getElementById('btnNext').disabled = currentPage >= totalPages;
-    }
+            <div class="ticket-id-box">
 
-    function changePage(delta) {
-        currentPage += delta;
-        renderTable();
-    }
+                <span class="details-label">
+                    ID
+                </span>
 
-    function resetFilters() {
-        document.getElementById('filterSearch').value = '';
-        document.getElementById('filterCategory').value = '';
-        document.getElementById('filterPriority').value = '';
-        document.getElementById('filterRating').value = '';
-        applyFilters();
-    }
+                <strong id="detailsTicketId">
+                    -
+                </strong>
 
-    document.getElementById('createTicketForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        showLoader("Salvando novo ticket...");
-        
-        const payload = {
-            customer_name: document.getElementById('customer_name').value,
-            customer_email: document.getElementById('customer_email').value,
-            customer_age: parseInt(document.getElementById('customer_age').value),
-            customer_gender: document.getElementById('customer_gender').value,
-            product_purchased: document.getElementById('product_purchased').value,
-            date_of_purchase: document.getElementById('date_of_purchase').value,
-            ticket_type: document.getElementById('ticket_type').value,
-            ticket_subject: document.getElementById('ticket_subject').value,
-            ticket_description: document.getElementById('ticket_description').value,
-            ticket_status: document.getElementById('ticket_status').value,
-            resolution: document.getElementById('resolution').value,
-            ticket_priority: document.getElementById('ticket_priority').value,
-            ticket_channel: document.getElementById('ticket_channel').value,
-            first_response_time: parseFloat(document.getElementById('first_response_time').value),
-            time_to_resolution: parseFloat(document.getElementById('time_to_resolution').value),
-            customer_satisfaction_rating: parseInt(document.getElementById('customer_satisfaction_rating').value)
-        };
+            </div>
 
-        try {
-            const response = await fetch('/tickets', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
 
-            if (response.ok) {
-                document.getElementById('createTicketForm').reset();
-                await fetchTickets();
-            } else {
-                alert('Erro ao criar ticket.');
-            }
-        } finally {
-            hideLoader();
-        }
-    });
+            <div class="ticket-status-box">
 
-    function logout() {
-        localStorage.removeItem('access_token');
-        window.location.href = '/login';
-    }
+                <span class="details-label">
+                    Status
+                </span>
 
-    fetchTickets();
-</script>
+                <span
+                    id="detailsTicketStatus"
+                    class="badge"
+                >
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="ticket-priority-box">
+
+                <span class="details-label">
+                    Prioridade
+                </span>
+
+                <span
+                    id="detailsTicketPriority"
+                    class="badge"
+                >
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="ticket-rating-box">
+
+                <span class="details-label">
+                    Avaliação
+                </span>
+
+                <strong id="detailsTicketRating">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- CORPO DOS DETALHES -->
+
+        <div class="ticket-details-body">
+
+
+            <!-- CLIENTE -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        👤
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Informações do cliente
+                        </h3>
+
+                        <p>
+                            Dados associados ao atendimento
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Nome
+                        </span>
+
+                        <strong id="detailsCustomerName">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            E-mail
+                        </span>
+
+                        <strong id="detailsCustomerEmail">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Idade
+                        </span>
+
+                        <strong id="detailsCustomerAge">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Gênero
+                        </span>
+
+                        <strong id="detailsCustomerGender">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- PRODUTO -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        🛒
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Produto e atendimento
+                        </h3>
+
+                        <p>
+                            Informações relacionadas à solicitação
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Produto
+                        </span>
+
+                        <strong id="detailsProduct">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Tipo do ticket
+                        </span>
+
+                        <strong id="detailsTicketType">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Canal
+                        </span>
+
+                        <strong id="detailsTicketChannel">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Data da compra
+                        </span>
+
+                        <strong id="detailsPurchaseDate">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- SOLICITAÇÃO -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        💬
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Solicitação
+                        </h3>
+
+                        <p>
+                            Conteúdo enviado pelo cliente
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-full">
+
+                    <span>
+                        Assunto
+                    </span>
+
+                    <div
+                        id="detailsSubject"
+                        class="detail-text"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="detail-full">
+
+                    <span>
+                        Descrição
+                    </span>
+
+                    <div
+                        id="detailsDescription"
+                        class="detail-text description-box"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- ATENDIMENTO -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        ⏱️
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Atendimento
+                        </h3>
+
+                        <p>
+                            Indicadores e resolução
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Primeira resposta
+                        </span>
+
+                        <strong id="detailsFirstResponse">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Tempo de resolução
+                        </span>
+
+                        <strong id="detailsResolutionTime">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item full-width">
+
+                        <span>
+                            Resolução
+                        </span>
+
+                        <strong id="detailsResolution">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- SISTEMA -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        🔐
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Informações do sistema
+                        </h3>
+
+                        <p>
+                            Controle e auditoria
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Usuário proprietário
+                        </span>
+
+                        <strong id="detailsUserId">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Ticket criado em
+                        </span>
+
+                        <strong id="detailsCreatedAt">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="button button-primary"
+                id="closeTicketDetailsButton"
+            >
+                Fechar
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script
+    src="{{ url_for('static', path='js/dashboard.js') }}"
+></script>
+
+
 </body>
+
 </html>
