@@ -29808,5 +29808,12 @@ Buy for 80-100% ( The issue I'm facing is intermittent. Sometimes it works fine,
 I could get a I've reviewed the troubleshooting steps on the official support website, but they didn't resolve the problem.",Open,,High,Phone,,,
 8470.0,Ana Silva,ana.silva@email.com,34.0,Female,Cartão de Crédito Premium,2026-07-15 10:30:00+00:00,Billing Inquiry,Cobrança indevida de anuidade,Foi cobrada a taxa de anuidade no meu cartão mesmo com a isenção prometida no contrato.,Open,Pendência em análise pelo setor financeiro.,High,App Mobile,2026-07-15 11:00:00+00:00,2026-07-15 12:00:00+00:00,5.0
 ,,,,,,,,,,,,,,,,
-8471.0,string,string,120.0,,string,2026-08-18 21:54:39.287000+00:00,,string,string,Open,string,,,2026-08-18 21:54:39.287000+00:00,2026-08-18 21:54:39.287000+00:00,5.0
-8472.0,Autorizado,string,120.0,,string,2026-08-18 23:16:13.539000+00:00,,string,string,Open,string,,,2026-08-18 23:16:13.539000+00:00,2026-08-18 23:16:13.539000+00:00,5.0
+8471.0,string,string,120.0,string,string,2026-08-18 21:54:39.287000+00:00,string,string,string,Open,string,string,string,2026-08-18 21:54:39.287000+00:00,2026-08-18 21:54:39.287000+00:00,5.0
+8472.0,Autorizado,string,120.0,string,string,2026-08-18 23:16:13.539000+00:00,string,string,string,Open,string,string,string,2026-08-18 23:16:13.539000+00:00,2026-08-18 23:16:13.539000+00:00,5.0
+8473.0,string,string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8473.0,"<script>alert(""ola mundo"")</script>",string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8474.0,&lt;script&gt;alert(&quot;ola mundo&quot;)&lt;/script&gt;,string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8475.0,weslley,w@w.cpm,30.0,Male,Cartão de Crédito,8/22/2026 0:00:00,Suporte Técnico,credito,pedido de credito,Open,Em análise inicial.,Low,Email,1970-01-01 00:00:00+00:00,1970-01-01 00:00:00+00:00,5.0
+8476.0,fabio antonio,a@a.com,30.0,Male,Cartão de Crédito,8/22/2026 0:00:00,Suporte Técnico,djnddn,acav,Open,Em análise inicial.,Low,Email,1970-01-01 00:00:00+00:00,1970-01-01 00:00:00+00:00,5.0
+8477.0,string,string,120.0,string,string,2026-08-23 14:15:40.182000+00:00,string,string,string,Open,string,string,string,2026-08-23 14:15:40.182000+00:00,2026-08-23 14:15:40.182000+00:00,1.0
+8478.0,weslley soares,soares@gamil.com,31.0,Male,Cartão de Crédito,2026-08-23 00:00:00,Suporte Técnico,app,meu app está travado na parte de pix,Open,Em atendimento,Medium,Phone,1970-01-01 00:00:00+00:00,1970-01-01 00:00:00+00:00,3.0

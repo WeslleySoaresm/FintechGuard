@@ -1,80 +1,199 @@
-from typing import Optional
-from fastapi import APIRouter, HTTPException, status, Depends
-import pandas as pd
-from data import db
-from data.db import CSV_PATH, df
-from schemas.ticket import TicketCreate
-from utils.helpers  import find_ticket_by_id, get_next_ticket_id
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session, select
+
+from data.db import get_session
+from models.model_events import Ticket
+from schemas.ticket import TicketCreate, TicketResponse
 from utils.auth import verify_token
+from utils.helpers import sanitize_text
 
 
-router = APIRouter(prefix="/tickets", tags=["Tickets"])
+router = APIRouter(
+    prefix="/tickets",
+    tags=["Tickets"]
+)
 
-@router.post("/{Create_user}", status_code=status.HTTP_201_CREATED)
-def create_ticket(ticket: TicketCreate, user_data: dict = Depends(verify_token)):
-    global df
-    
-   
-    # Se não enviou ticket_id, chama a função auxiliar
-    #Helpers para calcular o proximo id
-    next_id = ticket.ticket_id or get_next_ticket_id(df)
 
-    # Mapeamento completo entre o schema e os nomes das colunas no CSV
-    new_data = {
-        "Ticket ID": next_id,
-        "Customer Name": ticket.customer_name,
-        "Customer Email": ticket.customer_email,
-        "Customer Age": ticket.customer_age,
-        "Customer Gender": ticket.customer_gender,
-        "Product Purchased": ticket.product_purchased,
-        "Date of Purchase": ticket.date_of_purchase,
-        "Ticket Type": ticket.ticket_type,
-        "Ticket Subject": ticket.ticket_subject,
-        "Ticket Description": ticket.ticket_description,
-        "Ticket Status": ticket.ticket_status,
-        "Resolution": ticket.resolution,
-        "Ticket Priority": ticket.ticket_priority,
-        "Ticket Channel": ticket.ticket_channel,
-        "First Response Time": ticket.first_response_time,
-        "Time to Resolution": ticket.time_to_resolution,
-        "Customer Satisfaction Rating": ticket.customer_satisfaction_rating,
+@router.get(
+    "/root",
+    status_code=status.HTTP_200_OK
+)
+def root():
+    return {
+        "message": "API FintechGuard em execução"
     }
 
-    new_df = pd.DataFrame([new_data])
-    db.df = pd.concat([db.df, new_df], ignore_index=True)
 
-    # Persiste no arquivo mantendo a limpeza das colunas Unnamed
-    db.df.to_csv(db.CSV_PATH, index=False)
+@router.post(
+    "",
+    response_model=TicketResponse,
+    status_code=status.HTTP_201_CREATED
+)
+def create_ticket(
+    ticket: TicketCreate,
+    current_user: dict = Depends(verify_token),
+    session: Session = Depends(get_session)
+):
+    """
+    Cria um novo ticket para o usuário autenticado.
+    """
 
-    return new_data
+    # ID do usuário autenticado
+    user_id = current_user["user_id"]
 
-@router.get("/")
-def read_tickets(skip: int = 0, limit: int = 100):
-    paginated_df = df.iloc[skip : skip + limit].where(pd.notnull(df), None)
-    return paginated_df.to_dict(orient="records")
+    # ---------------------------------------------------------
+    # 1. Sanitizar campos de texto
+    # ---------------------------------------------------------
+
+    clean_name = sanitize_text(ticket.customer_name)
+
+    clean_description = None
+
+    if ticket.ticket_description:
+        clean_description = sanitize_text(
+            ticket.ticket_description
+        )
+
+    clean_subject = sanitize_text(
+        ticket.ticket_subject
+    )
+
+    # ---------------------------------------------------------
+    # 2. Criar objeto Ticket
+    # ---------------------------------------------------------
+
+    new_ticket = Ticket(
+        user_id=user_id,
+
+        customer_name=clean_name,
+        customer_email=ticket.customer_email,
+        customer_age=ticket.customer_age,
+        customer_gender=ticket.customer_gender,
+        product_purchased=ticket.product_purchased,
+        date_of_purchase=ticket.date_of_purchase,
+
+        ticket_type=ticket.ticket_type,
+        ticket_subject=clean_subject,
+        ticket_description=clean_description,
+
+        ticket_status=ticket.ticket_status or "Open",
+        ticket_priority=ticket.ticket_priority,
+        ticket_channel=ticket.ticket_channel,
+
+        first_response_time=ticket.first_response_time,
+        time_to_resolution=ticket.time_to_resolution,
+        resolution=ticket.resolution,
+
+        customer_satisfaction_rating=(
+            ticket.customer_satisfaction_rating
+        )
+    )
+
+    # ---------------------------------------------------------
+    # 3. Salvar no banco
+    # ---------------------------------------------------------
+
+    session.add(new_ticket)
+
+    session.commit()
+
+    session.refresh(new_ticket)
+
+    return new_ticket
+
+@router.get(
+    "",
+    response_model=list[TicketResponse]
+)
+def read_tickets(
+    skip: int = 0,
+    limit: int = 100,
+    current_user: dict = Depends(verify_token),
+    session: Session = Depends(get_session)
+):
+    """
+    Retorna somente os tickets pertencentes ao
+    usuário autenticado.
+    """
+
+    user_id = current_user["user_id"]
+
+    statement = (
+        select(Ticket)
+        .where(Ticket.user_id == user_id)
+        .offset(skip)
+        .limit(limit)
+    )
+
+    tickets = session.exec(statement).all()
+
+    return tickets
 
 
-@router.get("/{ticket_id}")
-def read_ticket(ticket_id: int):
-    # Usa a função auxiliar
-    ticket = find_ticket_by_id(ticket_id)
-    
-    # Trata valores nulos para o JSON
-    ticket_clean = ticket.where(pd.notnull(ticket), None)
-    return ticket_clean.to_dict(orient="records")[0]
+@router.get(
+    "/{ticket_id}",
+    response_model=TicketResponse
+)
+def read_ticket(
+    ticket_id: int,
+    current_user: dict = Depends(verify_token),
+    session: Session = Depends(get_session)
+):
+    """
+    Retorna um ticket específico somente se ele
+    pertencer ao usuário autenticado.
+    """
+
+    user_id = current_user["user_id"]
+
+    statement = select(Ticket).where(
+        Ticket.id == ticket_id,
+        Ticket.user_id == user_id
+    )
+
+    ticket = session.exec(statement).first()
+
+    if ticket is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ticket não encontrado."
+        )
+
+    return ticket
 
 
-@router.delete("/{ticket_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_ticket(ticket_id: int, user_data: dict = Depends(verify_token)):
-    # Reutiliza a busca (se não existir, já lança o erro 404 automaticamente)
-    find_ticket_by_id(ticket_id)
+@router.delete(
+    "/{ticket_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+def delete_ticket(
+    ticket_id: int,
+    current_user: dict = Depends(verify_token),
+    session: Session = Depends(get_session)
+):
+    """
+    Exclui um ticket somente se ele pertencer
+    ao usuário autenticado.
+    """
 
-    # Remove o ticket filtrando o DataFrame
-    numeric_ids = pd.to_numeric(db.df["Ticket ID"], errors="coerce")
-    db.df = db.df[numeric_ids != ticket_id]
+    user_id = current_user["user_id"]
 
-    # Salva as alterações no arquivo CSV
-    db.df.to_csv(db.CSV_PATH, index=False)
+    statement = select(Ticket).where(
+        Ticket.id == ticket_id,
+        Ticket.user_id == user_id
+    )
+
+    ticket = session.exec(statement).first()
+
+    if ticket is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ticket não encontrado."
+        )
+
+    session.delete(ticket)
+
+    session.commit()
 
     return None
-        

@@ -1,130 +1,147 @@
+"""
+===============================================================================
+PROJETO DE BLOCO: Análise e Segurança de Agentes de IA - TP1
+Arquivo: eda.py
+Descrição: Análise Exploratória de Dados (EDA) e limpeza do dataset de tickets.
+===============================================================================
+"""
+
+import os
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
-# ==========================================
-# 1. CARREGAMENTO DO DATASET
-# ==========================================
+def executar_eda():
+    # =========================================================================
+    # 1. CARREGAMENTO DO DATASET
+    # =========================================================================
+    # O Pandas carrega o arquivo CSV da pasta 'data/'. É o primeiro passo para
+    # converter o arquivo em uma estrutura manipulável (DataFrame).
+    caminho_dataset = "data/customer_support_tickets.csv"
+    
+    if not os.path.exists(caminho_dataset):
+        print(f"Erro: Arquivo '{caminho_dataset}' não encontrado.")
+        return
 
-df = pd.read_csv("data/customer_support_tickets.csv")
+    df = pd.read_csv(caminho_dataset)
+    print(">>> Dataset carregado com sucesso!\n")
 
+    # =========================================================================
+    # 2. ANÁLISE ESTRUTURAL (SHAPE E DTYPES)
+    # =========================================================================
+    # df.shape retorna a tupla (linhas, colunas).
+    # df.dtypes detalha a tipagem de cada coluna atribuída pelo Pandas.
+    print(f"Dimensões da base: {df.shape[0]} linhas e {df.shape[1]} colunas\n")
+    print("--- Tipos de Dados ---")
+    print(df.dtypes)
+    print("\n" + "=" * 80 + "\n")
 
-# ==========================================
-# 2. VISÃO INICIAL DOS DADOS
-# ==========================================
+    # =========================================================================
+    # 3. DIAGNÓSTICO DE VALORES AUSENTES E DUPLICATAS
+    # =========================================================================
+    # df.isnull().sum() conta os nulos de cada coluna.
+    # df.duplicated().sum() verifica linhas 100% idênticas.
+    print("--- Contagem de Valores Ausentes ---")
+    print(df.isnull().sum())
+    
+    qtd_duplicatas = df.duplicated().sum()
+    print(f"\nTotal de linhas duplicadas: {qtd_duplicatas}")
+    
+    # Explicação / Decisão de limpeza:
+    # Os nulos concentram-se em 'Resolution', 'Time to Resolution', 
+    # 'Customer Satisfaction Rating' e 'First Response Time'. Não devem ser 
+    # removidos pois representam o ciclo de vida (chamados ainda não encerrados).
+    print("\n" + "=" * 80 + "\n")
 
-print("\n========== PRIMEIRAS LINHAS ==========")
-print(df.head())
+    # =========================================================================
+    # 4. ESTATÍSTICAS DESCRITIVAS
+    # =========================================================================
+    # df.describe(include='all') calcula contagem, média, desvio padrão,
+    # valores mínimos, máximos e quartis para variáveis numéricas e categóricas.
+    print("--- Resumo Estatístico ---")
+    print(df.describe(include="all"))
+    print("\n" + "=" * 80 + "\n")
 
+    # =========================================================================
+    # 5. DISTRIBUIÇÃO DA VARIÁVEL ALVO (Ticket Type)
+    # =========================================================================
+    # Analisamos a frequência da variável-alvo para checar desbalanceamento.
+    print("--- Frequência Absoluta (Ticket Type) ---")
+    print(df['Ticket Type'].value_counts(dropna=False))
 
-print("\n========== DIMENSÕES ==========")
-print(f"Linhas: {df.shape[0]}")
-print(f"Colunas: {df.shape[1]}")
+    print("\n--- Frequência Relativa (%) ---")
+    print((df['Ticket Type'].value_counts(normalize=True) * 100).round(2))
+    print("\n" + "=" * 80 + "\n")
 
+    # =========================================================================
+    # 6. LIMPEZA, TRATAMENTO E EXPORTAÇÃO
+    # =========================================================================
+    # Criamos uma cópia para preservar os dados originais brutos.
+    df_cleaned = df.copy()
 
-print("\n========== COLUNAS ==========")
-print(df.columns.tolist())
+    # Executamos a limpeza de duplicatas caso existam
+    df_cleaned = df_cleaned.drop_duplicates()
 
+    # Padronizamos pequenas inconsistências de dicionário/idioma
+    df_cleaned["Ticket Type"] = df_cleaned["Ticket Type"].replace({"Cobrança": "Billing Inquiry"})
+    df_cleaned["Customer Gender"] = df_cleaned["Customer Gender"].replace({"Feminino": "Female"})
 
-print("\n========== TIPOS DE DADOS ==========")
-print(df.dtypes)
+    # Garantimos a existência da pasta data/ e salvamos a base limpa
+    os.makedirs("data", exist_ok=True)
+    caminho_destino = "data/customer_support_tickets_cleaned.csv"
+    df_cleaned.to_csv(caminho_destino, index=False)
+    print(f">>> Dataset limpo salvo com sucesso em: '{caminho_destino}'\n")
 
+    # =========================================================================
+    # 7. VISUALIZAÇÕES GRÁFICAS
+    # =========================================================================
+    # Gera gráficos de barras para examinar as distribuições visuais.
+    # Salva o arquivo em graphs/eda_visualizations.png.
+    os.makedirs("graphs", exist_ok=True)
+    
+    sns.set_theme(style="whitegrid")
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-print("\n========== INFORMAÇÕES DO DATASET ==========")
-df.info()
-
-
-print("\n========== VALORES AUSENTES ==========")
-print(df.isnull().sum())
-
-
-print("\n========== DUPLICATAS ==========")
-print(f"Quantidade de duplicatas: {df.duplicated().sum()}")
-
-
-print("\n========== ESTATÍSTICAS ==========")
-print(df.describe(include="all"))
-
-print("\n========== DISTRIBUIÇÃO DAS CLASSES ==========")
-coluna_texto = df.select_dtypes(include="object").columns
-
-for coluna in coluna_texto:
-    print(f"\nColuna --- {coluna}---")
-    print(df[coluna].value_counts(dropna=False).head(15))
-
-print("\n========== INICIANDO LIMPEZA ==========")
-
-# Criar uma cópia do dataset original para limpeza
-df_cleaned = df.copy()
-
-
-# ==========================================
-# 4.  remove duplicates
-# ==========================================
-
-df_cleaned = df_cleaned.drop_duplicates()
-
-# ==========================================
-# 5. corrigir valores claramente invalidos
-# ==========================================
-
-# valores "string" representa dados invalidos
-valor_invalido = "string"
-colunas_categoricas = [
-    "Customer Gender",
-    "Ticket Type",
-    "Ticket Priority",
-    "Ticket Channel",
-]
-
-for coluna in colunas_categoricas:
-    df_cleaned[coluna] = df_cleaned[coluna].replace(
-        valor_invalido,
-        pd.NA
+    # Gráfico 1: Tipo de Ticket (Variável Alvo)
+    sns.countplot(
+        data=df_cleaned, 
+        y="Ticket Type", 
+        order=df_cleaned["Ticket Type"].value_counts().index, 
+        ax=axes[0], 
+        palette="viridis"
     )
+    axes[0].set_title("Distribuição do Tipo de Ticket (Alvo)")
+    axes[0].set_xlabel("Quantidade")
 
-# ==========================================
-# 6. padronizar categorias
-# ==========================================
-
-df_cleaned["Customer Gender"] = df_cleaned["Customer Gender"].replace({
-    "Feminino": "Female"
-})
-
-df_cleaned["Ticket Type"] = df_cleaned["Ticket Type"].replace({
-    "Cobrança": "Billing Inquiry"
-})
-
-# ==========================================
-# 7. salvar dataset limpo
-# ==========================================
-
-df_cleaned.to_csv("data/customer_support_tickets_cleaned.csv", index=False)
-
-# =========================================
-# 8. verificação final
-# =========================================
-
-print("\n========== DATASET LIMPO ==========")
-print(f"Linhas: {df_cleaned.shape[0]}")
-print(f"Colunas: {df_cleaned.shape[1]}")
-
-print("\nvalores ausentes depois da limpeza:")
-print(df_cleaned.isnull().sum())
-
-print("\n duplicadas depois da limpeza:")
-print(df_cleaned.duplicated().sum())
-
-print("\n arquivo salvo em:")
-print("data/customer_support_tickets_cleaned.csv")
-
-print("\n========== STATUS DOS TICKETS ==========")
-print(df_cleaned["Ticket Status"].value_counts(dropna=False))
-
-print("\n========== STATUS X RESOLUTION ==========")
-print(
-    pd.crosstab(
-        df_cleaned["Ticket Status"],
-        df_cleaned["Resolution"].isna(),
-        margins=True
+    # Gráfico 2: Prioridade do Chamado
+    sns.countplot(
+        data=df_cleaned, 
+        x="Ticket Priority", 
+        order=["Low", "Medium", "High", "Critical"], 
+        ax=axes[1], 
+        palette="magma"
     )
-)
+    axes[1].set_title("Distribuição da Prioridade")
+    axes[1].set_ylabel("Quantidade")
+
+    # Gráfico 3: Canal de Atendimento
+    sns.countplot(
+        data=df_cleaned, 
+        x="Ticket Channel", 
+        order=df_cleaned["Ticket Channel"].value_counts().index, 
+        ax=axes[2], 
+        palette="mako"
+    )
+    axes[2].set_title("Distribuição do Canal de Suporte")
+    axes[2].set_ylabel("Quantidade")
+
+    plt.tight_layout()
+    caminho_grafico = "graphs/eda_visualizations.png"
+    plt.savefig(caminho_grafico)
+    print(f">>> Gráficos gerados e salvos em: '{caminho_grafico}'")
+    plt.show()
+
+
+if __name__ == "__main__":
+    executar_eda()

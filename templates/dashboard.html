@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>FintechGuard - Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/dashboard.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
+
+<header>
+
+    <div>
+
+        <h1>
+            FintechGuard
+        </h1>
+
+        <p>
+            Dashboard de Atendimento Bancário
+        </p>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <button
+            type="button"
+            class="button button-primary"
+            id="newTicketButton"
+        >
+            + Novo Ticket
+        </button>
+
+
+        <button
+            type="button"
+            class="button button-danger"
+            id="logoutButton"
+        >
+            Sair
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     CONTAINER
+     ========================================================= -->
+
+<main class="container">
+
+
+    <!-- =====================================================
+         ERRO
+         ===================================================== -->
+
+    <div
+        id="errorMessage"
+        class="error-message"
+        role="alert"
+    ></div>
+
+
+    <!-- =====================================================
+         CARDS
+         ===================================================== -->
+
+    <section class="cards">
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total de Tickets
+            </div>
+
+            <div
+                class="card-value"
+                id="totalTickets"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Tickets Abertos
+            </div>
+
+            <div
+                class="card-value"
+                id="openTickets"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Alta Prioridade
+            </div>
+
+            <div
+                class="card-value"
+                id="highPriorityTickets"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Avaliação Média
+            </div>
+
+            <div
+                class="card-value"
+                id="averageRating"
+            >
+                -
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         FILTROS
+         ===================================================== -->
+
+    <section class="filters">
+
+        <h2>
+            Filtros
+        </h2>
+
+
+        <div class="filter-grid">
+
+
+            <div class="filter-group">
+
+                <label for="filterSearch">
+                    Buscar
+                </label>
+
+                <input
+                    type="text"
+                    id="filterSearch"
+                    placeholder="ID, nome ou e-mail"
+                >
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="filterCategory">
+                    Categoria
+                </label>
+
+                <select id="filterCategory">
+
+                    <option value="">
+                        Todas as Categorias
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="filterPriority">
+                    Prioridade
+                </label>
+
+                <select id="filterPriority">
+
+                    <option value="">
+                        Todas
+                    </option>
+
+                    <option value="High">
+                        Alta
+                    </option>
+
+                    <option value="Medium">
+                        Média
+                    </option>
+
+                    <option value="Low">
+                        Baixa
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="filterStatus">
+                    Status
+                </label>
+
+                <select id="filterStatus">
+
+                    <option value="">
+                        Todos
+                    </option>
+
+                    <option value="Open">
+                        Aberto
+                    </option>
+
+                    <option value="Pending">
+                        Pendente
+                    </option>
+
+                    <option value="Closed">
+                        Fechado
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TABELA
+         ===================================================== -->
+
+    <section class="table-container">
+
+
+        <div class="table-header">
+
+            <h2>
+                Tickets
+            </h2>
+
+        </div>
+
+
+        <div class="table-scroll">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Cliente
+                        </th>
+
+                        <th>
+                            Assunto
+                        </th>
+
+                        <th>
+                            Categoria
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Prioridade
+                        </th>
+
+                        <th>
+                            Avaliação
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="ticketsTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="loading"
+                        >
+                            Carregando tickets...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- =========================================================
+     MODAL NOVO TICKET
+     ========================================================= -->
+
+<div
+    id="ticketModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="details-label">
+                    NOVO ATENDIMENTO
+                </span>
+
+                <h2>
+                    Criar Ticket
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="close"
+                id="closeModalButton"
+                aria-label="Fechar"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+        <form id="ticketForm">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="customer_name">
+                        Nome do cliente *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customer_name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_email">
+                        E-mail *
+                    </label>
+
+                    <input
+                        type="email"
+                        id="customer_email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_age">
+                        Idade
+                    </label>
+
+                    <input
+                        type="number"
+                        id="customer_age"
+                        min="0"
+                        max="120"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_gender">
+                        Gênero
+                    </label>
+
+                    <select id="customer_gender">
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                        <option value="Male">
+                            Masculino
+                        </option>
+
+                        <option value="Female">
+                            Feminino
+                        </option>
+
+                        <option value="Other">
+                            Outro
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="product_purchased">
+                        Produto
+                    </label>
+
+                    <input
+                        type="text"
+                        id="product_purchased"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="date_of_purchase">
+                        Data da compra
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date_of_purchase"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_type">
+                        Tipo do ticket
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticket_type"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_channel">
+                        Canal
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticket_channel"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_status">
+                        Status
+                    </label>
+
+                    <select id="ticket_status">
+
+                        <option value="Open">
+                            Aberto
+                        </option>
+
+                        <option value="Pending">
+                            Pendente
+                        </option>
+
+                        <option value="Closed">
+                            Fechado
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="ticket_priority">
+                        Prioridade
+                    </label>
+
+                    <select id="ticket_priority">
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                        <option value="High">
+                            Alta
+                        </option>
+
+                        <option value="Medium">
+                            Média
+                        </option>
+
+                        <option value="Low">
+                            Baixa
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="ticket_subject">
+                        Assunto *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticket_subject"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="ticket_description">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="ticket_description"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customer_satisfaction_rating">
+                        Avaliação
+                    </label>
+
+                    <input
+                        type="number"
+                        id="customer_satisfaction_rating"
+                        min="1"
+                        max="5"
+                        step="0.1"
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="button"
+                    id="cancelModalButton"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                    id="saveTicketButton"
+                >
+                    Salvar Ticket
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL DETALHES DO TICKET
+     ========================================================= -->
+
+<div
+    id="ticketDetailsModal"
+    class="modal"
+>
+
+    <div class="modal-content ticket-details-modal">
+
+
+        <!-- HEADER -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="details-label">
+                    DETALHES DO TICKET
+                </span>
+
+                <h2 id="detailsTicketSubject">
+                    Ticket
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="close"
+                id="closeTicketDetails"
+                aria-label="Fechar detalhes"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+        <!-- RESUMO -->
+
+        <div class="ticket-summary">
+
+
+            <div class="ticket-id-box">
+
+                <span class="details-label">
+                    ID
+                </span>
+
+                <strong id="detailsTicketId">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="ticket-status-box">
+
+                <span class="details-label">
+                    Status
+                </span>
+
+                <span
+                    id="detailsTicketStatus"
+                    class="badge"
+                >
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="ticket-priority-box">
+
+                <span class="details-label">
+                    Prioridade
+                </span>
+
+                <span
+                    id="detailsTicketPriority"
+                    class="badge"
+                >
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="ticket-rating-box">
+
+                <span class="details-label">
+                    Avaliação
+                </span>
+
+                <strong id="detailsTicketRating">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- CORPO DOS DETALHES -->
+
+        <div class="ticket-details-body">
+
+
+            <!-- CLIENTE -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        👤
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Informações do cliente
+                        </h3>
+
+                        <p>
+                            Dados associados ao atendimento
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Nome
+                        </span>
+
+                        <strong id="detailsCustomerName">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            E-mail
+                        </span>
+
+                        <strong id="detailsCustomerEmail">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Idade
+                        </span>
+
+                        <strong id="detailsCustomerAge">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Gênero
+                        </span>
+
+                        <strong id="detailsCustomerGender">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- PRODUTO -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        🛒
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Produto e atendimento
+                        </h3>
+
+                        <p>
+                            Informações relacionadas à solicitação
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Produto
+                        </span>
+
+                        <strong id="detailsProduct">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Tipo do ticket
+                        </span>
+
+                        <strong id="detailsTicketType">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Canal
+                        </span>
+
+                        <strong id="detailsTicketChannel">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Data da compra
+                        </span>
+
+                        <strong id="detailsPurchaseDate">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- SOLICITAÇÃO -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        💬
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Solicitação
+                        </h3>
+
+                        <p>
+                            Conteúdo enviado pelo cliente
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-full">
+
+                    <span>
+                        Assunto
+                    </span>
+
+                    <div
+                        id="detailsSubject"
+                        class="detail-text"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="detail-full">
+
+                    <span>
+                        Descrição
+                    </span>
+
+                    <div
+                        id="detailsDescription"
+                        class="detail-text description-box"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- ATENDIMENTO -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        ⏱️
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Atendimento
+                        </h3>
+
+                        <p>
+                            Indicadores e resolução
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Primeira resposta
+                        </span>
+
+                        <strong id="detailsFirstResponse">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Tempo de resolução
+                        </span>
+
+                        <strong id="detailsResolutionTime">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item full-width">
+
+                        <span>
+                            Resolução
+                        </span>
+
+                        <strong id="detailsResolution">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- SISTEMA -->
+
+            <section class="details-section">
+
+                <div class="details-section-title">
+
+                    <span class="details-icon">
+                        🔐
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Informações do sistema
+                        </h3>
+
+                        <p>
+                            Controle e auditoria
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Usuário proprietário
+                        </span>
+
+                        <strong id="detailsUserId">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Ticket criado em
+                        </span>
+
+                        <strong id="detailsCreatedAt">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="button button-primary"
+                id="closeTicketDetailsButton"
+            >
+                Fechar
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script
+    src="{{ url_for('static', path='js/dashboard.js') }}"
+></script>
+
+
+</body>
+
+</html>
