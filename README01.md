@@ -1,6 +1,4 @@
-Perfeito. Aqui está o `README.md` completo, já estruturado para o estado atual do **FintechGuard / TP2**.
 
-````markdown
 # FintechGuard
 
 ## Atendimento Bancário Seguro com Inteligência Artificial
