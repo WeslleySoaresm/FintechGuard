@@ -1,0 +1,8 @@
+Ticket ID,Customer Name,Customer Email,Customer Age,Customer Gender,Product Purchased,Date of Purchase,Ticket Type,Ticket Subject,Ticket Description,Ticket Status,Resolution,Ticket Priority,Ticket Channel,First Response Time,Time to Resolution,Customer Satisfaction Rating
+8471.0,string,string,120.0,string,string,2026-08-18 21:54:39.287000+00:00,string,string,string,Open,string,string,string,2026-08-18 21:54:39.287000+00:00,2026-08-18 21:54:39.287000+00:00,5.0
+8472.0,Autorizado,string,120.0,string,string,2026-08-18 23:16:13.539000+00:00,string,string,string,Open,string,string,string,2026-08-18 23:16:13.539000+00:00,2026-08-18 23:16:13.539000+00:00,5.0
+8473.0,string,string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8473.0,"<script>alert(""ola mundo"")</script>",string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8474.0,&lt;script&gt;alert(&quot;ola mundo&quot;)&lt;/script&gt;,string,120.0,string,string,2026-08-19 21:23:54.109000+00:00,string,string,string,Open,string,string,string,2026-08-19 21:23:54.109000+00:00,2026-08-19 21:23:54.109000+00:00,1.0
+8477.0,string,string,120.0,string,string,2026-08-23 14:15:40.182000+00:00,string,string,string,Open,string,string,string,2026-08-23 14:15:40.182000+00:00,2026-08-23 14:15:40.182000+00:00,1.0
+8479.0,string,string,120.0,string,string,2026-09-14 19:12:23.973000+00:00,string,string,string,Open,string,string,string,2026-09-14 19:12:23.973000+00:00,2026-09-14 19:12:23.973000+00:00,1.0
