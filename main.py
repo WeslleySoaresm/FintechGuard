@@ -125,6 +125,7 @@ async def security_headers(
             "font-src 'self'; "
             "connect-src 'self'; "
             "frame-ancestors 'none';"
+            "form-action 'self';"
         )
 
     else:
@@ -141,7 +142,6 @@ async def security_headers(
             "'unsafe-inline'; "
             "style-src 'self' "
             "https://cdn.jsdelivr.net "
-            "'unsafe-inline'; "
             "img-src 'self' data:; "
             "font-src 'self' data:; "
             "connect-src 'self'; "
