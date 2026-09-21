@@ -124,28 +124,25 @@ async def security_headers(
             "img-src 'self' data:; "
             "font-src 'self'; "
             "connect-src 'self'; "
-            "frame-ancestors 'none';"
+            "frame-ancestors 'none'; "
+            "form-action 'self';"
         )
 
     else:
 
         # Desenvolvimento:
-        # permite os recursos necessários ao Swagger.
+        # permite os recursos necessários ao Swagger e CDNs.
         response.headers[
             "Content-Security-Policy"
         ] = (
-            "default-src 'self' "
-            "https://cdn.jsdelivr.net; "
-            "script-src 'self' "
-            "https://cdn.jsdelivr.net "
-            "'unsafe-inline'; "
-            "style-src 'self' "
-            "https://cdn.jsdelivr.net "
-            "'unsafe-inline'; "
+            "default-src 'self' https://cdn.jsdelivr.net; "
+            "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+            "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
             "img-src 'self' data:; "
             "font-src 'self' data:; "
             "connect-src 'self'; "
-            "frame-ancestors 'none';"
+            "frame-ancestors 'none'; "
+            "form-action 'self';"
         )
 
     return response
