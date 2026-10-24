@@ -1496,4 +1496,4 @@ git commit -m "docs: add comprehensive TP2 project documentation"
 git push origin main
 ```
 
-Eu manteria **esse README separado do commit anterior do TP2**. Assim o histórico fica limpo: primeiro você registra as implementações, depois registra a documentação. Isso ajuda bastante quando o professor abrir o GitHub e quiser entender a evolução do projeto.
+
