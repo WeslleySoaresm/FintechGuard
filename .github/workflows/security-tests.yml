@@ -17,8 +17,9 @@ jobs:
     - name: Configurar Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.13.5" # Ajuste para a versão do Python que está a usar (ex: 3.11 ou 3.13)
+        python-version: "3.13" # Ajuste para a versão do Python que está a usar (ex: 3.11 ou 3.13)
         cache: 'pip'
+        cache-dependency-path: requirements.txt
 
     - name: Instalar dependências
       run: |
