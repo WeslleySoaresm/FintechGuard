@@ -85,6 +85,57 @@ Breve explicação:
 
 3. **Canal Preferencial por Prioridade:** Chamados de prioridade alta entram predominantemente por canais síncronos (chat/telefone), exigindo roteamento prioritário.
 
+## 🧪 TP3 — Regressão Linear e Formalização da Classificação
+
+Nesta etapa do projeto, foram desenvolvidas atividades de análise de dados e modelagem preditiva com o objetivo de investigar o comportamento dos dados de atendimento ao cliente e formalizar um problema de classificação de intenções.
+
+### 📈 1. Regressão Linear
+
+Foi desenvolvido um experimento de regressão linear múltipla para prever a quantidade de palavras presentes na descrição de um chamado (`description_word_count`).
+
+O desempenho do modelo foi comparado com um modelo de referência (*baseline*), permitindo avaliar se a abordagem adotada apresentava ganho preditivo.
+
+| Métrica | Modelo de regressão | Modelo de referência |
+|---|---:|---:|
+| R² | -0,0030 | -0,0031 |
+| RMSE | 8,7250 | 8,7253 |
+
+**Conclusão:** os resultados indicam que o modelo apresentou desempenho praticamente equivalente ao da referência, sem melhora preditiva relevante. O experimento também incluiu análises gráficas dos resíduos e um gráfico Q-Q para investigar as limitações do ajuste.
+
+### 🏷️ 2. Formalização do Problema de Classificação
+
+A partir dos dados de atendimento, foi formalizado o seguinte problema:
+
+**Dado um texto de atendimento ao cliente, qual é a intenção do usuário?**
+
+A variável-alvo é `Ticket Type`, que representa a categoria de intenção associada ao chamado. Foram identificadas cinco classes:
+
+| Classe | Quantidade | Proporção |
+|---|---:|---:|
+| Refund request | 1.751 | 20,68% |
+| Technical issue | 1.749 | 20,66% |
+| Cancellation request | 1.694 | 20,01% |
+| Product inquiry | 1.640 | 19,37% |
+| Billing inquiry | 1.633 | 19,29% |
+| **Total** | **8.467** | **100%** |
+
+A distribuição relativamente equilibrada entre as classes é relevante para o planejamento de futuros experimentos de classificação.
+
+A regressão linear não é a abordagem mais apropriada para prever diretamente essas categorias, pois a variável-alvo é categórica e possui cinco classes. Um modelo de classificação deverá ser avaliado em uma etapa posterior.
+
+### 📂 Artefatos do TP3
+
+- `tp3_regressao_linear.ipynb` — notebook com o experimento de regressão linear, métricas e análises gráficas.
+- `docs/tp3_formalizacao_classificacao.md` — documento com a pergunta de classificação, definição das classes, distribuição dos dados e justificativa da abordagem.
+
+### 🎯 Próximos passos
+
+- Preparar os dados textuais para classificação.
+- Avaliar abordagens adequadas para classificação de texto.
+- Comparar os resultados com métricas apropriadas para classificação multiclasse.
+
+
+
 
 
 ---
@@ -112,6 +163,7 @@ Breve explicação:
 * NumPy
 * Matplotlib
 * Seaborn
+* Scikit-learn
 
 ### Containers e Testes
 

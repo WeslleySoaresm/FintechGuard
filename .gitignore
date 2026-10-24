@@ -174,3 +174,26 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+
+# VS Code
+.vscode/
+
+# Ambientes e variáveis locais
+.env.*
+!.env.example
+
+# Bancos de dados locais
+*.db
+*.sqlite
+*.sqlite3
+
+# Artefatos de machine learning
+*.joblib
+*.pkl
+*.pickle
+
+# Arquivos de saída e temporários
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
