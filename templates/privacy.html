@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Privacidade | {{ settings.site_name }}</title>
+
+    <meta
+        name="description"
+        content="Conheça as diretrizes de privacidade e proteção de dados do projeto FintechGuard."
+    >
+
+    <link rel="stylesheet" href="/static/css/public.css">
+    <script src="/static/js/public.js" defer></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container navbar">
+            <a href="/" class="brand" aria-label="Página inicial do FintechGuard">
+                <span class="brand-icon" aria-hidden="true">F</span>
+                <span id="site-name">{{ settings.site_name }}</span>
+            </a>
+
+            <button
+                class="menu-toggle"
+                type="button"
+                aria-label="Abrir menu"
+                aria-expanded="false"
+                aria-controls="navigation"
+            >
+                ☰
+            </button>
+
+            <nav class="navigation" id="navigation" aria-label="Navegação principal">
+                <a href="/">Início</a>
+                <a href="/sobre">Sobre</a>
+                <a href="/servicos">Serviços</a>
+                <a href="/seguranca">Segurança</a>
+                <a href="/contato">Contato</a>
+            </nav>
+
+            <div class="header-actions">
+                <a href="/login" class="button button-outline">Entrar</a>
+                <a href="/login?cadastro=true" class="button button-primary">
+                    Criar conta
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <span class="eyebrow">Privacidade e transparência</span>
+
+                    <h1>Sua privacidade importa</h1>
+
+                    <p>
+                        O FintechGuard tem como objetivo desenvolver uma
+                        plataforma financeira com atenção à proteção de
+                        dados, à segurança da informação e à transparência
+                        no tratamento de informações pessoais.
+                    </p>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="security-card">
+                        <span class="service-icon" aria-hidden="true">🛡</span>
+                        <h2>Proteção desde o desenvolvimento</h2>
+                        <p>
+                            As medidas de segurança devem fazer parte da
+                            arquitetura e da evolução da plataforma.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">Política do projeto</span>
+                    <h2>Como pretendemos tratar os dados</h2>
+                    <p>
+                        Este documento descreve diretrizes previstas para
+                        o projeto acadêmico. As práticas efetivamente
+                        aplicadas devem ser verificadas na implementação.
+                    </p>
+                </div>
+
+                <div class="service-grid">
+                    <article class="service-card">
+                        <span class="service-icon" aria-hidden="true">📋</span>
+                        <h3>Dados que podem ser tratados</h3>
+                        <p>
+                            Dependendo das funcionalidades utilizadas,
+                            poderão ser tratados dados de cadastro,
+                            informações de contato, credenciais protegidas
+                            e dados necessários à operação da plataforma.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <span class="service-icon" aria-hidden="true">🎯</span>
+                        <h3>Finalidades</h3>
+                        <p>
+                            Os dados deverão ser utilizados apenas para
+                            finalidades definidas, como autenticação,
+                            funcionamento dos recursos, suporte e
+                            proteção contra atividades indevidas.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <span class="service-icon" aria-hidden="true">🔐</span>
+                        <h3>Segurança</h3>
+                        <p>
+                            O projeto prevê controles como validação de
+                            entradas, restrição de acesso, proteção de
+                            credenciais e prevenção de falhas comuns de
+                            segurança. A disponibilidade de cada controle
+                            depende da implementação.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="security-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">Seus dados</span>
+                    <h2>Princípios de privacidade</h2>
+                    <p>
+                        O desenvolvimento deve considerar a legislação
+                        aplicável, incluindo o RGPD quando pertinente
+                        e a LGPD quando aplicável ao contexto do tratamento.
+                    </p>
+                </div>
+
+                <div class="service-grid">
+                    <article class="service-card">
+                        <h3>Minimização</h3>
+                        <p>
+                            Solicitar apenas os dados necessários para
+                            cada finalidade, evitando a coleta excessiva
+                            de informações.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>Transparência</h3>
+                        <p>
+                            Informar de forma compreensível quais dados
+                            são tratados, por que são necessários e
+                            quais direitos podem ser exercidos.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>Retenção e descarte</h3>
+                        <p>
+                            Definir prazos de retenção adequados e
+                            procedimentos de eliminação ou anonimização,
+                            respeitando obrigações legais aplicáveis.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>Acesso controlado</h3>
+                        <p>
+                            Restringir o acesso aos dados conforme a
+                            necessidade e as permissões atribuídas
+                            a cada usuário.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>Compartilhamento</h3>
+                        <p>
+                            Qualquer compartilhamento com terceiros
+                            deverá ter uma finalidade definida e uma
+                            base legal adequada, quando exigida.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>Direitos dos titulares</h3>
+                        <p>
+                            Os pedidos relacionados aos dados pessoais
+                            deverão ser avaliados conforme a legislação
+                            aplicável e os procedimentos que vierem
+                            a ser implementados.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container cta-content">
+                <div>
+                    <h2>Tem dúvidas sobre privacidade?</h2>
+                    <p>
+                        Entre em contato para encaminhar perguntas ou
+                        solicitações relacionadas ao projeto.
+                    </p>
+                </div>
+
+                <a href="/contato" class="button button-primary">
+                    Acessar contato
+                </a>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Informações importantes</h2>
+                </div>
+
+                <article class="service-card">
+                    <p>
+                        O FintechGuard é um projeto acadêmico em
+                        desenvolvimento. Esta página é uma descrição
+                        inicial das diretrizes pretendidas e não deve
+                        ser interpretada como confirmação de que todos
+                        os controles descritos já estejam ativos.
+                    </p>
+
+                    <p>
+                        Antes de utilizar esta página como política
+                        oficial, é necessário confirmar os dados
+                        realmente coletados, as finalidades, as bases
+                        legais, os prazos de retenção, os destinatários
+                        e os canais responsáveis pelo atendimento
+                        de solicitações.
+                    </p>
+
+                    <p>
+                        Esta página não substitui uma avaliação jurídica
+                        das obrigações aplicáveis à operação real
+                        da plataforma.
+                    </p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <a href="/" class="brand">
+                    <span class="brand-icon" aria-hidden="true">F</span>
+                    <span>{{ settings.site_name }}</span>
+                </a>
+
+                <p>
+                    Tecnologia financeira com foco em segurança,
+                    transparência e confiança.
+                </p>
+            </div>
+
+            <div>
+                <h3>Navegação</h3>
+                <a href="/sobre">Sobre nós</a>
+                <a href="/servicos">Serviços</a>
+                <a href="/seguranca">Segurança</a>
+                <a href="/contato">Contato</a>
+            </div>
+
+            <div>
+                <h3>Informações</h3>
+                <a href="/privacidade" aria-current="page">Privacidade</a>
+                <a href="/contato">Fale conosco</a>
+            </div>
+        </div>
+
+        <div class="container footer-bottom">
+            <p>
+                © <span id="current-year"></span>
+                {{ settings.site_name }}. Projeto acadêmico.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

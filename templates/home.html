@@ -1,0 +1,260 @@
+ 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FintechGuard | Banco digital</title>
+
+    <meta
+        name="description"
+        content="Conheça o FintechGuard, uma plataforma financeira digital com foco em segurança, transparência e atendimento."
+    >
+
+    <link rel="stylesheet" href="/static/css/public.css">
+    <script src="/static/js/public.js" defer></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container navbar">
+            <a class="brand" href="/" aria-label="FintechGuard, página inicial">
+                <span class="brand-icon">FG</span>
+                <span id="site-name">FintechGuard</span>
+            </a>
+
+            <button
+                class="menu-toggle"
+                id="menu-toggle"
+                aria-label="Abrir menu"
+                aria-expanded="false"
+                aria-controls="main-navigation"
+                type="button"
+            >
+                ☰
+            </button>
+
+            <nav class="navigation" id="main-navigation">
+                <a href="/">Início</a>
+                <a href="/sobre">Sobre nós</a>
+                <a href="/servicos">Serviços</a>
+                <a href="/seguranca">Segurança</a>
+                <a href="/contato">Contato</a>
+            </nav>
+
+            <div class="header-actions">
+                <a class="button button-outline" href="/login">Entrar</a>
+                <a class="button button-primary" href="/login?cadastro=true">
+                    Começar agora
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <span class="eyebrow">
+                        FINANÇAS DIGITAIS COM MAIS TRANSPARÊNCIA
+                    </span>
+
+                    <h1 id="hero-title">
+                        Seu dinheiro merece uma experiência melhor.
+                    </h1>
+
+                    <p id="hero-description">
+                        Conheça uma nova forma de organizar sua vida financeira,
+                        com informações claras, tecnologia e foco na segurança.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="/login">
+                            Acessar minha conta
+                        </a>
+
+                        <a class="button button-outline" href="/servicos">
+                            Conhecer os serviços
+                        </a>
+                    </div>
+
+                    <p class="hero-note">
+                        Segurança digital e transparência em primeiro lugar.
+                    </p>
+                </div>
+
+                <div class="hero-visual">
+                    <img
+                        id="hero-image"
+                        src="/static/images/banking-hero.jpg"
+                        alt="Pessoa utilizando serviços financeiros pelo celular"
+                        onerror="this.style.display='none'"
+                    >
+
+                    <div class="security-card">
+                        <span class="security-icon">✓</span>
+                        <div>
+                            <strong>Segurança em foco</strong>
+                            <p>Proteção de dados como prioridade.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="trust-section">
+            <div class="container trust-grid">
+                <div>
+                    <span class="trust-number">01</span>
+                    <h2>Transparência</h2>
+                    <p>Informações claras para decisões financeiras conscientes.</p>
+                </div>
+
+                <div>
+                    <span class="trust-number">02</span>
+                    <h2>Proteção</h2>
+                    <p>Boas práticas de segurança e atenção à privacidade.</p>
+                </div>
+
+                <div>
+                    <span class="trust-number">03</span>
+                    <h2>Acessibilidade</h2>
+                    <p>Uma experiência digital pensada para facilitar o acesso.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">CONHEÇA A PLATAFORMA</span>
+                    <h2>Serviços que acompanham seus objetivos</h2>
+                    <p>
+                        Consulte as informações dos serviços disponibilizados
+                        pela plataforma FintechGuard.
+                    </p>
+                </div>
+
+                <div class="service-grid">
+                    <article class="service-card">
+                        <div class="service-icon">↔</div>
+                        <h3>Transferências</h3>
+                        <p>
+                            Consulte informações sobre transferências,
+                            condições e eventuais tarifas aplicáveis.
+                        </p>
+                        <a href="/servicos">Saiba mais →</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">▣</div>
+                        <h3>Cartões e pagamentos</h3>
+                        <p>
+                            Conheça as funcionalidades e condições dos
+                            produtos disponibilizados.
+                        </p>
+                        <a href="/servicos">Conhecer serviços →</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">⌂</div>
+                        <h3>Atendimento digital</h3>
+                        <p>
+                            Encontre informações de suporte e acompanhe
+                            suas solicitações pela área do cliente.
+                        </p>
+                        <a href="/contato">Falar conosco →</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="security-section">
+            <div class="container security-content">
+                <div>
+                    <span class="eyebrow">SEGURANÇA DIGITAL</span>
+                    <h2>Proteja seus dados. Desconfie de abordagens suspeitas.</h2>
+                    <p>
+                        A prevenção contra fraudes depende de tecnologia,
+                        informação e atenção. Nunca compartilhe senhas ou
+                        códigos de autenticação com terceiros.
+                    </p>
+
+                    <a class="button button-light" href="/seguranca">
+                        Conhecer nossas orientações
+                    </a>
+                </div>
+
+                <div class="security-illustration" aria-hidden="true">
+                    <div class="shield">✓</div>
+                    <span>Proteção e privacidade</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container cta-content">
+                <div>
+                    <h2>Conheça melhor o FintechGuard</h2>
+                    <p>
+                        Explore a plataforma e consulte os serviços disponíveis.
+                    </p>
+                </div>
+
+                <a class="button button-primary" href="/sobre">
+                    Sobre o FintechGuard
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <a class="brand footer-brand" href="/">
+                    <span class="brand-icon">FG</span>
+                    <span>FintechGuard</span>
+                </a>
+
+                <p>
+                    Tecnologia financeira com foco em segurança,
+                    transparência e atendimento.
+                </p>
+            </div>
+
+            <div>
+                <h3>Plataforma</h3>
+                <a href="/sobre">Sobre nós</a>
+                <a href="/servicos">Serviços</a>
+                <a href="/seguranca">Segurança</a>
+            </div>
+
+            <div>
+                <h3>Atendimento</h3>
+                <a href="/contato">Contato</a>
+                <a href="/login">Área do cliente</a>
+            </div>
+
+            <div>
+                <h3>Informações</h3>
+                <a href="/privacidade">Privacidade</a>
+                <a href="/termos">Termos de uso</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>
+                    © <span id="current-year"></span> FintechGuard.
+                    Todos os direitos reservados.
+                </p>
+                <p>
+                    Projeto acadêmico. Os serviços apresentados são
+                    ilustrativos e não representam uma oferta bancária real.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

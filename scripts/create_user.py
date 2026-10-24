@@ -3,11 +3,11 @@ import bcrypt
 from sqlmodel import Session
 from models.model_events import User
 from data.db import engine
+import sys
+import os
 
-
-# Configuração para geração e verificação de senhas com bcrypt
-
-
+# Adiciona a raiz do projeto ao PYTHONPATH do Python
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 def create_user():
     print("=== Criar usuário FintechGuard ===")
@@ -17,6 +17,25 @@ def create_user():
 
     password = getpass("Senha: ")
     password_confirmation = getpass("Confirme a senha: ")
+
+    # ---------------------------------------------------------
+    # Seleção de Role (Perfil)
+    # ---------------------------------------------------------
+    print("\nSelecione o Perfil (Role) do usuário:")
+    roles_disponiveis = ["ADMIN", "GERENTE", "BANCARIO", "CUSTOMER"]
+    
+    for i, r in enumerate(roles_disponiveis, 1):
+        print(f"[{i}] {r}")
+        
+    escolha = input("Escolha o número correspondente (Padrão [4] CUSTOMER): ").strip()
+    
+    role = "CUSTOMER" # Valor padrão caso o usuário apenas dê Enter
+    if escolha.isdigit():
+        idx = int(escolha) - 1
+        if 0 <= idx < len(roles_disponiveis):
+            role = roles_disponiveis[idx]
+    elif escolha.upper() in roles_disponiveis:
+        role = escolha.upper()
 
     # ---------------------------------------------------------
     # Validações básicas
@@ -43,8 +62,8 @@ def create_user():
     # ---------------------------------------------------------
 
     password_hash = bcrypt.hashpw(
-    password.encode("utf-8"),
-    bcrypt.gensalt()
+        password.encode("utf-8"),
+        bcrypt.gensalt()
     ).decode("utf-8")
 
     # ---------------------------------------------------------
@@ -57,7 +76,7 @@ def create_user():
             name=name,
             email=email,
             password_hash=password_hash,
-            role="CUSTOMER"
+            role=role
         )
 
         session.add(user)

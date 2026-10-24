@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Painel administrativo | FintechGuard</title>
+
+    <link rel="stylesheet" href="/static/css/admin.css">
+
+    <style>
+        :root {
+            color-scheme: light;
+            --admin-primary: #155eef;
+            --admin-primary-dark: #1249c7;
+            --admin-background: #f4f7fb;
+            --admin-surface: #ffffff;
+            --admin-text: #172b4d;
+            --admin-muted: #64748b;
+            --admin-border: #dce4ef;
+            --admin-danger: #b42318;
+            --admin-success: #067647;
+            --admin-radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body.admin-page {
+            margin: 0;
+            background: var(--admin-background);
+            color: var(--admin-text);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--admin-primary);
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: .65;
+        }
+
+        .admin-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 14px 5%;
+            background: var(--admin-surface);
+            border-bottom: 1px solid var(--admin-border);
+            box-shadow: 0 2px 12px rgb(15 23 42 / 4%);
+        }
+
+        .brand {
+            color: var(--admin-text);
+            font-size: 1.15rem;
+            font-weight: 800;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .brand span {
+            display: inline-block;
+            margin-left: 5px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #eaf1ff;
+            color: var(--admin-primary);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .admin-header nav {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .admin-header nav a {
+            color: var(--admin-muted);
+            font-size: .9rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .admin-header nav a:hover {
+            color: var(--admin-primary);
+        }
+
+        .admin-header nav button {
+            padding: 8px 14px;
+            border: 1px solid #fecdca;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--admin-danger);
+            font-weight: 700;
+        }
+
+        .admin-container {
+            width: min(1120px, 92%);
+            margin: 0 auto;
+            padding: 36px 0 64px;
+        }
+
+        .page-title {
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            margin: 0 0 6px;
+            color: var(--admin-primary);
+            font-size: .78rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+        }
+
+        .page-title h1 {
+            margin: 0;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            line-height: 1.2;
+        }
+
+        .muted {
+            color: var(--admin-muted);
+        }
+
+        .page-title .muted {
+            margin-bottom: 0;
+        }
+
+        .admin-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 22px;
+        }
+
+        .admin-card {
+            min-width: 0;
+            padding: clamp(18px, 3vw, 28px);
+            border: 1px solid var(--admin-border);
+            border-radius: var(--admin-radius);
+            background: var(--admin-surface);
+            box-shadow: 0 4px 16px rgb(15 23 42 / 3%);
+        }
+
+        .admin-card h2 {
+            margin: 0 0 6px;
+            font-size: 1.25rem;
+        }
+
+        .card-description {
+            margin: 0 0 22px;
+            color: var(--admin-muted);
+            font-size: .93rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .form-field {
+            display: flex;
+            min-width: 0;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            width: 100%;
+            min-width: 0;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            background: #fff;
+            color: var(--admin-text);
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        .form-field textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus {
+            border-color: var(--admin-primary);
+            box-shadow: 0 0 0 3px rgb(21 94 239 / 12%);
+        }
+
+        .form-field input[type="color"] {
+            height: 48px;
+            padding: 5px;
+        }
+
+        .field-help {
+            color: var(--admin-muted);
+            font-size: .8rem;
+        }
+
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .button-primary,
+        .button-secondary {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 42px;
+            padding: 10px 17px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .15s, transform .15s;
+        }
+
+        .button-primary {
+            background: var(--admin-primary);
+            color: #fff;
+        }
+
+        .button-primary:hover {
+            background: var(--admin-primary-dark);
+        }
+
+        .button-secondary {
+            border-color: var(--admin-border);
+            background: #fff;
+            color: var(--admin-text);
+        }
+
+        .button-secondary:hover {
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 22px;
+            padding: 13px 16px;
+            border: 1px solid var(--admin-border);
+            border-radius: 10px;
+            background: #fff;
+            overflow-wrap: anywhere;
+        }
+
+        .message.success {
+            border-color: #abefc6;
+            background: #ecfdf3;
+            color: var(--admin-success);
+        }
+
+        .message.error {
+            border-color: #fecdca;
+            background: #fef3f2;
+            color: var(--admin-danger);
+        }
+
+        .upload-panel {
+            padding: 18px;
+            border: 1px dashed #b8c7db;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .image-preview {
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid var(--admin-border);
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .image-preview img {
+            display: block;
+            max-width: 100%;
+            max-height: 280px;
+            margin: 0 auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .upload-result {
+            overflow-wrap: anywhere;
+        }
+
+        .admin-footer {
+            padding: 22px 5%;
+            border-top: 1px solid var(--admin-border);
+            background: #fff;
+            color: var(--admin-muted);
+            text-align: center;
+            font-size: .85rem;
+        }
+
+        @media (max-width: 760px) {
+            .admin-header {
+                position: static;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .admin-header nav {
+                gap: 10px 14px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-field.full-width {
+                grid-column: auto;
+            }
+
+            .admin-container {
+                width: 94%;
+                padding-top: 24px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="admin-page">
+    <header class="admin-header">
+        <a href="/admin" class="brand">
+            FintechGuard <span>Admin</span>
+        </a>
+
+        <nav aria-label="Navegação administrativa">
+            <a href="#configuracoes">Configurações</a>
+            <a href="#conteudo">Conteúdo</a>
+            <a href="#identidade">Identidade visual</a>
+            <a href="#arquivos">Imagens</a>
+            <a href="/" target="_blank" rel="noopener noreferrer">Ver site</a>
+            <a href="/dashboard">Tickets</a>
+            <button id="logoutButton" type="button">Sair</button>
+        </nav>
+    </header>
+
+    <main class="admin-container">
+        <section class="page-title" aria-labelledby="pageHeading">
+            <p class="eyebrow">CENTRAL DE CONTROLE</p>
+            <h1 id="pageHeading">Painel administrativo</h1>
+            <p class="muted">
+                Gerencie as configurações, os textos e a identidade visual
+                do FintechGuard.
+            </p>
+        </section>
+
+        <div
+            id="pageMessage"
+            class="message"
+            role="status"
+            aria-live="polite"
+            hidden
+        ></div>
+
+        <div class="admin-layout">
+            <section id="configuracoes" class="admin-card">
+                <h2>Configurações gerais</h2>
+                <p class="card-description">
+                    Informações institucionais e canais de contato do site.
+                </p>
+
+                <form id="settingsForm">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="siteName">Nome do site</label>
+                            <input
+                                id="siteName"
+                                name="site_name"
+                                maxlength="100"
+                                autocomplete="organization"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="brandName">Nome da marca</label>
+                            <input
+                                id="brandName"
+                                name="brand_name"
+                                maxlength="100"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="tagline">Frase de destaque</label>
+                            <input
+                                id="tagline"
+                                name="tagline"
+                                maxlength="160"
+                            >
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="description">Descrição institucional</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                maxlength="1000"
+                                rows="4"
+                            ></textarea>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="contactEmail">E-mail de contato</label>
+                            <input
+                                id="contactEmail"
+                                name="contact_email"
+                                type="email"
+                                maxlength="254"
+                                autocomplete="email"
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="supportUrl">Link de suporte</label>
+                            <input
+                                id="supportUrl"
+                                name="support_url"
+                                type="url"
+                                maxlength="500"
+                                placeholder="https://exemplo.com/suporte"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="button-primary" type="submit">
+                            Salvar configurações
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="conteudo" class="admin-card">
+                <h2>Conteúdo principal</h2>
+                <p class="card-description">
+                    Edite o título e o texto de apresentação da página inicial.
+                </p>
+
+                <form id="contentForm">
+                    <div class="form-grid">
+                        <div class="form-field full-width">
+                            <label for="heroTitle">Título principal</label>
+                            <input
+                                id="heroTitle"
+                                name="hero_title"
+                                maxlength="160"
+                                required
+                            >
+                            <span class="field-help">
+                                Texto principal exibido na abertura da página.
+                            </span>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="heroDescription">Texto de apresentação</label>
+                            <textarea
+                                id="heroDescription"
+                                name="hero_description"
+                                maxlength="1000"
+                                rows="5"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="button-primary" type="submit">
+                            Salvar conteúdo
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="identidade" class="admin-card">
+                <h2>Identidade visual</h2>
+                <p class="card-description">
+                    Configure logotipo, imagem principal e cores da marca.
+                </p>
+
+                <form id="brandingForm">
+                    <div class="form-grid">
+                        <div class="form-field full-width">
+                            <label for="logoUrl">Caminho do logotipo</label>
+                            <input
+                                id="logoUrl"
+                                name="logo_url"
+                                maxlength="500"
+                                placeholder="/static/uploads/logo.webp"
+                            >
+                            <span class="field-help">
+                                Informe um caminho público válido ou selecione
+                                o logotipo no formulário de upload.
+                            </span>
+                            <div
+                                id="logoPreview"
+                                class="image-preview"
+                                hidden
+                            ></div>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="heroImageUrl">Imagem principal</label>
+                            <input
+                                id="heroImageUrl"
+                                name="hero_image_url"
+                                maxlength="500"
+                                placeholder="/static/uploads/banner.webp"
+                            >
+                            <span class="field-help">
+                                Imagem de destaque da página inicial.
+                            </span>
+                            <div
+                                id="heroImagePreview"
+                                class="image-preview"
+                                hidden
+                            ></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="primaryColor">Cor principal</label>
+                            <input
+                                id="primaryColor"
+                                name="primary_color"
+                                type="color"
+                                value="#155eef"
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="primaryDarkColor">Cor principal escura</label>
+                            <input
+                                id="primaryDarkColor"
+                                name="primary_dark_color"
+                                type="color"
+                                value="#1249c7"
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="accentColor">Cor de destaque</label>
+                            <input
+                                id="accentColor"
+                                name="accent_color"
+                                type="color"
+                                value="#26c6a3"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="button-primary" type="submit">
+                            Salvar identidade visual
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="arquivos" class="admin-card">
+                <h2>Biblioteca de imagens</h2>
+                <p class="card-description">
+                    Envie imagens para utilizar no site. Depois do envio,
+                    salve a identidade visual para aplicar a alteração.
+                </p>
+
+                <div class="upload-panel">
+                    <form id="uploadForm">
+                        <div class="form-grid">
+                            <div class="form-field full-width">
+                                <label for="imageTarget">Destino da imagem</label>
+                                <select id="imageTarget" name="image_target">
+                                    <option value="logo_url">Logotipo</option>
+                                    <option value="hero_image_url">
+                                        Imagem principal
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <label for="imageFile">Selecione uma imagem</label>
+                                <input
+                                    id="imageFile"
+                                    name="file"
+                                    type="file"
+                                    accept="image/png,image/jpeg,image/webp"
+                                    required
+                                >
+                                <span class="field-help">
+                                    Formatos aceitos: PNG, JPG e WEBP.
+                                    Limite de 5 MB por arquivo.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button
+                                id="uploadButton"
+                                class="button-primary"
+                                type="submit"
+                            >
+                                Enviar imagem
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <p
+                    id="uploadedImagePath"
+                    class="upload-result muted"
+                    aria-live="polite"
+                ></p>
+            </section>
+
+            <section class="admin-card">
+                <h2>Acesso rápido</h2>
+                <p class="card-description">
+                    Atalhos para as demais áreas da plataforma.
+                </p>
+
+                <div class="form-actions">
+                    <a class="button-secondary" href="/" target="_blank" rel="noopener noreferrer">
+                        Abrir site público
+                    </a>
+
+                    <a class="button-secondary" href="/dashboard">
+                        Gerenciar tickets
+                    </a>
+
+                    <a class="button-secondary" href="/docs" target="_blank" rel="noopener noreferrer">
+                        Documentação da API
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="admin-footer">
+        FintechGuard · Painel administrativo
+    </footer>
+
+    <script src="/static/js/admin.js" defer></script>
+</body>
+</html>

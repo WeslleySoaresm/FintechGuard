@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Segurança digital | FintechGuard</title>
+
+    <meta
+        name="description"
+        content="Aprenda a reconhecer golpes digitais e proteger suas credenciais e informações pessoais."
+    >
+
+    <link rel="stylesheet" href="/static/css/public.css">
+    <script src="/static/js/public.js" defer></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container navbar">
+            <a class="brand" href="/" aria-label="FintechGuard, página inicial">
+                <span class="brand-icon">FG</span>
+                <span id="site-name">FintechGuard</span>
+            </a>
+
+            <button
+                class="menu-toggle"
+                id="menu-toggle"
+                type="button"
+                aria-label="Abrir menu"
+                aria-expanded="false"
+                aria-controls="main-navigation"
+            >
+                ☰
+            </button>
+
+            <nav class="navigation" id="main-navigation">
+                <a href="/">Início</a>
+                <a href="/sobre">Sobre nós</a>
+                <a href="/servicos">Serviços</a>
+                <a href="/seguranca" aria-current="page">Segurança</a>
+                <a href="/contato">Contato</a>
+            </nav>
+
+            <div class="header-actions">
+                <a class="button button-outline" href="/login">Entrar</a>
+                <a class="button button-primary" href="/login?cadastro=true">
+                    Começar agora
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <span class="eyebrow">SEGURANÇA DIGITAL</span>
+
+                    <h1>Reconheça os golpes antes de cair neles.</h1>
+
+                    <p>
+                        A segurança começa com informação. Aprenda a
+                        identificar abordagens suspeitas, proteger suas
+                        credenciais e agir rapidamente diante de uma fraude.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#golpes">
+                            Conhecer os principais golpes
+                        </a>
+
+                        <a class="button button-outline" href="#protecao">
+                            Como se proteger
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <img
+                        src="/static/images/security-hero.jpg"
+                        alt="Ilustração de segurança digital e proteção de informações"
+                        onerror="this.style.display='none'"
+                    >
+
+                    <div class="security-card">
+                        <span class="security-icon">✓</span>
+                        <div>
+                            <strong>Proteja suas credenciais</strong>
+                            <p>Nunca compartilhe senhas ou códigos de autenticação.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section" id="golpes">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">AMEAÇAS DIGITAIS</span>
+                    <h2>Conheça os golpes mais comuns</h2>
+                    <p>
+                        Criminosos exploram urgência, confiança e distração
+                        para obter dados ou induzir vítimas a realizar pagamentos.
+                    </p>
+                </div>
+
+                <div class="service-grid">
+                    <article class="service-card">
+                        <div class="service-icon">✉</div>
+                        <h3>Phishing</h3>
+                        <p>
+                            Mensagens falsas que imitam empresas ou serviços
+                            legítimos para roubar senhas, dados pessoais
+                            ou informações financeiras.
+                        </p>
+                        <a href="#protecao">Como se proteger →</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">⚠</div>
+                        <h3>Engenharia social</h3>
+                        <p>
+                            Abordagens que usam medo, urgência ou confiança
+                            para convencer alguém a revelar informações
+                            ou executar ações prejudiciais.
+                        </p>
+                        <a href="#protecao">Como se proteger →</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">▣</div>
+                        <h3>Falsos atendentes</h3>
+                        <p>
+                            Pessoas que se passam por funcionários e pedem
+                            senhas, códigos de autenticação ou transferências
+                            para supostamente resolver um problema.
+                        </p>
+                        <a href="#protecao">Como se proteger →</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">↗</div>
+                        <h3>Links maliciosos</h3>
+                        <p>
+                            Links que direcionam para páginas falsas ou
+                            iniciam downloads de arquivos perigosos.
+                        </p>
+                        <a href="#protecao">Como se proteger →</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">♧</div>
+                        <h3>Roubo de credenciais</h3>
+                        <p>
+                            Uso indevido de senhas obtidas por vazamentos,
+                            páginas falsas ou reutilização de credenciais.
+                        </p>
+                        <a href="#protecao">Como se proteger →</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">€</div>
+                        <h3>Fraudes em pagamentos</h3>
+                        <p>
+                            Pedidos de pagamento falsos, alteração fraudulenta
+                            de dados bancários e comprovantes adulterados.
+                        </p>
+                        <a href="#protecao">Como se proteger →</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="security-section" id="protecao">
+            <div class="container security-content">
+                <div>
+                    <span class="eyebrow">MEDIDAS DE PROTEÇÃO</span>
+
+                    <h2>Pequenos hábitos podem evitar grandes prejuízos.</h2>
+
+                    <p>
+                        Pare antes de agir quando uma mensagem exigir
+                        uma decisão imediata. Confirme a solicitação
+                        por um canal independente e confiável.
+                    </p>
+
+                    <a class="button button-light" href="#incidente">
+                        O que fazer em caso de fraude
+                    </a>
+                </div>
+
+                <div class="security-illustration">
+                    <div class="shield">✓</div>
+                    <span>Prevenção, atenção e responsabilidade</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">CHECKLIST DE SEGURANÇA</span>
+                    <h2>Proteja sua conta no dia a dia</h2>
+                    <p>
+                        Utilize estas recomendações como uma lista
+                        de verificação para suas práticas digitais.
+                    </p>
+                </div>
+
+                <div class="service-grid">
+                    <article class="service-card">
+                        <h3>01. Use senhas exclusivas</h3>
+                        <p>
+                            Crie senhas longas e diferentes para cada serviço.
+                            Um gerenciador de senhas pode ajudar.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>02. Ative a autenticação multifator</h3>
+                        <p>
+                            Quando disponível, utilize uma segunda forma
+                            de verificação para proteger o acesso.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>03. Confirme o endereço do site</h3>
+                        <p>
+                            Verifique cuidadosamente o domínio antes
+                            de inserir credenciais ou dados pessoais.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>04. Nunca compartilhe códigos</h3>
+                        <p>
+                            Não forneça senhas, códigos temporários
+                            ou códigos de recuperação a terceiros.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>05. Mantenha seus dispositivos atualizados</h3>
+                        <p>
+                            Instale atualizações de segurança e utilize
+                            proteção adequada nos dispositivos.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <h3>06. Revise suas movimentações</h3>
+                        <p>
+                            Verifique as operações da conta e comunique
+                            imediatamente qualquer atividade desconhecida.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="trust-section" id="incidente">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">RESPOSTA A INCIDENTES</span>
+                    <h2>Suspeita de fraude? Aja rapidamente.</h2>
+                </div>
+
+                <div class="trust-grid">
+                    <div>
+                        <span class="trust-number">01</span>
+                        <h2>Proteja o acesso</h2>
+                        <p>
+                            Se ainda conseguir acessar a conta, altere
+                            as credenciais comprometidas e encerre sessões
+                            desconhecidas quando houver essa opção.
+                        </p>
+                    </div>
+
+                    <div>
+                        <span class="trust-number">02</span>
+                        <h2>Contate o serviço envolvido</h2>
+                        <p>
+                            Utilize o canal oficial obtido de forma
+                            independente. Solicite o bloqueio de acessos
+                            ou instrumentos de pagamento, se necessário.
+                        </p>
+                    </div>
+
+                    <div>
+                        <span class="trust-number">03</span>
+                        <h2>Registre as evidências</h2>
+                        <p>
+                            Guarde mensagens, comprovantes, datas e
+                            referências das operações para facilitar
+                            a investigação e a contestação.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="cta-content">
+                    <div>
+                        <h2>Precisa consultar os canais de atendimento?</h2>
+                        <p>
+                            Acesse a página de contato para encontrar
+                            as informações disponibilizadas no projeto.
+                        </p>
+                    </div>
+
+                    <a class="button button-primary" href="/contato">
+                        Ver contato
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <a class="brand footer-brand" href="/">
+                    <span class="brand-icon">FG</span>
+                    <span>FintechGuard</span>
+                </a>
+
+                <p>
+                    Projeto acadêmico de plataforma financeira digital
+                    com foco em segurança e transparência.
+                </p>
+            </div>
+
+            <div>
+                <h3>Plataforma</h3>
+                <a href="/sobre">Sobre nós</a>
+                <a href="/servicos">Serviços</a>
+                <a href="/seguranca">Segurança</a>
+            </div>
+
+            <div>
+                <h3>Atendimento</h3>
+                <a href="/contato">Contato</a>
+                <a href="/login">Área do cliente</a>
+            </div>
+
+            <div>
+                <h3>Informações</h3>
+                <a href="/privacidade">Privacidade</a>
+                <a href="/termos">Termos de uso</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>
+                    © <span id="current-year"></span> FintechGuard.
+                    Todos os direitos reservados.
+                </p>
+                <p>
+                    Projeto acadêmico. Os conteúdos são informativos
+                    e não representam uma oferta real de serviços bancários.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

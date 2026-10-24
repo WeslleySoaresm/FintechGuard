@@ -28,6 +28,7 @@ dnspython==2.8.0
 ecdsa==0.19.2
 email-validator==2.3.0
 executing==2.2.1
+Faker==40.43.0
 fastapi==0.141.1
 fastjsonschema==2.22.2
 flake8==7.3.0
@@ -45,6 +46,7 @@ ipython_pygments_lexers==1.1.1
 ipywidgets==8.1.8
 isoduration==20.11.0
 isort==8.0.1
+itsdangerous==2.2.0
 jedi==0.20.0
 Jinja2==3.1.6
 json5==0.15.0
@@ -122,6 +124,7 @@ rfc3986-validator==0.1.1
 rfc3987-syntax==1.1.0
 rpds-py==2026.6.3
 rsa==4.9.1
+scipy==1.18.1
 seaborn==0.13.2
 Send2Trash==2.1.0
 six==1.17.0
@@ -148,4 +151,3 @@ websocket-client==1.9.0
 websockets==17.0.1
 widgetsnbextension==4.0.15
 scipy==1.18.1
-scikit-learn==1.9.1

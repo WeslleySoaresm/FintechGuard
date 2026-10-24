@@ -1,0 +1,274 @@
+
+:root {
+    --primary: #14557f;
+    --accent: #36a3d9;
+    --background: #f3f7fa;
+    --surface: #ffffff;
+    --text: #183247;
+    --muted: #718394;
+    --border: #dfe8ef;
+    --danger: #b42332;
+    --success: #187653;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: var(--background);
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.admin-login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #e8f5fc, #f5f8fb);
+}
+
+.admin-login-card {
+    width: 100%;
+    max-width: 430px;
+    padding: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 18px 55px #18324712;
+}
+
+.admin-logo {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 24px;
+    border-radius: 14px;
+    background: var(--primary);
+    color: white;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.eyebrow {
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+h1,
+h2 {
+    margin-top: 0;
+}
+
+h1 {
+    font-size: 27px;
+}
+
+h2 {
+    font-size: 19px;
+}
+
+.muted {
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 13px;
+}
+
+label {
+    display: block;
+    margin: 18px 0 7px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fbfdff;
+    color: var(--text);
+}
+
+input:focus,
+textarea:focus {
+    outline: 2px solid #36a3d933;
+    border-color: var(--accent);
+}
+
+textarea {
+    resize: vertical;
+}
+
+button[type="submit"] {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+}
+
+button[type="submit"]:hover {
+    background: #0e4264;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 22px;
+    color: var(--primary);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 5%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.brand {
+    color: var(--primary);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.brand span {
+    margin-left: 5px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.admin-header nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.admin-header nav a {
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.admin-header nav a:hover {
+    color: var(--primary);
+}
+
+.admin-header nav button {
+    padding: 9px 13px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--danger);
+}
+
+.admin-container {
+    width: min(100% - 32px, 1000px);
+    margin: 35px auto;
+}
+
+.page-title {
+    margin-bottom: 28px;
+}
+
+.admin-card {
+    margin: 22px 0;
+    padding: 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 5px 20px #18324708;
+}
+
+.admin-card form {
+    max-width: 680px;
+}
+
+.message {
+    margin: 16px 0;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.message[hidden] {
+    display: none;
+}
+
+.message.error {
+    color: var(--danger);
+    background: #fff0f1;
+    border-color: #f4c4c8;
+}
+
+.message.success {
+    color: var(--success);
+    background: #eaf8f1;
+    border-color: #b9e8d2;
+}
+
+.message.warning {
+    color: #815c13;
+    background: #fff8e9;
+    border-color: #f3dfaa;
+}
+
+#uploadedImagePath {
+    overflow-wrap: anywhere;
+    font-size: 13px;
+    color: var(--success);
+}
+
+@media (max-width: 760px) {
+    .admin-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-header nav {
+        gap: 12px;
+    }
+
+    .admin-login-card {
+        padding: 25px;
+    }
+
+    .admin-card {
+        padding: 19px;
+    }
+
+    .admin-container {
+        margin-top: 24px;
+    }
+}
