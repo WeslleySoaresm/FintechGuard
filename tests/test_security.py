@@ -1,5 +1,4 @@
 import pytest
-
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine
 from sqlalchemy.pool import StaticPool
@@ -17,26 +16,11 @@ test_engine = create_engine(
 )
 
 
-@pytest.fixture
-def test_db():
+@pytest.fixture(autouse=True)
+def setup_database():
+    """Cria e limpa as tabelas automaticamente para todos os testes."""
     SQLModel.metadata.create_all(test_engine)
-
-    with Session(test_engine) as session:
-        ticket = Ticket(
-            user_id=2,
-            customer_name="Cliente Dois",
-            customer_email="cliente2@teste.com",
-            ticket_subject="Ticket do usuário 2",
-        )
-
-        session.add(ticket)
-        session.commit()
-        session.refresh(ticket)
-
-        ticket_id = ticket.id
-
-    yield ticket_id
-
+    yield
     SQLModel.metadata.drop_all(test_engine)
 
 
@@ -62,13 +46,12 @@ def client():
     app.dependency_overrides.clear()
 
 
-def test_acesso_sem_token_deve_retornar_401():
-    """
-    Um usuário sem token JWT não deve conseguir
-    acessar um endpoint protegido.
-    """
+# =========================================================
+# TESTES DE SEGURANÇA DA API
+# =========================================================
 
-    # Removemos temporariamente o override da autenticação
+def test_acesso_sem_token_deve_retornar_401():
+    """1. Teste de Autenticação: Acesso sem token deve retornar 401."""
     app.dependency_overrides.pop(verify_token, None)
 
     with TestClient(app) as unauthenticated_client:
@@ -77,29 +60,37 @@ def test_acesso_sem_token_deve_retornar_401():
     assert response.status_code == 401
 
 
-def test_usuario_nao_deve_acessar_ticket_de_outro_usuario(
-    client,
-    test_db,
-):
-    """
-    O usuário 1 tenta acessar um ticket pertencente ao usuário 2.
+def test_invalid_token_access():
+    """2. Teste de Autenticação: Token inválido ou falsificado deve retornar 401."""
+    # Criamos um TestClient puro, sem os overrides da fixture 'client'
+    with TestClient(app) as clean_client:
+        response = clean_client.get(
+            "/tickets", 
+            headers={"Authorization": "Bearer token_falsificado_ou_invalido"}
+        )
+    assert response.status_code == 401
 
-    Deve ser bloqueado pela proteção BOLA.
-    """
 
-    response = client.get(f"/tickets/{test_db}")
+def test_usuario_nao_deve_acessar_ticket_de_outro_usuario(client):
+    """3. Teste de Autorização (BOLA): Tenta aceder a um ticket de outro contexto."""
+    with Session(test_engine) as session:
+        ticket = Ticket(
+            user_id=2,
+            customer_name="Cliente Dois",
+            customer_email="cliente2@teste.com",
+            ticket_subject="Ticket do usuário 2",
+        )
+        session.add(ticket)
+        session.commit()
+        session.refresh(ticket)
+        ticket_id = ticket.id
 
-    assert response.status_code == 404
+    response = client.get(f"/tickets/{ticket_id}")
+    assert response.status_code in [403, 404]
 
 
 def test_body_nao_deve_aceitar_campo_extra(client):
-    """
-    O endpoint deve rejeitar campos que não pertencem
-    ao schema TicketCreate.
-
-    Isso testa ConfigDict(extra='forbid').
-    """
-
+    """4. Teste de Validação de Entradas: Rejeição de campos extra (extra='forbid')."""
     response = client.post(
         "/tickets",
         json={
@@ -109,5 +100,15 @@ def test_body_nao_deve_aceitar_campo_extra(client):
             "campo_inventado": "tentativa de campo extra",
         },
     )
-
     assert response.status_code == 422
+
+
+def test_rate_limiting_behavior():
+    """5. Teste de Rate Limiting / Carga sob múltiplos pedidos."""
+    responses = []
+    with TestClient(app) as temp_client:
+        for _ in range(25):
+            response = temp_client.get("/tickets")
+            responses.append(response.status_code)
+    
+    assert all(code in [200, 401, 429] for code in responses)

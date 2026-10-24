@@ -288,61 +288,83 @@
             <table>
 
                 <thead>
-
                     <tr>
-
-                        <th>
-                            ID
-                        </th>
-
-                        <th>
-                            Cliente
-                        </th>
-
-                        <th>
-                            Assunto
-                        </th>
-
-                        <th>
-                            Categoria
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Prioridade
-                        </th>
-
-                        <th>
-                            Avaliação
-                        </th>
-
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Assunto</th>
+                        <th>Categoria</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Avaliação</th>
+                        
                     </tr>
-
                 </thead>
 
-
                 <tbody id="ticketsTableBody">
-
                     <tr>
-
-                        <td
-                            colspan="7"
-                            class="loading"
-                        >
+                        <td colspan="8" class="loading">
                             Carregando tickets...
                         </td>
-
                     </tr>
-
                 </tbody>
-
             </table>
 
         </div>
+    <!-- =====================================================
+            PAGINAÇÃO
+     ===================================================== -->
 
+    
+        <!-- PAGINAÇÃO -->
+        <div class="pagination-container" id="paginationContainer">
+
+            <div class="pagination-info">
+                <label for="pageSize">
+                    Tickets por página:
+                </label>
+
+                <select id="pageSize">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+
+                <span id="paginationInfo">
+                    Exibindo tickets
+                </span>
+            </div>
+
+            <div class="pagination-controls">
+
+                <button
+                    type="button"
+                    class="button"
+                    id="prevPageButton"
+                    disabled
+                >
+                    Anterior
+                </button>
+
+                <span id="currentPage">
+                    Página 1 de 1
+                </span>
+
+                <button
+                    type="button"
+                    class="button"
+                    id="nextPageButton"
+                    disabled
+                >
+                    Próxima
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </div>
     </section>
 
 
@@ -1138,6 +1160,14 @@
 
             <button
                 type="button"
+                class="button button-danger"
+                id="deleteTicketButton"
+            >
+                Deletar Ticket
+            </button>
+
+            <button
+                type="button"
                 class="button button-primary"
                 id="closeTicketDetailsButton"
             >
@@ -1156,9 +1186,7 @@
      JAVASCRIPT
      ========================================================= -->
 
-<script
-    src="{{ url_for('static', path='js/dashboard.js') }}"
-></script>
+<script src="{{ url_for('static', path='js/dashboard.js') }}?v=2"></script>
 
 
 </body>
