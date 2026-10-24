@@ -1,11 +1,11 @@
+
 name: CI Security Tests
 
 on:
   push:
-    branches: [ "main", "master", "dev" ]
+    branches: ["main", "master", "dev", "ws", "bs"]
   pull_request:
-    branches: [ "main", "master", "dev" ]
-
+    branches: ["main", "master", "ws"]
 jobs:
   test:
     runs-on: ubuntu-latest
