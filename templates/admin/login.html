@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administração | FintechGuard</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body class="admin-login-page">
+    <main class="admin-login-card">
+        <div class="admin-logo">FG</div>
+
+        <p class="eyebrow">FINTECHGUARD</p>
+        <h1>Painel administrativo</h1>
+        <p class="muted">Entre com sua conta de administrador.</p>
+
+        <div id="loginMessage" class="message" role="alert" hidden></div>
+
+        <form id="adminLoginForm">
+            <label for="email">E-mail</label>
+            <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="username"
+                maxlength="254"
+                required
+            >
+
+            <label for="password">Senha</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                maxlength="128"
+                required
+            >
+
+            <button id="loginButton" type="submit">
+                Entrar no painel
+            </button>
+        </form>
+
+        <a class="back-link" href="/login">
+            Voltar ao login da plataforma
+        </a>
+    </main>
+
+    <script src="/static/js/admin-login.js" defer></script>
+</body>
+</html>
