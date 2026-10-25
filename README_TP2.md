@@ -203,13 +203,12 @@ FintechGuard/
 │   └── README_EDA_02.md
 │
 ├── docs/
-│   ├── TP2.md
-│   ├── EDA_REPORT.md
-│   ├── ZAP_FINDINGS.md
+│   ├── CIA_FINTECHGUARD.md
+│   ├── tp3_formalizacao_classificacao.md
+│   ├── owasp_zap_report.md
 │   └── images/
 │
-├── reports/
-│   └── zap_report_tp2.html
+├── 
 │
 ├── tests/
 │   └── test_security.py
@@ -579,7 +578,7 @@ A análise exploratória deverá conter:
 
 O documento da EDA está em:
 
-[📊 `docs/EDA_REPORT.md`](scripts/README_EDA_02.md)
+[📊 `scripts/README_EDA_02.md`](scripts/README_EDA_02.md)
 
 ---
 

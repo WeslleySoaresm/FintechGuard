@@ -111,6 +111,7 @@ def read_tickets(
     limit: int = 100,
     current_user: dict = Depends(verify_token),
     session: Session = Depends(get_session)
+    
 ):
     """
     Retorna somente os tickets pertencentes ao

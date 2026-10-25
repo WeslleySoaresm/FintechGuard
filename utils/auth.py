@@ -15,7 +15,10 @@ from models.model_events import User
 load_dotenv(override=True)
 
 
-SECRET_KEY = os.getenv("SECRET_KEY", "SECRET_KEY")
+SECRET_KEY = os.getenv( "SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("a variável SECRET_KEY precisa estar configurada.")
+
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(
     os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30)
