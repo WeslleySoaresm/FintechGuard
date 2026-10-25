@@ -1,4 +1,3 @@
-
 name: CI Security Tests
 
 on:
@@ -29,7 +28,7 @@ jobs:
           pip install pytest fastapi httpx sqlmodel
 
       - name: Executar testes de segurança com pytest
-        run: pytest tests/ -v
         env:
           SECRET_KEY: "test-only-secret-key-not-for-production"
           ENVIRONMENT: "test"
+        run: pytest tests/ -v
