@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine
 from sqlalchemy.pool import StaticPool
-
+import main
 from main import app
 from data.db import get_session
 from utils.auth import verify_token
@@ -112,3 +112,37 @@ def test_rate_limiting_behavior():
             responses.append(response.status_code)
     
     assert all(code in [200, 401, 429] for code in responses)
+    
+
+
+
+
+
+def test_headers_em_desenvolvimento(monkeypatch):
+    monkeypatch.setattr(main, "ENVIRONMENT", "development")
+
+    client = TestClient(main.app)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["x-content-type-options"] == "nosniff"
+
+    # HSTS não deve ser enviado no ambiente local HTTP.
+    assert "strict-transport-security" not in response.headers
+
+
+def test_tres_headers_em_producao(monkeypatch):
+    monkeypatch.setattr(main, "ENVIRONMENT", "production")
+
+    client = TestClient(main.app)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["strict-transport-security"] == (
+        "max-age=31536000; includeSubDomains"
+    )

@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import os
 
@@ -6,12 +7,12 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 
 from router.predict_router import router as predict_router
 from router.ticket_router import router as ticket_router
 from router.auth_router import router as auth_router
 from router.dashboard_router import router as dashboard_router
-from starlette.middleware.sessions import SessionMiddleware
 from router.admin_router import router as admin_router
 from router.public_router import router as public_router
 
@@ -47,7 +48,6 @@ app.add_middleware(
 
 BASE_DIR = Path(__file__).resolve().parent
 
-
 # ============================================================
 # ARQUIVOS ESTÁTICOS
 # ============================================================
@@ -60,7 +60,6 @@ app.mount(
     name="static"
 )
 
-
 # ============================================================
 # TEMPLATES
 # ============================================================
@@ -68,7 +67,6 @@ app.mount(
 templates = Jinja2Templates(
     directory=str(BASE_DIR / "templates")
 )
-
 
 # ============================================================
 # CONFIGURAÇÃO DE CORS
@@ -87,7 +85,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # ============================================================
 # HEADERS DE SEGURANÇA HTTP
 # ============================================================
@@ -100,74 +97,62 @@ async def security_headers(
     response = await call_next(request)
 
     # --------------------------------------------------------
-    # HSTS
-    # --------------------------------------------------------
-    # Ativado somente em produção porque exige HTTPS.
+    # HSTS: ativado somente em produção com HTTPS
     # --------------------------------------------------------
 
     if ENVIRONMENT == "production":
-
-        response.headers[
-            "Strict-Transport-Security"
-        ] = (
-            "max-age=31536000; "
-            "includeSubDomains"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
         )
 
     # --------------------------------------------------------
     # PROTEÇÃO CONTRA CLICKJACKING
     # --------------------------------------------------------
 
-    response.headers[
-        "X-Frame-Options"
-    ] = "DENY"
+    response.headers["X-Frame-Options"] = "DENY"
 
     # --------------------------------------------------------
-    # MIME SNIFFING
+    # PROTEÇÃO CONTRA MIME SNIFFING
     # --------------------------------------------------------
 
-    response.headers[
-        "X-Content-Type-Options"
-    ] = "nosniff"
+    response.headers["X-Content-Type-Options"] = "nosniff"
 
     # --------------------------------------------------------
-    # CONTENT SECURITY POLICY
+    # CONTENT SECURITY POLICY (CSP)
     # --------------------------------------------------------
 
     if ENVIRONMENT == "production":
-
-        response.headers[
-            "Content-Security-Policy"
-        ] = (
+        # Política restritiva em produção.
+        response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self'; "
             "style-src 'self'; "
             "img-src 'self' data:; "
-            "font-src 'self'; "
-            "connect-src 'self'; "
-            "frame-ancestors 'none'; "
-            "form-action 'self';"
-        )
-
-    else:
-
-        # Desenvolvimento:
-        # permite os recursos necessários ao Swagger e CDNs.
-        response.headers[
-            "Content-Security-Policy"
-        ] = (
-            "default-src 'self' https://cdn.jsdelivr.net; "
-            "script-src 'self' https://cdn.jsdelivr.net ; "
-            "style-src 'self' https://cdn.jsdelivr.net ; "
-            "img-src 'self' data:; "
             "font-src 'self' data:; "
             "connect-src 'self'; "
             "frame-ancestors 'none'; "
-            "form-action 'self';"
+            "form-action 'self'; "
+            "base-uri 'self'; "
+            "object-src 'none';"
+        )
+
+    else:
+        # Desenvolvimento: permite scripts e estilos inline
+        # necessários para o Swagger UI.
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+            "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+            "img-src 'self' data: https://fastapi.tiangolo.com; "
+            "font-src 'self' data: https://cdn.jsdelivr.net; "
+            "connect-src 'self' https://cdn.jsdelivr.net; "
+            "frame-ancestors 'none'; "
+            "form-action 'self'; "
+            "base-uri 'self'; "
+            "object-src 'none';"
         )
 
     return response
-
 
 # ============================================================
 # ROTAS
@@ -179,6 +164,7 @@ app.include_router(predict_router)
 app.include_router(dashboard_router)
 app.include_router(admin_router)
 app.include_router(public_router)
+
 # ============================================================
 # HEALTH CHECK
 # ============================================================
@@ -188,12 +174,10 @@ app.include_router(public_router)
     tags=["Health Check"]
 )
 def health_check():
-
     return {
         "status": "ok",
         "service": "FintechGuard API"
     }
-
 
 # ============================================================
 # LOGIN
@@ -205,7 +189,6 @@ def health_check():
     response_class=HTMLResponse
 )
 def render_login(request: Request):
-
     return templates.TemplateResponse(
         request=request,
         name="login.html"

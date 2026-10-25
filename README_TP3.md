@@ -29,15 +29,38 @@ Consulte também os demais documentos disponíveis na raiz do repositório:
 - [README_EDA.md](scripts/README_EDA.md): documentação da análise exploratória de dados.
 - [README_EDA_02.md](scripts/README_EDA_02.md): documentação complementar da análise exploratória.
 
-### Segurança
+**### Segurança**
 
 - [Relatório OWASP ZAP](docs/owasp_zap_report.md): relatório da análise de segurança com OWASP ZAP.
 - [Formalização da classificação do TP3](docs/tp3_formalizacao_classificacao.md): documentação da formalização da tarefa de classificação.
+
+#### Evidências da análise de segurança com OWASP ZAP
+
+**Imagem 1**
+![Evidência OWASP ZAP 01](docs/img/zap_01.png)
+
+**Imagem 2**
+![Evidência OWASP ZAP 02](docs/img/zap_02.png)
+
+**Imagem 3**
+![Evidência OWASP ZAP 03](docs/img/zap_03.png)
+
+**Imagem 4**
+![Evidência OWASP ZAP 04](docs/img/zap_04.png)
+
+**Imagem 5**
+![Evidência OWASP ZAP 05](docs/img/zap_05.png)
+
+**Imagem 6**
+![Evidência OWASP ZAP 06](docs/img/zap_06.png)
 
 ### Gráficos
 
 - [README_GRAPHS.md](graphs/README_GRAPHS.md): documentação dos gráficos gerados pelo projeto.
 
+### Classificação
+
+- [tp3_formalizacao_classificacao.md](docs/tp3_formalizacao_classificacao.md): Formalização da Pergunta de Classificação
 
 ### 2.1. `home.html`
 
@@ -148,9 +171,79 @@ Adição dos templates HTML iniciais para as páginas inicial, privacidade, segu
 
 Implementação da automação dos testes de segurança por meio do GitHub Actions, com preparação do ambiente Python e instalação das dependências necessárias.
 
+## Validação do CI de segurança com GitHub Actions
+
+### Objetivo
+
+Implementar e validar um processo de Integração Contínua (CI) para executar automaticamente os testes de segurança do FintechGuard durante o desenvolvimento e a integração de alterações no repositório.
+
+### Configuração do workflow
+
+O workflow `CI Security Tests` está definido em:
+
+`.github/workflows/security-tests.yml`
+
+O processo utiliza GitHub Actions para:
+
+1. Obter o código do repositório.
+2. Configurar o ambiente Python.
+3. Instalar as dependências do projeto.
+4. Executar os testes automatizados com `pytest`.
+
+O comando utilizado para executar os testes é:
+
+```bash
+pytest tests/ -v
+```
+
+### Eventos de execução
+
+O workflow foi configurado para executar em eventos de `push` nas branches `main`, `master`, `dev` e `ws`, além de eventos de `pull_request` destinados às branches `main`, `master` e `dev`.
+
+Essa configuração permite verificar as alterações durante o desenvolvimento e após a integração do código na branch principal.
+
+### Resultados da validação
+
+Foram registradas execuções bem-sucedidas do workflow durante a correção da configuração do Python, a atualização do Pull Request #17 e o merge na branch `master`.
+
+| Execução | Evento | Resultado |
+|---|---|---|
+| [CI Security Tests #3](https://github.com/WeslleySoaresm/FintechGuard/actions/runs/40117059228) | Push da correção da configuração do Python | Sucesso |
+| [CI Security Tests #4](https://github.com/WeslleySoaresm/FintechGuard/actions/runs/40117061770) | Atualização do Pull Request #17 | Sucesso |
+| [CI Security Tests #5](https://github.com/WeslleySoaresm/FintechGuard/actions/runs/40117206491) | Merge do Pull Request #17 na `master` | Sucesso |
+
+Esses resultados demonstram que o workflow foi reconhecido e executado com sucesso nos eventos apresentados.
+
+### Ajuste da configuração do Python
+
+Durante a validação inicial, foi identificado um erro relacionado à indisponibilidade da versão exata `3.13.5` no ambiente Ubuntu utilizado pelo runner.
+
+A configuração foi ajustada para utilizar a série Python `3.13`, permitindo que a action selecione uma versão disponível e compatível.
+
+### Avisos identificados
+
+Nas execuções também foram identificados avisos relacionados à depreciação do Node.js 20 nas actions utilizadas e à futura migração do ambiente `ubuntu-latest` para Ubuntu 26.
+
+Esses avisos não impediram o sucesso das execuções apresentadas. Foi identificada a necessidade de atualizar as actions para versões compatíveis com Node.js 24 e acompanhar as mudanças no ambiente de execução.
+
+### Conclusão
+
+A implementação do CI estabeleceu uma rotina automatizada de execução dos testes do FintechGuard por meio do GitHub Actions. As execuções registradas confirmam o funcionamento do workflow nos eventos verificados, incluindo a integração das alterações na branch `master`.
+
+A validação da cobertura e dos resultados individuais dos testes deve ser complementada pela análise dos logs do `pytest`, disponíveis nas execuções do GitHub Actions.
+
+### Evidências
+
+- [Histórico de execuções do GitHub Actions](https://github.com/WeslleySoaresm/FintechGuard/actions)
+- [Execução #5 após o merge na master](https://github.com/WeslleySoaresm/FintechGuard/actions/runs/40117206491)
+- [Pull Request #17](https://github.com/WeslleySoaresm/FintechGuard/pull/17)
+
 ### `docs: Create README for security tests`
 
 Criação da documentação dos testes de segurança, incluindo instruções de execução, funções de teste e fixtures.
+
+### Relatorio final 
+- [relatorio_auditoria_final.md](docs/relatorio_auditoria_final.md): Pentest do FintechGuard
 
 ## 8. Conclusão
 
