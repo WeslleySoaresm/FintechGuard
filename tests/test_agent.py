@@ -1,4 +1,5 @@
 import pytest
+from types import SimpleNamespace
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine, select
 from sqlalchemy.pool import StaticPool
@@ -24,7 +25,19 @@ def setup_database():
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
+    async def fake_agent_run(*args, **kwargs):
+        return SimpleNamespace(
+            final_output="Resposta determinística para teste."
+        )
+
+    # Estes testes cobrem a API e as regras locais. Não dependem de uma
+    # chamada de rede ao provedor do modelo.
+    monkeypatch.setattr(
+        "router.agent_router.Runner.run",
+        fake_agent_run,
+    )
+
     def override_get_session():
         with Session(test_engine) as session:
             yield session
@@ -202,8 +215,8 @@ def test_agent_deve_salvar_mensagem_do_cliente_e_resposta(client):
     assert customer_message.message == "Quero saber sobre minha cobrança."
     assert agent_message.message.strip() != ""
     
-def test_agent_sem_ticket_nao_deve_salvar_historico(client):
-    from models.model_events import ConversationMessage
+def test_agent_sem_ticket_deve_salvar_historico_da_conversa(client):
+    from models.model_events import Conversation, ConversationMessage
 
     response = client.post(
         "/agent",
@@ -215,11 +228,107 @@ def test_agent_sem_ticket_nao_deve_salvar_historico(client):
     assert response.status_code == 200
 
     with Session(test_engine) as session:
+        conversations = session.exec(select(Conversation)).all()
         messages = session.exec(
             select(ConversationMessage)
         ).all()
 
-    assert len(messages) == 0
+    assert len(conversations) == 1
+    assert conversations[0].ticket_id is None
+    assert len(messages) == 2
+    assert {message.sender_type for message in messages} == {
+        "CUSTOMER",
+        "AGENT",
+    }
+
+
+def test_historico_lista_e_abre_conversa_do_usuario(client):
+    from models.model_events import Conversation, ConversationMessage
+
+    ticket_id = create_ticket(user_id=1)
+    posted = client.post("/agent", json={
+        "message": "Preciso de ajuda com a cobrança.",
+        "ticket_id": ticket_id,
+    })
+    assert posted.status_code == 200
+    conversation_id = posted.json()["conversation_id"]
+
+    listing = client.get("/agent/conversations?limit=10&offset=0")
+    assert listing.status_code == 200
+    assert listing.json()[0]["id"] == conversation_id
+    assert listing.json()[0]["ticket_id"] == ticket_id
+    assert "created_at" in listing.json()[0]
+
+    detail = client.get(f"/agent/conversations/{conversation_id}")
+    assert detail.status_code == 200
+    assert detail.json()["ticket_id"] == ticket_id
+    assert [message["sender_type"] for message in detail.json()["messages"]] == [
+        "CUSTOMER", "AGENT"
+    ]
+    assert detail.json()["messages"][0]["message"] == (
+        "Preciso de ajuda com a cobrança."
+    )
+
+
+def test_historico_nao_expoe_conversa_de_outro_usuario(client):
+    from models.model_events import Conversation, ConversationMessage
+
+    with Session(test_engine) as session:
+        other_conversation = Conversation(user_id=2)
+        session.add(other_conversation)
+        session.commit()
+        session.refresh(other_conversation)
+        other_id = other_conversation.id
+        session.add(ConversationMessage(
+            conversation_id=other_id,
+            sender_type="CUSTOMER",
+            message="Conteúdo privado de outro usuário",
+        ))
+        session.commit()
+
+    listing = client.get("/agent/conversations")
+    assert listing.status_code == 200
+    assert all(item["id"] != other_id for item in listing.json())
+    assert client.get(f"/agent/conversations/{other_id}").status_code == 404
+
+
+def test_historico_rejeita_paginacao_invalida(client):
+    assert client.get("/agent/conversations?limit=101").status_code == 422
+    assert client.get("/agent/conversations?offset=-1").status_code == 422
+
+
+def test_historico_requer_autenticacao(unauthenticated_client):
+    assert unauthenticated_client.get("/agent/conversations").status_code == 401
+    assert unauthenticated_client.get("/agent/conversations/1").status_code == 401
+
+
+def test_conversa_existente_pode_ser_associada_a_ticket_proprio(client):
+    from models.model_events import Conversation, ConversationMessage
+
+    first = client.post("/agent", json={"message": "Tenho uma dúvida."})
+    assert first.status_code == 200
+    conversation_id = first.json()["conversation_id"]
+    ticket_id = create_ticket(user_id=1)
+
+    second = client.post("/agent", json={
+        "message": "É sobre este ticket.",
+        "conversation_id": conversation_id,
+        "ticket_id": ticket_id,
+    })
+    assert second.status_code == 200
+    assert second.json()["conversation_id"] == conversation_id
+
+    with Session(test_engine) as session:
+        conversation = session.get(Conversation, conversation_id)
+        messages = session.exec(
+            select(ConversationMessage).where(
+                ConversationMessage.conversation_id == conversation_id
+            ).order_by(ConversationMessage.id)
+        ).all()
+
+    assert conversation.ticket_id == ticket_id
+    assert len(messages) == 4
+    assert [message.ticket_id for message in messages[-2:]] == [ticket_id, ticket_id]
     
 
 @pytest.mark.parametrize(
@@ -326,14 +435,18 @@ def test_agent_deve_fazer_rollback_quando_commit_falhar(client, monkeypatch):
     monkeypatch.setattr(Session, "commit", commit_com_falha)
     monkeypatch.setattr(Session, "rollback", rollback_monitorado)
 
-    with pytest.raises(RuntimeError, match="Falha simulada no commit"):
-        client.post(
-            "/agent",
-            json={
-                "message": "Quero saber sobre minha cobrança.",
-                "ticket_id": ticket_id,
-            },
-        )
+    response = client.post(
+        "/agent",
+        json={
+            "message": "Quero saber sobre minha cobrança.",
+            "ticket_id": ticket_id,
+        },
+    )
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == (
+        "Não foi possível salvar sua mensagem."
+    )
 
     assert rollback_executado is True
 

@@ -664,3 +664,198 @@ input:focus-visible {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* FINTECHGUARD DARK BLUE THEME */
+
+:root {
+    color-scheme: dark;
+    --primary: #69a7ff;
+    --primary-dark: #397ee8;
+    --navy: #f1f6ff;
+    --background: #080f1d;
+    --surface: #111c2e;
+    --text: #e6eefb;
+    --muted: #9aaac2;
+    --border: rgba(150, 177, 215, 0.17);
+    --green: #49d6a1;
+    --shadow: 0 26px 80px rgba(0, 0, 0, 0.32);
+}
+
+body.home-page {
+    color: var(--text);
+    background:
+        radial-gradient(ellipse at 50% -25%, rgba(43, 100, 184, 0.25), transparent 58%),
+        linear-gradient(180deg, #091222 0%, #080f1d 70%, #0b1423 100%);
+}
+
+.page-background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.background-glow {
+    position: absolute;
+    width: 460px;
+    height: 460px;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: 0.16;
+}
+
+.background-glow-one {
+    top: 7%;
+    left: -14%;
+    background: #2878e8;
+}
+
+.background-glow-two {
+    top: 27%;
+    right: -18%;
+    background: #3261d1;
+}
+
+.background-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.13;
+    background-image: linear-gradient(rgba(130, 166, 218, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(130, 166, 218, 0.1) 1px, transparent 1px);
+    background-size: 54px 54px;
+    mask-image: linear-gradient(to bottom, black, transparent 80%);
+}
+
+.site-header {
+    position: sticky;
+    z-index: 2;
+    background: rgba(8, 15, 29, 0.78);
+    border-color: var(--border);
+}
+
+.brand,
+.welcome-area h1,
+.assistant-info h2,
+.login-callout h2 {
+    color: var(--text);
+}
+
+.brand-icon,
+.assistant-avatar {
+    background: linear-gradient(145deg, #6fb2ff, #2767d4 68%, #2347a1);
+    box-shadow: 0 8px 24px rgba(43, 111, 219, 0.26);
+}
+
+.login-button,
+.suggestion-button {
+    color: #d8e7ff;
+    background: rgba(18, 30, 49, 0.88);
+    border-color: var(--border);
+}
+
+.login-button:hover,
+.suggestion-button:hover {
+    color: #fff;
+    background: rgba(40, 76, 131, 0.42);
+    border-color: rgba(105, 167, 255, 0.62);
+}
+
+.welcome-area h1 span {
+    color: #80b7ff;
+}
+
+.welcome-area p,
+.assistant-status,
+.feature,
+.login-callout p {
+    color: var(--muted);
+}
+
+.chat-card,
+.login-callout {
+    border-color: var(--border);
+    background: rgba(15, 26, 43, 0.92);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+}
+
+.main-content,
+.site-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.chat-header,
+.site-footer {
+    border-color: var(--border);
+    background: rgba(17, 28, 46, 0.96);
+}
+
+.chat-messages {
+    background: linear-gradient(180deg, #101b2d, #0d1728);
+}
+
+.message-bubble {
+    color: #dce7f7;
+    background: #1a2940;
+}
+
+.message-avatar,
+.ai-badge {
+    color: #a6cbff;
+    background: rgba(56, 112, 194, 0.2);
+}
+
+.message-time,
+.suggestions-title,
+.chat-disclaimer,
+.site-footer p {
+    color: #8394ae;
+}
+
+.suggestion-button {
+    transition: transform 0.2s ease, border-color 0.2s ease,
+        background 0.2s ease, color 0.2s ease;
+}
+
+.suggestion-button:hover {
+    transform: translateY(-1px);
+}
+
+.chat-input-area {
+    border-color: rgba(137, 166, 210, 0.24);
+    background: #0b1525;
+}
+
+.chat-input-area:focus-within {
+    border-color: #69a7ff;
+    box-shadow: 0 0 0 3px rgba(65, 133, 229, 0.18);
+}
+
+.chat-input-area input {
+    color: var(--text);
+}
+
+.chat-input-area input::placeholder {
+    color: #74849d;
+}
+
+.chat-input-area button,
+.callout-button {
+    background: linear-gradient(135deg, #4b96f6, #2767d4);
+    box-shadow: 0 8px 20px rgba(39, 103, 212, 0.24);
+}
+
+.chat-input-area button:hover,
+.callout-button:hover {
+    background: linear-gradient(135deg, #66a9ff, #3478e7);
+}
+
+.login-callout {
+    margin-top: 48px;
+}
+
+.site-footer {
+    border-top: 1px solid var(--border);
+}

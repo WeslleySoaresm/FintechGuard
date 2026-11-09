@@ -1241,3 +1241,268 @@ td:last-child .button {
         justify-content: center;
     }
 }
+
+/* FINTECHGUARD DARK BLUE THEME */
+
+:root {
+    color-scheme: dark;
+    --dash-bg: #080f1d;
+    --dash-surface: #111c2e;
+    --dash-surface-raised: #16243a;
+    --dash-border: rgba(150, 177, 215, 0.17);
+    --dash-text: #e6eefb;
+    --dash-muted: #9aaac2;
+    --dash-blue: #69a7ff;
+}
+
+body {
+    color: var(--dash-text);
+    background:
+        radial-gradient(ellipse at 70% -20%, rgba(38, 91, 169, 0.23), transparent 55%),
+        linear-gradient(180deg, #091222, var(--dash-bg) 70%);
+}
+
+header {
+    background: rgba(10, 19, 34, 0.88);
+    border-bottom: 1px solid var(--dash-border);
+    box-shadow: 0 12px 38px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(18px);
+}
+
+header h1,
+.card-value,
+.filters h2,
+.table-header h2,
+.details-section-title,
+.ticket-id-box strong {
+    color: var(--dash-text);
+}
+
+header p,
+.card-title,
+.filter-group label,
+.details-label,
+.details-section-title p {
+    color: var(--dash-muted);
+}
+
+.container {
+    width: min(1440px, calc(100% - 48px));
+    margin: 32px auto 48px;
+}
+
+.card,
+.filters,
+.table-container,
+.modal-content,
+.ticket-details-modal,
+.ticket-id-box,
+.ticket-status-box,
+.ticket-priority-box,
+.ticket-rating-box,
+.detail-item,
+.detail-full,
+.description-box,
+.delete-modal-content {
+    color: var(--dash-text);
+    background: var(--dash-surface);
+    border-color: var(--dash-border);
+    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+    border-radius: 18px;
+    padding: 25px;
+}
+
+.card:hover {
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+}
+
+.card-value {
+    font-size: 34px;
+}
+
+.filters,
+.table-container {
+    border-radius: 18px;
+}
+
+.filter-group input,
+.filter-group select,
+.form-group input,
+.form-group select,
+.form-group textarea,
+.pagination-info #pageSize,
+#ticketIdInput {
+    color: var(--dash-text);
+    background: #0b1525;
+    border-color: var(--dash-border);
+}
+
+.filter-group input::placeholder,
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+#ticketIdInput::placeholder {
+    color: #74849d;
+}
+
+.filter-group input:focus,
+.filter-group select:focus,
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+#ticketIdInput:focus {
+    background: #101d31;
+    border-color: var(--dash-blue);
+    box-shadow: 0 0 0 3px rgba(105, 167, 255, 0.15);
+}
+
+.table-header,
+.modal-actions,
+.ticket-details-modal .modal-header,
+.ticket-summary,
+.ticket-details-body,
+.ticket-details-modal .modal-actions,
+.delete-modal-actions {
+    background: var(--dash-surface);
+    border-color: var(--dash-border);
+}
+
+thead {
+    background: #0d1728;
+}
+
+th {
+    color: #a9bbd4;
+    border-color: var(--dash-border);
+}
+
+td {
+    color: #d7e2f2;
+    border-color: rgba(150, 177, 215, 0.1);
+}
+
+tbody tr:hover {
+    background: rgba(54, 98, 160, 0.16);
+}
+
+.button-primary,
+.callout-button {
+    color: #fff;
+    background: linear-gradient(135deg, #4b96f6, #2767d4);
+    box-shadow: 0 8px 22px rgba(39, 103, 212, 0.24);
+}
+
+.button-primary:hover {
+    background: linear-gradient(135deg, #66a9ff, #3478e7);
+}
+
+.button-secondary,
+.pagination-controls .button,
+.new-chat-button {
+    color: #dce8fb;
+    background: #1a2940;
+    border-color: var(--dash-border);
+}
+
+.button-secondary:hover,
+.pagination-controls .button:hover {
+    color: white;
+    background: #223653;
+}
+
+.button-danger {
+    background: #a9364a;
+}
+
+.button-danger:hover {
+    background: #c4455a;
+}
+
+.modal-header,
+.ticket-details-modal .modal-header {
+    background: linear-gradient(115deg, #122642, #173965 65%, #1c4c86);
+    border-bottom: 1px solid rgba(132, 174, 233, 0.2);
+}
+
+.form-group label,
+.details-section-title h3,
+.detail-item strong,
+.detail-full strong,
+.ticket-details-modal .modal-header h2,
+.delete-modal-content h2,
+.delete-modal-ticket {
+    color: var(--dash-text);
+}
+
+.details-section-title {
+    border-color: var(--dash-border);
+}
+
+.details-grid {
+    gap: 12px;
+}
+
+.detail-item:hover {
+    background: var(--dash-surface-raised);
+}
+
+.description-box {
+    color: #d9e5f6;
+    background: #0c1728;
+    border-color: var(--dash-border);
+}
+
+.pagination-container,
+.pagination-info,
+.pagination-controls,
+.pagination-info label,
+.pagination-info #paginationInfo,
+.pagination-controls span {
+    color: var(--dash-muted);
+}
+
+.pagination-info #pageSize {
+    color: var(--dash-text);
+    border-color: var(--dash-border);
+}
+
+.status-closed {
+    color: #c2d0e4;
+    background: #29384e;
+}
+
+.status-pending,
+.priority-medium {
+    color: #f2c978;
+    background: rgba(166, 113, 27, 0.2);
+}
+
+.priority-high {
+    color: #ff9aab;
+    background: rgba(167, 47, 69, 0.22);
+}
+
+.status-open,
+.priority-low {
+    color: #78dfb2;
+    background: rgba(29, 132, 94, 0.2);
+}
+
+.error-message {
+    color: #ffb3bf;
+    background: rgba(144, 42, 60, 0.2);
+    border-color: rgba(232, 105, 127, 0.28);
+}
+
+@media (max-width: 700px) {
+    .container {
+        width: min(100% - 24px, 1440px);
+        margin-top: 20px;
+    }
+
+    header {
+        padding: 16px 18px;
+    }
+}

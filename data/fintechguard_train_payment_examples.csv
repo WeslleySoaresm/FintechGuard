@@ -1,0 +1,7 @@
+text,intent
+What was the amount of my last card payment?,billing inquiry
+Can you explain my last account payment?,billing inquiry
+I need a receipt for the last payment on my bank account.,billing inquiry
+Where can I find details of my most recent account payment?,billing inquiry
+Please clarify the amount on my last monthly payment.,billing inquiry
+I want to review my latest payment transaction.,billing inquiry

@@ -23,12 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 TRAIN_PATH = BASE_DIR / "data" / "fintechguard_train_augmented.csv"
 VALIDATION_PATH = BASE_DIR / "data" / "fintechguard_validation.csv"
+PAYMENT_EXAMPLES_PATH = (
+    BASE_DIR / "data" / "fintechguard_train_payment_examples.csv"
+)
 
-# Não sobrescreve o modelo original.
+# Mantém V1 e V2 disponíveis e gera uma nova versão independente.
 MODEL_PATH = (
     BASE_DIR
     / "fintechguard_agents"
-    / "intent_classifier_v2.joblib"
+    / "intent_classifier_v3.joblib"
 )
 
 def normalize_text(text: str) -> str:
@@ -79,6 +82,11 @@ def main():
 
     # 1. Carregamento dos datasets.
     train_df = load_dataset(TRAIN_PATH)
+    payment_examples_df = load_dataset(PAYMENT_EXAMPLES_PATH)
+    train_df = pd.concat(
+        [train_df, payment_examples_df],
+        ignore_index=True,
+    )
     validation_df = load_dataset(VALIDATION_PATH)
 
     # 2. Remove do treinamento qualquer texto presente na validação.
@@ -236,20 +244,20 @@ def main():
 
     print("\n===== COMPARAÇÃO COM BASELINE =====")
     print(f"Baseline Accuracy: {baseline_accuracy:.4f}")
-    print(f"Modelo V2 Accuracy: {tuned_accuracy:.4f}")
+    print(f"Modelo V3 Accuracy: {tuned_accuracy:.4f}")
     print(
         "Ganho Accuracy: "
         f"{(tuned_accuracy - baseline_accuracy) * 100:.2f} p.p."
     )
 
     print(f"\nBaseline F1 Macro: {baseline_f1:.4f}")
-    print(f"Modelo V2 F1 Macro: {tuned_f1:.4f}")
+    print(f"Modelo V3 F1 Macro: {tuned_f1:.4f}")
     print(
         "Ganho F1 Macro: "
         f"{(tuned_f1 - baseline_f1) * 100:.2f} p.p."
     )
 
-    print("\n===== MÉTRICAS DO MODELO V2 =====")
+    print("\n===== MÉTRICAS DO MODELO V3 =====")
     print(f"Precision Macro: {tuned_precision:.4f}")
     print(f"Recall Macro: {tuned_recall:.4f}")
     print(f"F1 Macro: {tuned_f1:.4f}")
@@ -278,11 +286,11 @@ def main():
         columns=[f"Previsto: {label}" for label in labels],
     ))
 
-    # 12. Salvamento do modelo V2.
+    # 12. Salvamento do modelo V3, sem sobrescrever versões anteriores.
     joblib.dump(best_model, MODEL_PATH)
 
-    print(f"\nModelo V2 salvo em: {MODEL_PATH}")
-    print("\n===== TREINAMENTO V2 CONCLUÍDO =====")
+    print(f"\nModelo V3 salvo em: {MODEL_PATH}")
+    print("\n===== TREINAMENTO V3 CONCLUÍDO =====")
 
 
 if __name__ == "__main__":

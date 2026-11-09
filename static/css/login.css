@@ -174,6 +174,120 @@ button:disabled {
     color: #888;
 }
 
+/* FINTECHGUARD DARK BLUE THEME */
+
+:root {
+    color-scheme: dark;
+}
+
+body {
+    position: relative;
+    overflow: hidden;
+    color: #e6eefb;
+    background:
+        radial-gradient(ellipse at 50% 4%, rgba(55, 112, 198, 0.28), transparent 45%),
+        linear-gradient(145deg, #080f1d, #0b1628 58%, #101d32);
+}
+
+body::before,
+body::after {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: 0.16;
+    pointer-events: none;
+}
+
+body::before {
+    top: -220px;
+    left: -140px;
+    background: #2878e8;
+}
+
+body::after {
+    right: -180px;
+    bottom: -250px;
+    background: #315ac0;
+}
+
+.login-container {
+    position: relative;
+    z-index: 1;
+}
+
+.login-card {
+    padding: 42px 38px 30px;
+    border: 1px solid rgba(153, 183, 226, 0.19);
+    border-radius: 22px;
+    color: #e6eefb;
+    background: rgba(16, 28, 47, 0.89);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+}
+
+.logo h1 {
+    color: #f3f7ff;
+    font-size: 31px;
+    letter-spacing: -0.8px;
+}
+
+.logo p,
+.footer {
+    color: #94a7c2;
+}
+
+.form-group label {
+    color: #c7d5e9;
+    font-size: 13px;
+}
+
+.form-group input {
+    padding: 13px 14px;
+    border: 1px solid rgba(153, 183, 226, 0.19);
+    border-radius: 10px;
+    color: #edf4ff;
+    background: #0b1525;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: #71839e;
+}
+
+.form-group input:focus {
+    border-color: #69a7ff;
+    box-shadow: 0 0 0 3px rgba(105, 167, 255, 0.15);
+}
+
+#loginButton {
+    margin-top: 5px;
+    padding: 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4b96f6, #2767d4);
+    box-shadow: 0 10px 25px rgba(39, 103, 212, 0.22);
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+#loginButton:hover {
+    background: linear-gradient(135deg, #66a9ff, #3478e7);
+    transform: translateY(-1px);
+}
+
+.message.error {
+    color: #ffb3bf;
+    background: rgba(144, 42, 60, 0.2);
+    border-color: rgba(232, 105, 127, 0.28);
+}
+
+.message.success {
+    color: #8ce2bb;
+    background: rgba(29, 132, 94, 0.18);
+    border-color: rgba(73, 214, 161, 0.26);
+}
+
 /* =========================================================
    TICKET DETAILS MODAL
    ========================================================= */

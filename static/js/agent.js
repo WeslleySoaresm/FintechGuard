@@ -11,6 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const newConversationButton = document.getElementById("newConversationButton");
     const historyButton = document.getElementById("historyButton");
+    const historyDialog = document.getElementById("historyDialog");
+    const closeHistoryButton = document.getElementById("closeHistoryButton");
+    const conversationList = document.getElementById("conversationList");
+    const historyStatus = document.getElementById("historyStatus");
+    const loadMoreHistoryButton = document.getElementById("loadMoreHistoryButton");
     const logoutButton = document.getElementById("logoutButton");
 
     const ticketIdInput = document.getElementById("ticketIdInput");
@@ -32,6 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentConversationId = null;
     let associatedTicketId = null;
     let sendingMessage = false;
+    let historyOffset = 0;
+    const historyPageSize = 50;
 
     function addMessage(text, sender, isError = false) {
         const message = document.createElement("div");
@@ -83,6 +90,82 @@ document.addEventListener("DOMContentLoaded", () => {
         ticketStatus.textContent = associatedTicketId
             ? `Ticket associado: #${associatedTicketId}`
             : "Nenhum ticket associado";
+    }
+
+    async function loadConversationHistory(append = false) {
+        historyDialog.classList.remove("hidden");
+        if (!append) {
+            historyOffset = 0;
+            conversationList.replaceChildren();
+            loadMoreHistoryButton.classList.add("hidden");
+        }
+        historyStatus.textContent = "Carregando conversas…";
+
+        try {
+            const response = await fetch(`/agent/conversations?limit=${historyPageSize}&offset=${historyOffset}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                window.location.href = "/login";
+                return;
+            }
+            if (!response.ok) throw new Error("Não foi possível carregar o histórico.");
+
+            const conversations = await response.json();
+            if (!conversations.length && !append) {
+                historyStatus.textContent = "Ainda não há conversas salvas.";
+                return;
+            }
+
+            historyOffset += conversations.length;
+            historyStatus.textContent = "Selecione uma conversa para abrir suas mensagens.";
+            loadMoreHistoryButton.classList.toggle("hidden", conversations.length < historyPageSize);
+            conversations.forEach((conversation) => {
+                const item = document.createElement("button");
+                item.type = "button";
+                item.className = "conversation-item";
+                const date = conversation.created_at
+                    ? new Date(conversation.created_at).toLocaleString("pt-BR")
+                    : `Conversa #${conversation.id}`;
+                item.textContent = `${date}${conversation.ticket_id ? ` · Ticket #${conversation.ticket_id}` : " · Sem ticket"}`;
+                item.addEventListener("click", () => openConversation(conversation.id));
+                conversationList.appendChild(item);
+            });
+        } catch (error) {
+            historyStatus.textContent = error.message || "Erro ao carregar o histórico.";
+        }
+    }
+
+    async function openConversation(conversationId) {
+        historyStatus.textContent = "Abrindo conversa…";
+        try {
+            const response = await fetch(`/agent/conversations/${conversationId}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                window.location.href = "/login";
+                return;
+            }
+            if (!response.ok) throw new Error("Não foi possível abrir esta conversa.");
+
+            const conversation = await response.json();
+            currentConversationId = conversation.id;
+            associatedTicketId = conversation.ticket_id;
+            ticketIdInput.value = conversation.ticket_id || "";
+            chatMessages.replaceChildren();
+            conversation.messages.forEach((message) => {
+                addMessage(message.message, message.sender_type === "CUSTOMER" ? "user" : "agent");
+            });
+            updateTicketStatus();
+            resetAnalysis();
+            historyDialog.classList.add("hidden");
+            messageInput.focus();
+        } catch (error) {
+            historyStatus.textContent = error.message || "Erro ao abrir a conversa.";
+        }
     }
 
     async function sendMessage(message) {
@@ -235,10 +318,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     historyButton.addEventListener("click", () => {
-        addMessage(
-            "A consulta do histórico ainda precisa ser implementada no backend.",
-            "agent"
-        );
+        loadConversationHistory();
+    });
+    loadMoreHistoryButton.addEventListener("click", () => loadConversationHistory(true));
+
+    closeHistoryButton.addEventListener("click", () => historyDialog.classList.add("hidden"));
+    historyDialog.addEventListener("click", (event) => {
+        if (event.target === historyDialog) historyDialog.classList.add("hidden");
     });
 
     logoutButton.addEventListener("click", () => {

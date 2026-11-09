@@ -37,6 +37,10 @@ A captura do ZAP apresenta respostas bem-sucedidas de várias rotas, mas um stat
 
 **Conclusão preliminar:** o projeto possui evidências iniciais suficientes para continuar a preparação do pentest em ambiente local controlado. A autorização definitiva depende da validação dos controles de autenticação, autorização, exposição de dados, paginação, CSP e dos alertas remanescentes do ZAP.
 
+### Atualização — histórico do proxy recebido em 9 de novembro de 2026
+
+O CSV recebido contém nove linhas de histórico HTTP do proxy, não uma exportação da lista de alertas do ZAP. Ele registra `/docs`, `/login`, o CDN público do Swagger UI e duas tentativas de `POST /auth/login` que retornaram `500`. Esse endpoint não é o endpoint atual de login (`POST /auth/token`); portanto, as respostas 500 precisam ser reavaliadas contra a aplicação/local image em execução. Os rótulos “Alerta Máximo” e “Marcadores” do histórico não identificam, por si só, cada finding nem seu tratamento. O export de alertas continua pendente.
+
 ---
 
 ## 3. Escopo e metodologia
@@ -98,7 +102,7 @@ Não há evidência apresentada de execução de Active Scan. Portanto, este doc
 | SEC-12 | Autorização por recurso (BOLA/IDOR) | Pendente de validação final | Executar testes com dois usuários e tickets distintos. |
 | SEC-13 | Validação de entrada | Parcialmente validado | Existem testes de validação, mas é necessária revisão das rotas e dos modelos. |
 | SEC-14 | Rate limiting | Pendente de evidência final | Demonstrar o limite, o código `429` e o comportamento diante de falhas do Redis, se utilizado. |
-| SEC-15 | Paginação e limites | Pendente | A rota `/tickets?limit=10000` retornou `200` e um corpo de aproximadamente 300 KB. Verificar o limite máximo permitido e se o acesso exige autenticação. |
+| SEC-15 | Paginação e limites | Corrigido localmente; falta nova captura ZAP | `GET /tickets` agora limita cada página a 1.000 registros, valida `skip >= 0` e ordena por ID. O dashboard solicita páginas de até 1.000 e mantém a paginação/filtros locais. |
 | SEC-16 | Exposição de dados | Pendente de revisão | Inspecionar os campos retornados por `/tickets` e confirmar que informações pessoais ou internas não são expostas indevidamente. |
 | SEC-17 | Segredos e configuração | Pendente de revisão final | Confirmar que não existem segredos padrão inseguros no ambiente avaliado e que arquivos de configuração sensíveis não estão versionados. |
 | SEC-18 | Tratamento de erros e logs | Pendente de revisão final | Verificar ausência de stack traces, tokens e dados pessoais desnecessários nas respostas e logs. |
@@ -123,7 +127,7 @@ Esse resultado não comprova uma vulnerabilidade. Entretanto, justifica verifica
 - Se os dados retornados incluem e-mail, nomes ou outros dados pessoais desnecessários;
 - Se a paginação é eficiente e resistente a consultas excessivamente grandes.
 
-**Critério de aprovação:** a API deve impor limites no servidor, validar a autorização de cada consulta e retornar somente os dados necessários ao usuário autorizado.
+**Correção local:** `GET /tickets` agora aceita no máximo 1.000 registros por requisição e mantém o filtro por usuário. O dashboard percorre as páginas em blocos limitados, preservando seus filtros e paginação existentes. A validação automatizada rejeita `limit=1001` com HTTP 422. Uma nova captura ZAP deve confirmar o comportamento no ambiente atualizado.
 
 ### 5.2 Endpoint `/auth/token`
 
@@ -285,3 +289,9 @@ A autorização definitiva para o pentest depende do fechamento dos itens priori
 | Resultado | Prontidão condicionada |
 | Aprovação para pentest | Pendente de validação final |
 | Evidências anexadas | Captura do ZAP e testes manuais; relatório exportado a anexar |
+
+### 4.3 Histórico da conversa e associação a tickets
+
+As rotas `GET /agent/conversations` e `GET /agent/conversations/{conversation_id}` exigem autenticação e filtram as conversas pelo `user_id` extraído do token. A lista aplica paginação com `limit` entre 1 e 100 e `offset` não negativo. A consulta detalhada só devolve mensagens depois de encontrar a conversa pertencente ao usuário. Ao retomar uma conversa sem ticket, o backend valida que o ticket informado pertence ao mesmo usuário antes de gravar a associação.
+
+A interface do agente consulta o histórico paginado, abre as mensagens na ordem registrada e restaura o `ticket_id` associado. Os testes automatizados cobrem autenticação, isolamento entre usuários, paginação, leitura de mensagens e associação de ticket ao continuar uma conversa. Esses testes de rota usam autenticação simulada; a validação de JWT real continua dependente do ambiente de integração.
