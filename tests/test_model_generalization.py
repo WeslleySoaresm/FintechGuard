@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, accuracy_score
 # 1. Localizar o modelo treinado
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MODEL_PATH = BASE_DIR / "agents" / "intent_classifier.joblib"
+MODEL_PATH = BASE_DIR / "fintechguard_agents" / "intent_classifier.joblib"
 
 model = joblib.load(MODEL_PATH)
 

@@ -1,6 +1,6 @@
 import joblib
 
-MODEL_PATH = "agents/intent_classifier_v2.joblib"
+MODEL_PATH = "fintechguard_agents/intent_classifier_v2.joblib"
 
 model = joblib.load(MODEL_PATH)
 
