@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TRAIN_PATH = BASE_DIR / "data" / "fintechguard_train.csv"
 VALIDATION_PATH = BASE_DIR / "data" / "fintechguard_validation.csv"
 
-MODEL_PATH = BASE_DIR / "agents" / "intent_classifier.joblib"
+MODEL_PATH = BASE_DIR / "fintechguard_agents" / "intent_classifier.joblib"
 
 
 # 2. Função para carregar e limpar os dados

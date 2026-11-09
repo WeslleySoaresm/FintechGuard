@@ -1,4 +1,6 @@
 
+import logging
+import re
 import unicodedata
 
 from fintechguard_agents.intent_classifier import classify_intent
@@ -7,12 +9,10 @@ from fintechguard_agents.security_analyzer import analyze_security
 from fintechguard_agents.response_generator import generate_response
 from fintechguard_agents.decision_engine import make_decision
 
-# Confiança mínima exigida para aceitar a classificação do modelo ML.
+logger = logging.getLogger(__name__)
+
 ML_CONFIDENCE_THRESHOLD = 0.60
 
-
-# Converte as categorias do modelo ML para as categorias
-# utilizadas pelo restante da aplicação.
 INTENT_MAPPING = {
     "billing inquiry": "Billing",
     "cancellation request": "Cancellation",
@@ -21,58 +21,19 @@ INTENT_MAPPING = {
     "technical issue": "Technical Issue",
 }
 
-
-# Termos que identificam mensagens relacionadas ao domínio bancário.
-# Os termos são armazenados sem acentos.
 DOMAIN_TERMS = [
-    "payment",
-    "billing",
-    "refund",
-    "charge",
-    "invoice",
-    "cancel",
-    "subscription",
-    "product",
-    "feature",
-    "application",
-    "app",
-    "crash",
-    "error",
-    "transaction",
-    "card",
-    "account",
-    "transfer",
-    "loan",
-    "credit",
-    "cobranca",
-    "fatura",
-    "reembolso",
-    "estorno",
-    "pagamento",
-    "cartao",
-    "conta",
-    "transferencia",
-    "emprestimo",
-    "credito",
-    "aplicativo",
-    "cancelar",
-    "tarifa",
-    "tarifas",
-    "cobrado",
-    "cobrada",
-    "cobraram",
-    "cobrança",
-    "duplicada",
-    "duplicado",
-    "duas vezes",
-    "dinheiro de volta",
-    "estorno",
+    "payment", "billing", "refund", "charge", "invoice",
+    "cancel", "subscription", "product", "feature",
+    "application", "app", "crash", "error", "transaction",
+    "card", "account", "transfer", "loan", "credit",
+    "cobranca", "fatura", "reembolso", "estorno",
+    "pagamento", "cartao", "conta", "transferencia",
+    "emprestimo", "credito", "aplicativo", "cancelar",
+    "tarifa", "tarifas", "cobrado", "cobrada",
+    "cobraram", "duplicada", "duplicado",
+    "duas vezes", "dinheiro de volta",
 ]
 
-
-# Categorias preservadas pelo classificador antigo.
-# Funcionam como fallback caso o modelo ML não tenha
-# confiança suficiente para classificar a mensagem.
 LEGACY_INTENTS = {
     "Fraud",
     "Account Access",
@@ -85,109 +46,121 @@ LEGACY_INTENTS = {
 
 
 def normalize_domain_text(text: str) -> str:
-    """
-    Normaliza o texto para facilitar a identificação
-    de termos bancários, removendo acentos e espaços externos.
-    """
-
+    """Normaliza o texto, removendo acentos e padronizando espaços."""
     text = text.lower().strip()
-
     text = unicodedata.normalize("NFD", text)
 
-    return "".join(
+    text = "".join(
         char
         for char in text
         if unicodedata.category(char) != "Mn"
     )
 
+    return re.sub(r"\s+", " ", text)
+
+
+def contains_domain_term(message: str) -> bool:
+    """Identifica termos bancários sem aceitar correspondências parciais."""
+    normalized_message = normalize_domain_text(message)
+
+    for term in DOMAIN_TERMS:
+        normalized_term = normalize_domain_text(term)
+
+        pattern = (
+            r"(?<!\w)"
+            + re.escape(normalized_term)
+            + r"(?!\w)"
+        )
+
+        if re.search(pattern, normalized_message):
+            return True
+
+    return False
+
 
 def classify_message(message: str) -> str:
     """
-    Classifica uma mensagem utilizando uma arquitetura híbrida:
-
-    1. Regras antigas para fraude e acesso à conta.
-    2. Verificação de termos relacionados ao domínio bancário.
-    3. Modelo de Machine Learning para as cinco categorias treinadas.
-    4. Regras antigas como fallback quando necessário.
-    5. Categoria Other quando não houver classificação adequada.
+    Arquitetura híbrida:
+    1. Preserva fraude e acesso à conta.
+    2. Verifica se a mensagem pertence ao domínio bancário.
+    3. Utiliza o modelo ML V2.
+    4. Utiliza o classificador antigo como fallback.
+    5. Retorna Other quando não há classificação adequada.
     """
 
-    # 1. Executa o classificador baseado em regras.
+    if not isinstance(message, str) or not message.strip():
+        return "Other"
+
+    # Classificação baseada em regras.
     rule_intent = classify_intent(message)
 
-    # 2. Preserva as regras críticas de fraude e acesso à conta.
+    # Preserva categorias críticas do classificador antigo.
     if rule_intent in {"Fraud", "Account Access"}:
         return rule_intent
 
-    # 3. Normaliza o texto para remover diferenças de acentuação.
-    normalized_message = normalize_domain_text(message)
-
-    # 4. Verifica se a mensagem pertence ao domínio bancário.
-    has_domain_term = any(
-        term in normalized_message
-        for term in DOMAIN_TERMS
-    )
-
-    # Se não for uma mensagem bancária, não força uma classificação.
-    if not has_domain_term:
+    # Não força classificação bancária em mensagens fora do domínio.
+    if not contains_domain_term(message):
         if rule_intent in LEGACY_INTENTS:
             return rule_intent
 
         return "Other"
 
-    # 5. Tenta classificar utilizando o modelo de Machine Learning.
+    # Classificação pelo modelo de Machine Learning.
     try:
         prediction = predict_intent(message)
 
-        predicted_intent = prediction["intent"]
-        confidence = prediction["confidence"]
+        predicted_intent = prediction.get("intent")
+        confidence = float(prediction.get("confidence", 0.0))
 
-        # Converte a categoria do modelo para a categoria da aplicação.
         mapped_intent = INTENT_MAPPING.get(predicted_intent)
 
-        # Aceita a previsão somente quando a confiança é suficiente.
-        if mapped_intent and confidence >= ML_CONFIDENCE_THRESHOLD:
+        if (
+            mapped_intent
+            and 0.0 <= confidence <= 1.0
+            and confidence >= ML_CONFIDENCE_THRESHOLD
+        ):
             return mapped_intent
 
-    except Exception:
-        # Se o modelo falhar, a aplicação continua utilizando
-        # as regras antigas como mecanismo alternativo.
-        pass
+        logger.warning(
+            "Classificação ML não aceita. Intenção=%s, confiança=%.4f",
+            predicted_intent,
+            confidence,
+        )
 
-    # 6. Fallback para as regras antigas.
+    except Exception:
+        logger.exception(
+            "Falha ao executar a classificação pelo modelo ML."
+        )
+
+    # Fallback para as regras antigas.
     if rule_intent in LEGACY_INTENTS:
         return rule_intent
 
-    # 7. Não foi possível classificar com segurança.
     return "Other"
 
 
 def process_message(message: str) -> dict:
-    """
-    Coordena a análise da mensagem e a decisão do agente.
-    """
+    """Coordena classificação, segurança, decisão e resposta."""
 
-    # 1. Identifica a intenção do cliente.
+    if not isinstance(message, str) or not message.strip():
+        raise ValueError("A mensagem não pode estar vazia.")
+
     intent = classify_message(message)
 
-    # 2. Avalia o risco de segurança.
     security = analyze_security(message)
 
-    # 3. Decide qual ação deve ser executada.
     decision = make_decision(
         intent=intent,
         risk_level=security["risk_level"],
         requires_human=security["requires_human"],
     )
 
-    # 4. Gera a resposta adequada.
     response = generate_response(
         intent=intent,
         risk_level=security["risk_level"],
         requires_human=decision["requires_human"],
     )
 
-    # 5. Retorna o resultado completo.
     return {
         "intent": intent,
         "risk_level": security["risk_level"],

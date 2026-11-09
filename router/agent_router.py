@@ -1,9 +1,7 @@
 
 import logging
 import os
-import logging
 
-logger = logging.getLogger(__name__)
 from agents import Runner
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
@@ -22,10 +20,6 @@ from models.model_events import (
 )
 from utils.auth import verify_token
 
-
-# --------------------------------------------------
-# CONFIGURAÇÕES
-# --------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +141,7 @@ async def chat_with_agent(
 ):
     user_id = int(current_user["user_id"])
 
-    # 1. VALIDAÇÃO DO TICKET
+    # 1. VALIDAR TICKET E PROPRIEDADE
 
     ticket = None
 
@@ -165,10 +159,11 @@ async def chat_with_agent(
                 detail="Ticket não encontrado.",
             )
 
-    # 2. RECUPERAR OU CRIAR CONVERSA
+    # 2. VALIDAR OU PREPARAR CONVERSA
+
+    conversation = None
 
     if payload.conversation_id is not None:
-
         conversation_statement = select(Conversation).where(
             Conversation.id == payload.conversation_id,
             Conversation.user_id == user_id,
@@ -184,7 +179,6 @@ async def chat_with_agent(
                 detail="Conversa não encontrada.",
             )
 
-        # Impede associar a conversa a outro ticket.
         if (
             ticket is not None
             and conversation.ticket_id is not None
@@ -195,29 +189,19 @@ async def chat_with_agent(
                 detail="Esta conversa já está associada a outro ticket.",
             )
 
-        # Associa o ticket caso a conversa ainda não tenha um.
         if ticket is not None and conversation.ticket_id is None:
             conversation.ticket_id = ticket.id
-
             session.add(conversation)
-            session.commit()
-            session.refresh(conversation)
 
     else:
-
         conversation = Conversation(
             user_id=user_id,
             ticket_id=ticket.id if ticket else None,
         )
 
         session.add(conversation)
-        session.commit()
-        session.refresh(conversation)
 
-    # Guarda a associação efetiva da conversa.
-    effective_ticket_id = conversation.ticket_id
-
-    # 3. ANÁLISE DE INTENÇÃO E SEGURANÇA
+    # 3. ANALISAR INTENÇÃO E SEGURANÇA
 
     try:
         analysis = process_message(payload.message)
@@ -227,60 +211,70 @@ async def chat_with_agent(
             "Erro ao analisar a mensagem do usuário."
         )
 
+        session.rollback()
+
         raise HTTPException(
             status_code=500,
             detail="Não foi possível analisar a mensagem.",
         )
 
-    # 4. RECUPERAR HISTÓRICO
+    # 4. RECUPERAR HISTÓRICO ANTERIOR
 
-    history_statement = (
-        select(ConversationMessage)
-        .where(
-            ConversationMessage.conversation_id == conversation.id
+    conversation_history = []
+
+    # Uma conversa nova ainda não possui ID persistido.
+    if conversation.id is not None:
+        history_statement = (
+            select(ConversationMessage)
+            .where(
+                ConversationMessage.conversation_id == conversation.id
+            )
+            .order_by(
+                ConversationMessage.created_at,
+                ConversationMessage.id,
+            )
         )
-        .order_by(
-            ConversationMessage.created_at,
-            ConversationMessage.id,
-        )
-    )
 
-    previous_messages = session.exec(
-        history_statement
-    ).all()
+        previous_messages = session.exec(
+            history_statement
+        ).all()
 
-    conversation_history = [
-        {
-            "role": (
-                "assistant"
-                if message.sender_type == "AGENT"
-                else "user"
-            ),
-            "content": message.message,
-        }
-        for message in previous_messages
-        if message.sender_type in {"CUSTOMER", "AGENT"}
-    ]
+        conversation_history = [
+            {
+                "role": (
+                    "assistant"
+                    if message.sender_type == "AGENT"
+                    else "user"
+                ),
+                "content": message.message,
+            }
+            for message in previous_messages
+            if message.sender_type in {"CUSTOMER", "AGENT"}
+        ]
 
-    # 5. SALVAR MENSAGEM DO CLIENTE
+    # 5. SALVAR A MENSAGEM DO CLIENTE
 
     customer_message = ConversationMessage(
-        conversation_id=conversation.id,
-        ticket_id=effective_ticket_id,
+        conversation=conversation,
+        ticket_id=conversation.ticket_id,
         sender_type="CUSTOMER",
         message=payload.message,
     )
 
     try:
         session.add(customer_message)
+
+        # Persiste a conversa e a mensagem na mesma transação.
         session.commit()
+
+        session.refresh(conversation)
         session.refresh(customer_message)
 
     except Exception:
         session.rollback()
 
         logger.exception(
-            "Erro ao salvar mensagem do cliente."
+            "Erro ao salvar a mensagem do cliente."
         )
 
         raise HTTPException(
@@ -288,7 +282,7 @@ async def chat_with_agent(
             detail="Não foi possível salvar sua mensagem.",
         )
 
-    # 6. ADICIONAR NOVA MENSAGEM AO HISTÓRICO
+    # 6. ATUALIZAR HISTÓRICO PARA EXECUÇÃO DO AGENTE
 
     conversation_history.append(
         {
@@ -297,10 +291,9 @@ async def chat_with_agent(
         }
     )
 
-    # 7. DECISÃO DE SEGURANÇA E EXECUÇÃO DO AGENTE
+    # 7. DECIDIR ENTRE ESCALONAMENTO E AGENTE AUTOMÁTICO
 
     if analysis["requires_human"]:
-
         response_text = generate_response(
             intent=analysis["intent"],
             risk_level=analysis["risk_level"],
@@ -308,7 +301,6 @@ async def chat_with_agent(
         )
 
     else:
-
         try:
             result = await Runner.run(
                 customer_service_agent,
@@ -326,7 +318,6 @@ async def chat_with_agent(
                 )
 
         except Exception:
-
             logger.exception(
                 "Falha na execução do Customer Service Agent. "
                 "Verifique a configuração da API, as ferramentas "
@@ -343,7 +334,7 @@ async def chat_with_agent(
 
     agent_message = ConversationMessage(
         conversation_id=conversation.id,
-        ticket_id=effective_ticket_id,
+        ticket_id=conversation.ticket_id,
         sender_type="AGENT",
         message=response_text,
     )
@@ -351,17 +342,19 @@ async def chat_with_agent(
     try:
         session.add(agent_message)
         session.commit()
+        session.refresh(agent_message)
 
     except Exception:
-            logger.exception(
-                "Erro durante a execução do Customer Service Agent."
-            )
+        session.rollback()
 
-            response_text = generate_response(
-                intent=analysis["intent"],
-                risk_level=analysis["risk_level"],
-                requires_human=False,
-            )
+        logger.exception(
+            "Erro ao salvar a resposta do agente."
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Não foi possível salvar a resposta do atendimento.",
+        )
 
     # 9. RETORNAR RESULTADO
 

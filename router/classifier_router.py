@@ -1,54 +1,68 @@
 
-from fastapi import APIRouter, Depends, HTTPException
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 
-# Importa a função responsável por executar a previsão.
 from fintechguard_agents.predict_intent import predict_intent
-
-# Reutiliza a autenticação JWT existente no projeto.
 from utils.auth import verify_token
 
 
-# Cria um grupo de rotas para o classificador.
+logger = logging.getLogger(__name__)
+
 router = APIRouter(
     prefix="/classify",
-    tags=["Intent Classification"]
+    tags=["Intent Classification"],
 )
 
 
-# Define o formato de entrada da requisição.
 class ClassificationRequest(BaseModel):
-    # Rejeita campos extras e remove espaços desnecessários.
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    model_config = ConfigDict(
+        extra="forbid",
+        str_strip_whitespace=True,
+    )
 
     text: str = Field(
         min_length=1,
         max_length=5000,
-        description="Mensagem enviada pelo cliente"
+        description="Mensagem enviada pelo cliente",
     )
 
 
-# Define o formato da resposta.
 class ClassificationResponse(BaseModel):
-    intent: str
-    confidence: float
+    intent: str = Field(min_length=1)
+    confidence: float = Field(ge=0.0, le=1.0)
 
 
-# Endpoint protegido por autenticação JWT.
-@router.post("/", response_model=ClassificationResponse)
+@router.post(
+    "/",
+    response_model=ClassificationResponse,
+    status_code=status.HTTP_200_OK,
+)
 def classify_message(
     request: ClassificationRequest,
-    current_user: dict = Depends(verify_token)
+    current_user: dict = Depends(verify_token),
 ):
     try:
-        # Executa a classificação da mensagem.
         result = predict_intent(request.text)
 
         return ClassificationResponse(**result)
 
-    except Exception:
-        # Evita expor detalhes internos do modelo ao cliente.
-        raise HTTPException(
-            status_code=500,
-            detail="Erro interno ao classificar a mensagem."
+    except ValueError as error:
+        logger.warning(
+            "Mensagem inválida enviada ao classificador: %s",
+            error,
         )
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Não foi possível classificar a mensagem enviada.",
+        ) from error
+
+    except Exception as error:
+        logger.exception(
+            "Erro interno durante a classificação de intenção."
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno ao classificar a mensagem.",
+        ) from error

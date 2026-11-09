@@ -1,38 +1,66 @@
 
-import joblib
+import logging
 from pathlib import Path
 
-# Diretório onde está este arquivo.
-BASE_DIR = Path(__file__).resolve().parent
+import joblib
 
-# O agente passa a utilizar o modelo V2.
+logger = logging.getLogger(__name__)
+
+BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "intent_classifier_v2.joblib"
 
-# Carrega o modelo uma única vez.
-if not MODEL_PATH.exists():
+if not MODEL_PATH.is_file():
     raise FileNotFoundError(
         f"Modelo de classificação não encontrado: {MODEL_PATH}"
     )
 
-model = joblib.load(MODEL_PATH)
+try:
+    model = joblib.load(MODEL_PATH)
+except Exception as error:
+    logger.exception("Não foi possível carregar o modelo de classificação.")
+    raise RuntimeError(
+        "Falha ao carregar o modelo de classificação."
+    ) from error
 
 
 def predict_intent(text: str) -> dict:
     """
-    Classifica uma mensagem e retorna a intenção
-    prevista e o nível de confiança do modelo.
+    Classifica uma mensagem usando o modelo ML V2.
+
+    Retorna:
+        {
+            "intent": str,
+            "confidence": float
+        }
     """
+
     if not isinstance(text, str) or not text.strip():
         raise ValueError("A mensagem não pode estar vazia.")
 
+    if not hasattr(model, "predict_proba"):
+        raise RuntimeError(
+            "O modelo carregado não oferece suporte a predict_proba."
+        )
+
     probabilities = model.predict_proba([text])[0]
     classes = model.classes_
-    best_index = probabilities.argmax()
+
+    if len(probabilities) != len(classes):
+        raise RuntimeError(
+            "A saída do modelo não corresponde às classes disponíveis."
+        )
+
+    best_index = int(probabilities.argmax())
+
+    confidence = float(probabilities[best_index])
+    intent = str(classes[best_index])
+
+    if not 0.0 <= confidence <= 1.0:
+        raise RuntimeError(
+            "O modelo retornou um nível de confiança inválido."
+        )
 
     return {
-        "intent": str(classes[best_index]),
-        "confidence": round(
-            float(probabilities[best_index]),
-            4
-        )
+        "intent": intent,
+        "confidence": round(confidence, 4),
     }

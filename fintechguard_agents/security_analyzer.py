@@ -3,7 +3,6 @@ from fintechguard_agents.intent_classifier import normalize_text
 
 
 CRITICAL_KEYWORDS = [
-    # Credenciais e informações altamente sensíveis
     "palavra passe",
     "codigo de autenticacao",
     "codigo de verificacao",
@@ -13,12 +12,11 @@ CRITICAL_KEYWORDS = [
     "cvc",
     "numero completo do cartao",
     "numero do cartao",
-
-    # English
     "authentication code",
     "verification code",
     "security code",
 ]
+
 SUSPICIOUS_CREDENTIAL_PATTERNS = [
     "pedindo minha senha",
     "pediu minha senha",
@@ -45,7 +43,6 @@ SUSPICIOUS_CREDENTIAL_PATTERNS = [
 ]
 
 HIGH_RISK_KEYWORDS = [
-    # Transações não reconhecidas
     "nao reconheco essa compra",
     "nao reconheco o lancamento",
     "nao reconheco essa transferencia",
@@ -60,8 +57,6 @@ HIGH_RISK_KEYWORDS = [
     "nao reconheco um pagamento",
     "nao reconheco um debito",
     "nao reconheco uma compra",
-
-    # Fraude e comprometimento de conta
     "fraude",
     "cartao clonado",
     "cartao foi clonado",
@@ -73,8 +68,6 @@ HIGH_RISK_KEYWORDS = [
     "minha conta foi invadida",
     "roubaram meu cartao",
     "perdi meu cartao",
-
-    # English
     "fraud",
     "unauthorized charge",
     "unauthorized transaction",
@@ -85,7 +78,6 @@ HIGH_RISK_KEYWORDS = [
     "card stolen",
     "card cloned",
 ]
-
 
 MEDIUM_RISK_KEYWORDS = [
     "cobranca indevida",
@@ -98,8 +90,6 @@ MEDIUM_RISK_KEYWORDS = [
     "cobranca duplicada",
     "pagamento duplicado",
     "valor debitado incorretamente",
-
-    # English
     "incorrect charge",
     "charged twice",
     "duplicate charge",
@@ -109,31 +99,58 @@ MEDIUM_RISK_KEYWORDS = [
 ]
 
 
-def analyze_security(message: str) -> dict:
-    normalized_message = normalize_text(message)
-    
+def contains_keyword(message: str, keywords: list[str]) -> bool:
+    """Verifica palavras e expressões após normalização."""
 
-    if any(
-        pattern in normalized_message
-        for pattern in SUSPICIOUS_CREDENTIAL_PATTERNS
+    return any(
+        normalize_text(keyword) in message
+        for keyword in keywords
+    )
+
+
+def analyze_security(message: str) -> dict:
+    """
+    Analisa sinais de risco na mensagem.
+
+    Prioridade:
+    1. Solicitação ou exposição suspeita de credenciais.
+    2. Indícios de fraude ou transação não autorizada.
+    3. Problemas financeiros que exigem atenção.
+    4. Risco baixo.
+    """
+
+    if not isinstance(message, str) or not message.strip():
+        return {
+            "risk_level": "low",
+            "requires_human": False,
+        }
+
+    normalized_message = normalize_text(message)
+
+    # Risco crítico: possível comprometimento de credenciais.
+    if contains_keyword(
+        normalized_message,
+        SUSPICIOUS_CREDENTIAL_PATTERNS,
     ):
         return {
             "risk_level": "critical",
             "requires_human": True,
         }
 
-    if any(
-        keyword in normalized_message
-        for keyword in HIGH_RISK_KEYWORDS
+    # Risco alto: suspeita de fraude ou transação não autorizada.
+    if contains_keyword(
+        normalized_message,
+        HIGH_RISK_KEYWORDS,
     ):
         return {
             "risk_level": "high",
             "requires_human": True,
         }
 
-    if any(
-        keyword in normalized_message
-        for keyword in MEDIUM_RISK_KEYWORDS
+    # Risco médio: problemas financeiros.
+    if contains_keyword(
+        normalized_message,
+        MEDIUM_RISK_KEYWORDS,
     ):
         return {
             "risk_level": "medium",
