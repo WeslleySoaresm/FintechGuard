@@ -1,260 +1,296 @@
- 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FintechGuard | Banco digital</title>
+    <title>{{ settings.brand_name }} | Assistente Inteligente</title>
 
     <meta
         name="description"
-        content="Conheça o FintechGuard, uma plataforma financeira digital com foco em segurança, transparência e atendimento."
+        content="{{ settings.hero_description }}"
     >
 
-    <link rel="stylesheet" href="/static/css/public.css">
-    <script src="/static/js/public.js" defer></script>
+    <meta name="theme-color" content="#101b35">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/public.css') }}"
+    >
+
+    <script
+        src="{{ url_for('static', path='js/public.js') }}"
+        defer
+    ></script>
 </head>
 
-<body>
+<body class="home-page">
+
+    <div class="page-background" aria-hidden="true">
+        <div class="background-glow background-glow-one"></div>
+        <div class="background-glow background-glow-two"></div>
+        <div class="background-grid"></div>
+    </div>
+
     <header class="site-header">
-        <div class="container navbar">
-            <a class="brand" href="/" aria-label="FintechGuard, página inicial">
+        <nav class="navbar" aria-label="Navegação principal">
+
+            <a class="brand" href="/" aria-label="Página inicial">
                 <span class="brand-icon">FG</span>
-                <span id="site-name">FintechGuard</span>
+                <span class="brand-name">{{ settings.brand_name }}</span>
             </a>
 
-            <button
-                class="menu-toggle"
-                id="menu-toggle"
-                aria-label="Abrir menu"
-                aria-expanded="false"
-                aria-controls="main-navigation"
-                type="button"
-            >
-                ☰
-            </button>
+            <div class="header-right">
+                <span class="secure-label">
+                    <span class="status-indicator"></span>
+                    Ambiente protegido
+                </span>
 
-            <nav class="navigation" id="main-navigation">
-                <a href="/">Início</a>
-                <a href="/sobre">Sobre nós</a>
-                <a href="/servicos">Serviços</a>
-                <a href="/seguranca">Segurança</a>
-                <a href="/contato">Contato</a>
-            </nav>
-
-            <div class="header-actions">
-                <a class="button button-outline" href="/login">Entrar</a>
-                <a class="button button-primary" href="/login?cadastro=true">
-                    Começar agora
+                <a href="/login" class="login-button">
+                    Entrar na conta
+                    <span aria-hidden="true">→</span>
                 </a>
             </div>
-        </div>
+
+        </nav>
     </header>
 
-    <main>
-        <section class="hero">
-            <div class="container hero-grid">
-                <div class="hero-content">
-                    <span class="eyebrow">
-                        FINANÇAS DIGITAIS COM MAIS TRANSPARÊNCIA
-                    </span>
+    <main class="main-content">
 
-                    <h1 id="hero-title">
-                        Seu dinheiro merece uma experiência melhor.
-                    </h1>
+        <section class="welcome-area">
 
-                    <p id="hero-description">
-                        Conheça uma nova forma de organizar sua vida financeira,
-                        com informações claras, tecnologia e foco na segurança.
-                    </p>
+            <div class="eyebrow">
+                <span class="eyebrow-icon" aria-hidden="true">✦</span>
+                FINTECHGUARD INTELLIGENCE
+            </div>
 
-                    <div class="hero-actions">
-                        <a class="button button-primary" href="/login">
-                            Acessar minha conta
-                        </a>
+            <h1>{{ settings.hero_title }}</h1>
 
-                        <a class="button button-outline" href="/servicos">
-                            Conhecer os serviços
-                        </a>
+            <p>{{ settings.hero_description }}</p>
+
+            <div class="welcome-trust">
+                <span>
+                    <span class="trust-check" aria-hidden="true">✓</span>
+                    Atendimento digital
+                </span>
+
+                <span>
+                    <span class="trust-check" aria-hidden="true">✓</span>
+                    Foco em segurança
+                </span>
+            </div>
+
+        </section>
+
+        <section
+            class="chat-card"
+            aria-label="Atendimento virtual FintechGuard"
+        >
+
+            <div class="chat-header">
+
+                <div class="assistant-profile">
+
+                    <div class="assistant-avatar" aria-hidden="true">
+                        ✦
                     </div>
 
-                    <p class="hero-note">
-                        Segurança digital e transparência em primeiro lugar.
-                    </p>
+                    <div class="assistant-info">
+                        <h2>Assistente FintechGuard</h2>
+
+                        <span class="assistant-status">
+                            <span class="status-indicator"></span>
+                            Atendimento virtual
+                        </span>
+                    </div>
+
                 </div>
 
-                <div class="hero-visual">
-                    <img
-                        id="hero-image"
-                        src="/static/images/banking-hero.jpg"
-                        alt="Pessoa utilizando serviços financeiros pelo celular"
-                        onerror="this.style.display='none'"
-                    >
+                <span class="ai-badge">IA</span>
 
-                    <div class="security-card">
-                        <span class="security-icon">✓</span>
-                        <div>
-                            <strong>Segurança em foco</strong>
-                            <p>Proteção de dados como prioridade.</p>
+            </div>
+
+            <div
+                class="chat-messages"
+                id="chat-messages"
+                aria-live="polite"
+                aria-relevant="additions"
+                aria-label="Mensagens da conversa"
+            >
+
+                <div class="message assistant-message">
+
+                    <div class="message-avatar" aria-hidden="true">
+                        FG
+                    </div>
+
+                    <div class="message-content">
+
+                        <span class="message-author">
+                            FintechGuard
+                        </span>
+
+                        <div class="message-bubble">
+                            Olá! Seja bem-vindo ao FintechGuard. 👋
+
+                            <br><br>
+
+                            Sou seu assistente virtual. Posso ajudar com
+                            dúvidas sobre tarifas, transferências,
+                            pagamentos, reembolsos e segurança financeira.
+
+                            <br><br>
+
+                            Como posso ajudar você hoje?
                         </div>
+
+                        <span class="message-time">
+                            Assistente virtual
+                        </span>
+
                     </div>
+
                 </div>
+
             </div>
+
+            <div class="suggestions" id="chat-suggestions">
+
+                <span class="suggestions-title">
+                    Experimente perguntar
+                </span>
+
+                <div class="suggestion-list">
+
+                    <button
+                        type="button"
+                        class="suggestion-button"
+                        data-message="Quero consultar as tarifas da minha conta."
+                    >
+                        <span aria-hidden="true">↗</span>
+                        Consultar tarifas
+                    </button>
+
+                    <button
+                        type="button"
+                        class="suggestion-button"
+                        data-message="Preciso de ajuda com uma transferência."
+                    >
+                        <span aria-hidden="true">⇄</span>
+                        Transferências
+                    </button>
+
+                    <button
+                        type="button"
+                        class="suggestion-button"
+                        data-message="Fui cobrado duas vezes pela mesma transação."
+                    >
+                        <span aria-hidden="true">€</span>
+                        Cobrança duplicada
+                    </button>
+
+                    <button
+                        type="button"
+                        class="suggestion-button"
+                        data-message="Quero informar uma possível fraude."
+                    >
+                        <span aria-hidden="true">⌑</span>
+                        Segurança e fraudes
+                    </button>
+
+                </div>
+
+            </div>
+
+            <form
+                class="chat-input-area"
+                id="chat-form"
+                autocomplete="off"
+            >
+
+                <label for="chat-input" class="sr-only">
+                    Escreva sua mensagem
+                </label>
+
+                <input
+                    type="text"
+                    id="chat-input"
+                    name="message"
+                    placeholder="Digite sua dúvida aqui..."
+                    maxlength="2000"
+                    autocomplete="off"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    id="send-button"
+                    aria-label="Enviar mensagem"
+                >
+                    <span aria-hidden="true">➤</span>
+                </button>
+
+            </form>
+
+            <div class="chat-disclaimer">
+                <span aria-hidden="true">🔒</span>
+                Nunca compartilhe senhas, CVV ou códigos de autenticação.
+            </div>
+
         </section>
 
-        <section class="trust-section">
-            <div class="container trust-grid">
-                <div>
-                    <span class="trust-number">01</span>
-                    <h2>Transparência</h2>
-                    <p>Informações claras para decisões financeiras conscientes.</p>
-                </div>
+        <section class="features" aria-label="Diferenciais">
 
-                <div>
-                    <span class="trust-number">02</span>
-                    <h2>Proteção</h2>
-                    <p>Boas práticas de segurança e atenção à privacidade.</p>
-                </div>
-
-                <div>
-                    <span class="trust-number">03</span>
-                    <h2>Acessibilidade</h2>
-                    <p>Uma experiência digital pensada para facilitar o acesso.</p>
-                </div>
+            <div class="feature">
+                <span class="feature-icon" aria-hidden="true">✦</span>
+                <span>Atendimento inteligente</span>
             </div>
+
+            <div class="feature">
+                <span class="feature-icon" aria-hidden="true">⌑</span>
+                <span>Segurança em primeiro lugar</span>
+            </div>
+
+            <div class="feature">
+                <span class="feature-icon" aria-hidden="true">✓</span>
+                <span>Transparência nas informações</span>
+            </div>
+
         </section>
 
-        <section class="services-section">
-            <div class="container">
-                <div class="section-heading">
-                    <span class="eyebrow">CONHEÇA A PLATAFORMA</span>
-                    <h2>Serviços que acompanham seus objetivos</h2>
-                    <p>
-                        Consulte as informações dos serviços disponibilizados
-                        pela plataforma FintechGuard.
-                    </p>
-                </div>
+        <section class="login-callout">
 
-                <div class="service-grid">
-                    <article class="service-card">
-                        <div class="service-icon">↔</div>
-                        <h3>Transferências</h3>
-                        <p>
-                            Consulte informações sobre transferências,
-                            condições e eventuais tarifas aplicáveis.
-                        </p>
-                        <a href="/servicos">Saiba mais →</a>
-                    </article>
+            <div>
+                <h2>Precisa acessar sua conta?</h2>
 
-                    <article class="service-card">
-                        <div class="service-icon">▣</div>
-                        <h3>Cartões e pagamentos</h3>
-                        <p>
-                            Conheça as funcionalidades e condições dos
-                            produtos disponibilizados.
-                        </p>
-                        <a href="/servicos">Conhecer serviços →</a>
-                    </article>
-
-                    <article class="service-card">
-                        <div class="service-icon">⌂</div>
-                        <h3>Atendimento digital</h3>
-                        <p>
-                            Encontre informações de suporte e acompanhe
-                            suas solicitações pela área do cliente.
-                        </p>
-                        <a href="/contato">Falar conosco →</a>
-                    </article>
-                </div>
+                <p>
+                    Entre na sua área segura para consultar seus serviços.
+                </p>
             </div>
+
+            <a href="/login" class="callout-button">
+                Acessar minha conta →
+            </a>
+
         </section>
 
-        <section class="security-section">
-            <div class="container security-content">
-                <div>
-                    <span class="eyebrow">SEGURANÇA DIGITAL</span>
-                    <h2>Proteja seus dados. Desconfie de abordagens suspeitas.</h2>
-                    <p>
-                        A prevenção contra fraudes depende de tecnologia,
-                        informação e atenção. Nunca compartilhe senhas ou
-                        códigos de autenticação com terceiros.
-                    </p>
-
-                    <a class="button button-light" href="/seguranca">
-                        Conhecer nossas orientações
-                    </a>
-                </div>
-
-                <div class="security-illustration" aria-hidden="true">
-                    <div class="shield">✓</div>
-                    <span>Proteção e privacidade</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="cta-section">
-            <div class="container cta-content">
-                <div>
-                    <h2>Conheça melhor o FintechGuard</h2>
-                    <p>
-                        Explore a plataforma e consulte os serviços disponíveis.
-                    </p>
-                </div>
-
-                <a class="button button-primary" href="/sobre">
-                    Sobre o FintechGuard
-                </a>
-            </div>
-        </section>
     </main>
 
     <footer class="site-footer">
-        <div class="container footer-grid">
-            <div>
-                <a class="brand footer-brand" href="/">
-                    <span class="brand-icon">FG</span>
-                    <span>FintechGuard</span>
-                </a>
-
-                <p>
-                    Tecnologia financeira com foco em segurança,
-                    transparência e atendimento.
-                </p>
-            </div>
-
-            <div>
-                <h3>Plataforma</h3>
-                <a href="/sobre">Sobre nós</a>
-                <a href="/servicos">Serviços</a>
-                <a href="/seguranca">Segurança</a>
-            </div>
-
-            <div>
-                <h3>Atendimento</h3>
-                <a href="/contato">Contato</a>
-                <a href="/login">Área do cliente</a>
-            </div>
-
-            <div>
-                <h3>Informações</h3>
-                <a href="/privacidade">Privacidade</a>
-                <a href="/termos">Termos de uso</a>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <div class="container">
-                <p>
-                    © <span id="current-year"></span> FintechGuard.
-                    Todos os direitos reservados.
-                </p>
-                <p>
-                    Projeto acadêmico. Os serviços apresentados são
-                    ilustrativos e não representam uma oferta bancária real.
-                </p>
-            </div>
-        </div>
+        <p>
+            © <span id="current-year"></span>
+            {{ settings.brand_name }}.
+            Projeto acadêmico. Serviços ilustrativos.
+        </p>
     </footer>
+
+    <noscript>
+        <p class="noscript-message">
+            Para utilizar o atendimento virtual, habilite o JavaScript
+            no seu navegador.
+        </p>
+    </noscript>
+
 </body>
 </html>

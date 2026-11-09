@@ -1,0 +1,57 @@
+======================================================================
+DATASET QUALITY REPORT - FINTECHGUARD INTENT CLASSIFICATION (T2)
+======================================================================
+Data de Geração: 2026-11-08
+Projeto: FintechGuard - Atendimento Bancário Seguro
+Pipeline: Scikit-learn (TF-IDF + Logistic Regression)
+
+1. RESUMO GERAL DE VOLUMETRIA
+----------------------------------------------------------------------
+- Total de Registros (Treinamento): 4000
+- Total de Registros (Validação): 1000
+- Total Geral do Dataset: 5000
+- Idiomas Suportados: Português Brasileiro (pt-BR) e Inglês (en)
+- Número de Categorias: 5 (billing inquiry, cancellation request, product inquiry, refund request, technical issue)
+
+2. DISTRIBUIÇÃO E BALANCEAMENTO RIGOROSO
+----------------------------------------------------------------------
+Treinamento (fintechguard_train.csv):
+language               en  pt-BR
+intent                          
+billing inquiry       400    400
+cancellation request  400    400
+product inquiry       400    400
+refund request        400    400
+technical issue       400    400
+
+Validação (fintechguard_validation.csv):
+language               en  pt-BR
+intent                          
+billing inquiry       100    100
+cancellation request  100    100
+product inquiry       100    100
+refund request        100    100
+technical issue       100    100
+
+3. VERIFICAÇÃO AUTOMATIZADA DE INTEGRIDADE
+----------------------------------------------------------------------
+- Duplicatas Exatas no Treinamento: 0
+- Duplicatas Exatas na Validação: 0
+- Sobreposição entre Treino e Validação (Data Leakage): 0 registros
+- Textos Vazios, Nulos ou Brancos: 0
+- Categorias Fora do Escopo Estrito: 0
+- Mensagens Fora do Domínio Financeiro: 0
+
+4. CRITÉRIOS DE INDEPENDÊNCIA E SEPARAÇÃO
+----------------------------------------------------------------------
+- O conjunto de validação (fintechguard_validation.csv) foi rigorosamente filtrado para garantir 0% de intersecção com o treino.
+- A distribuição de idiomas e classes foi mantida rigorosamente simétrica (50% pt-BR, 50% en em ambas as bases).
+
+5. LIMITAÇÕES E RECOMENDAÇÕES PARA T2
+----------------------------------------------------------------------
+- Todos os registros possuem a tag source='synthetic' e review_status='reviewed' (após validação automatizada de sintaxe e regras de domínio bancário).
+- Recomenda-se realizar o pré-processamento com TF-IDF utilizando n-gramas (1,2) para capturar melhor termos compostos como 'taxa de manutenção', 'débito automático' e 'virtual card'.
+
+======================================================================
+FIM DO RELATÓRIO DE QUALIDADE
+======================================================================

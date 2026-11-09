@@ -1,0 +1,61 @@
+﻿text,intent
+Why was an additional fee applied to my account?,billing inquiry
+I noticed unexpected service charges on my monthly statement.,billing inquiry
+Can you explain the fees charged to my account this month?,billing inquiry
+I need a breakdown of the charges on my latest bill.,billing inquiry
+Why is my credit card statement showing a higher amount?,billing inquiry
+Could you explain how the interest on my balance was calculated?,billing inquiry
+I paid my full statement balance before the due date. Why was interest charged?,billing inquiry
+There is an unfamiliar service fee on my bank statement.,billing inquiry
+Gostaria de entender as tarifas aplicadas à minha conta.,billing inquiry
+Por que apareceu uma cobrança adicional na minha fatura?,billing inquiry
+Preciso consultar o detalhamento dos encargos cobrados.,billing inquiry
+Minha fatura apresenta um valor diferente do que eu esperava.,billing inquiry
+Poderiam explicar como foram calculados os juros da minha conta?,billing inquiry
+Paguei o valor integral da fatura. Por que houve cobrança de juros?,billing inquiry
+Identifiquei uma tarifa que não compreendi no meu extrato.,billing inquiry
+Quero saber de onde veio esse encargo na minha conta.,billing inquiry
+O valor da anuidade do cartão está correto?,billing inquiry
+Preciso entender a cobrança de manutenção da conta.,billing inquiry
+Why is my account showing a monthly maintenance fee?,billing inquiry
+How can I see the calculation of the fees on my statement?,billing inquiry
+My statement includes interest that I was not expecting.,billing inquiry
+There seems to be a discrepancy in the total amount due.,billing inquiry
+Can you clarify the foreign transaction fee on my purchase?,billing inquiry
+I would like an explanation of the charges listed on my invoice.,billing inquiry
+Apareceu uma taxa de serviço que não reconheço na fatura.,billing inquiry
+Quero entender a cobrança de juros rotativos do meu cartão.,billing inquiry
+O extrato mostra encargos adicionais. Como foram calculados?,billing inquiry
+Por que o valor total da minha fatura aumentou?,billing inquiry
+Gostaria de receber o detalhamento das tarifas bancárias.,billing inquiry
+A cobrança da taxa de transferência está correta?,billing inquiry
+My account dashboard keeps showing a blank screen.,technical issue
+The dashboard page gets stuck while loading.,technical issue
+I cannot open my account overview on the website.,technical issue
+The mobile banking application crashes when I open it.,technical issue
+My transaction history page is not displaying any data.,technical issue
+The account balance does not update after I refresh the page.,technical issue
+I receive an error whenever I try to access the dashboard.,technical issue
+The application freezes before reaching the login screen.,technical issue
+O painel da minha conta não carrega corretamente.,technical issue
+A página inicial fica travada quando tento abrir.,technical issue
+Não consigo visualizar o resumo da minha conta.,technical issue
+O aplicativo fecha sozinho quando tento acessar minha conta.,technical issue
+Meu histórico de transações não aparece na tela.,technical issue
+O saldo não atualiza mesmo depois de atualizar a página.,technical issue
+Recebo uma mensagem de erro ao abrir o painel.,technical issue
+A tela do aplicativo fica branca depois do login.,technical issue
+Não consigo carregar os detalhes da minha conta.,technical issue
+O site apresenta falha quando acesso a área do cliente.,technical issue
+The dashboard takes forever to load and eventually times out.,technical issue
+I cannot download my account statement because the page crashes.,technical issue
+The mobile app displays a connection error despite having internet access.,technical issue
+My profile settings page is not responding.,technical issue
+The transaction search feature returns an error.,technical issue
+The website stops responding whenever I open the account summary.,technical issue
+O painel fica carregando sem apresentar nenhuma informação.,technical issue
+A página de extrato apresenta erro ao tentar abrir.,technical issue
+O sistema não responde quando clico em atualizar saldo.,technical issue
+Não consigo acessar o aplicativo mesmo com a internet funcionando.,technical issue
+A consulta de movimentações apresenta uma falha inesperada.,technical issue
+O site trava sempre que tento acessar meus dados bancários.,technical issue

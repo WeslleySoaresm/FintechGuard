@@ -1,54 +1,13 @@
+
 "use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
-    initializeMobileMenu();
     initializeFooterYear();
-    loadPublicSettings();
+    initializeChat();
 });
 
 /**
- * Abre e fecha o menu de navegação em telas pequenas.
- */
-function initializeMobileMenu() {
-    const menuButton = document.getElementById("menu-toggle");
-    const navigation = document.getElementById("main-navigation");
-
-    if (!menuButton || !navigation) {
-        return;
-    }
-
-    menuButton.addEventListener("click", () => {
-        const isOpen = navigation.classList.toggle("is-open");
-
-        menuButton.setAttribute("aria-expanded", String(isOpen));
-        menuButton.setAttribute(
-            "aria-label",
-            isOpen ? "Fechar menu" : "Abrir menu"
-        );
-        menuButton.textContent = isOpen ? "✕" : "☰";
-    });
-
-    navigation.querySelectorAll("a").forEach((link) => {
-        link.addEventListener("click", () => {
-            navigation.classList.remove("is-open");
-            menuButton.setAttribute("aria-expanded", "false");
-            menuButton.setAttribute("aria-label", "Abrir menu");
-            menuButton.textContent = "☰";
-        });
-    });
-
-    window.addEventListener("resize", () => {
-        if (window.innerWidth > 760) {
-            navigation.classList.remove("is-open");
-            menuButton.setAttribute("aria-expanded", "false");
-            menuButton.setAttribute("aria-label", "Abrir menu");
-            menuButton.textContent = "☰";
-        }
-    });
-}
-
-/**
- * Mantém o ano do rodapé atualizado automaticamente.
+ * Atualiza o ano do rodapé.
  */
 function initializeFooterYear() {
     const yearElement = document.getElementById("current-year");
@@ -59,141 +18,315 @@ function initializeFooterYear() {
 }
 
 /**
- * Carrega as configurações publicadas pelo administrador.
- *
- * A API será implementada posteriormente no FastAPI.
- * Se ela ainda não existir ou estiver indisponível,
- * a página continuará exibindo o conteúdo padrão do HTML.
+ * Inicializa o chat.
  */
-async function loadPublicSettings() {
-    try {
-        const response = await fetch("/api/public/settings", {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            },
-            credentials: "same-origin"
+function initializeChat() {
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("chat-input");
+    const messages = document.getElementById("chat-messages");
+    const suggestions = document.getElementById("chat-suggestions");
+    const sendButton = document.getElementById("send-button");
+
+    if (!form || !input || !messages || !sendButton) {
+        console.error("Elementos necessários para o chat não encontrados.");
+        return;
+    }
+
+    let isSending = false;
+    let conversationId = null;
+
+    /*
+     * Se o usuário estiver trabalhando com um ticket,
+     * defina o ID real aqui ou carregue-o da aplicação.
+     *
+     * Não invente um ticket_id.
+     */
+    let ticketId = null;
+
+    /**
+     * Recupera o token de autenticação.
+     *
+     * IMPORTANTE:
+     * Esta função precisa ser integrada ao mecanismo
+     * de autenticação utilizado pelo seu projeto.
+     *
+     * Não coloque tokens secretos diretamente no código.
+     */
+    async function getAccessToken() {
+        /*
+         * O ideal é utilizar um cookie HttpOnly, Secure
+         * e SameSite, com suporte correspondente no backend.
+         *
+         * Enquanto isso não estiver implementado,
+         * não enviamos requisições sem autenticação.
+         */
+        return null;
+    }
+
+    /**
+     * Adiciona uma mensagem ao histórico visual.
+     */
+    function addMessage(text, type) {
+        const message = document.createElement("div");
+        message.className = `message ${type}-message`;
+
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.textContent = type === "assistant" ? "FG" : "EU";
+
+        const content = document.createElement("div");
+        content.className = "message-content";
+
+        const author = document.createElement("span");
+        author.className = "message-author";
+        author.textContent = type === "assistant"
+            ? "FintechGuard"
+            : "Você";
+
+        const bubble = document.createElement("div");
+        bubble.className = "message-bubble";
+        bubble.textContent = text;
+
+        const time = document.createElement("span");
+        time.className = "message-time";
+        time.textContent = new Date().toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit"
         });
 
+        content.append(author, bubble, time);
+        message.append(avatar, content);
+        messages.appendChild(message);
+
+        scrollToLatestMessage();
+    }
+
+    /**
+     * Exibe informações complementares da resposta.
+     */
+    function addAgentMetadata(data) {
+        if (!data.requires_human) {
+            return;
+        }
+
+        const notice = document.createElement("div");
+        notice.className = "agent-escalation-notice";
+
+        notice.textContent =
+            "Sua solicitação precisa de atendimento humano. " +
+            "O encaminhamento foi identificado pelo sistema.";
+
+        messages.appendChild(notice);
+        scrollToLatestMessage();
+    }
+
+    /**
+     * Mantém a conversa na última mensagem.
+     */
+    function scrollToLatestMessage() {
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    /**
+     * Mostra o indicador de digitação.
+     */
+    function showTyping() {
+        removeTyping();
+
+        const typing = document.createElement("div");
+        typing.className = "message assistant-message";
+        typing.id = "typing-indicator";
+
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.textContent = "FG";
+
+        const bubble = document.createElement("div");
+        bubble.className = "message-bubble typing-indicator";
+        bubble.setAttribute("aria-label", "Assistente está digitando");
+
+        for (let index = 0; index < 3; index++) {
+            bubble.appendChild(document.createElement("span"));
+        }
+
+        typing.append(avatar, bubble);
+        messages.appendChild(typing);
+
+        scrollToLatestMessage();
+    }
+
+    /**
+     * Remove o indicador de digitação.
+     */
+    function removeTyping() {
+        document.getElementById("typing-indicator")?.remove();
+    }
+
+    /**
+     * Envia a mensagem ao endpoint real do agente.
+     */
+    async function sendToAgent(message) {
+        const token = await getAccessToken();
+
+        if (!token) {
+            throw new Error(
+                "Para utilizar o atendimento, é necessário entrar na sua conta."
+            );
+        }
+
+        const payload = {
+            message: message,
+            conversation_id: conversationId,
+            ticket_id: ticketId
+        };
+
+        const response = await fetch("/agent", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            credentials: "same-origin",
+            body: JSON.stringify(payload)
+        });
+
+        let data;
+
+        try {
+            data = await response.json();
+        } catch {
+            throw new Error(
+                "O servidor retornou uma resposta inválida."
+            );
+        }
+
+        if (response.status === 401) {
+            throw new Error(
+                "Sua sessão expirou ou não é válida. Entre novamente."
+            );
+        }
+
+        if (response.status === 403) {
+            throw new Error(
+                "Você não possui autorização para realizar esta operação."
+            );
+        }
+
         if (!response.ok) {
+            const detail = typeof data.detail === "string"
+                ? data.detail
+                : `Erro HTTP ${response.status}.`;
+
+            throw new Error(detail);
+        }
+
+        /*
+         * Campos definidos pelo AgentResponse.
+         */
+        if (
+            typeof data.response !== "string" ||
+            !data.response.trim()
+        ) {
+            console.error("Resposta recebida:", data);
+
+            throw new Error(
+                "O agente não retornou uma resposta válida."
+            );
+        }
+
+        if (
+            !Number.isInteger(data.conversation_id) ||
+            data.conversation_id <= 0
+        ) {
+            throw new Error(
+                "O servidor não retornou um identificador válido de conversa."
+            );
+        }
+
+        conversationId = data.conversation_id;
+
+        return data;
+    }
+
+    /**
+     * Processa o envio de uma mensagem.
+     */
+    async function handleSendMessage(text) {
+        const cleanText = text.trim();
+
+        if (!cleanText || isSending) {
             return;
         }
 
-        const settings = await response.json();
-
-        if (!settings || typeof settings !== "object") {
+        if (cleanText.length > 2000) {
+            addMessage(
+                "Sua mensagem ultrapassou o limite de 2.000 caracteres.",
+                "assistant"
+            );
             return;
         }
 
-        applyPublicSettings(settings);
-    } catch (error) {
-        // A página permanece funcional com o conteúdo padrão.
-        console.warn("Não foi possível carregar as configurações públicas.");
-    }
-}
+        addMessage(cleanText, "user");
 
-/**
- * Atualiza somente os elementos previstos para conteúdo dinâmico.
- */
-function applyPublicSettings(settings) {
-    setText("site-name", settings.site_name);
-    setText("hero-title", settings.hero_title);
-    setText("hero-description", settings.hero_description);
+        input.value = "";
 
-    if (isValidHexColor(settings.primary_color)) {
-        document.documentElement.style.setProperty(
-            "--color-primary",
-            settings.primary_color
-        );
-    }
+        if (suggestions) {
+            suggestions.hidden = true;
+        }
 
-    if (isValidHexColor(settings.primary_dark_color)) {
-        document.documentElement.style.setProperty(
-            "--color-primary-dark",
-            settings.primary_dark_color
-        );
-    }
+        isSending = true;
+        input.disabled = true;
+        sendButton.disabled = true;
 
-    if (isValidHexColor(settings.accent_color)) {
-        document.documentElement.style.setProperty(
-            "--color-accent",
-            settings.accent_color
-        );
-    }
+        showTyping();
 
-    setImage(
-        "hero-image",
-        settings.hero_image_url,
-        "Imagem de apresentação do FintechGuard"
-    );
-}
+        try {
+            const result = await sendToAgent(cleanText);
 
-/**
- * Altera o texto sem interpretar o conteúdo como HTML.
- */
-function setText(elementId, value) {
-    const element = document.getElementById(elementId);
+            removeTyping();
 
-    if (
-        !element ||
-        typeof value !== "string" ||
-        !value.trim()
-    ) {
-        return;
+            addMessage(result.response, "assistant");
+
+            addAgentMetadata(result);
+
+        } catch (error) {
+            removeTyping();
+
+            console.error("Erro no atendimento:", error);
+
+            addMessage(
+                error.message ||
+                "Não foi possível conectar ao atendimento.",
+                "assistant"
+            );
+
+        } finally {
+            isSending = false;
+            input.disabled = false;
+            sendButton.disabled = false;
+            input.focus();
+        }
     }
 
-    element.textContent = value.trim();
-}
+    /**
+     * Envio pelo formulário.
+     */
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        handleSendMessage(input.value);
+    });
 
-/**
- * Aceita imagens do próprio site ou URLs HTTPS.
- */
-function setImage(elementId, value, altText) {
-    const image = document.getElementById(elementId);
+    /**
+     * Perguntas sugeridas.
+     */
+    document.querySelectorAll(".suggestion-button").forEach((button) => {
+        button.addEventListener("click", () => {
+            const suggestedMessage = button.dataset.message;
 
-    if (
-        !image ||
-        typeof value !== "string" ||
-        !value.trim()
-    ) {
-        return;
-    }
-
-    const url = value.trim();
-
-    const isLocalImage =
-        url.startsWith("/static/uploads/") ||
-        url.startsWith("/static/images/");
-
-    let isHttpsImage = false;
-
-    try {
-        const parsedUrl = new URL(url);
-
-        isHttpsImage =
-            parsedUrl.protocol === "https:" &&
-            !parsedUrl.username &&
-            !parsedUrl.password;
-    } catch {
-        isHttpsImage = false;
-    }
-
-    if (!isLocalImage && !isHttpsImage) {
-        console.warn("URL de imagem recusada por segurança.");
-        return;
-    }
-
-    image.alt = altText;
-    image.src = url;
-    image.style.display = "";
-}
-
-/**
- * Valida cores hexadecimais como #155eef.
- */
-function isValidHexColor(value) {
-    return (
-        typeof value === "string" &&
-        /^#[0-9a-fA-F]{6}$/.test(value)
-    );
+            if (suggestedMessage) {
+                handleSendMessage(suggestedMessage);
+            }
+        });
+    });
 }
