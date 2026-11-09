@@ -15,8 +15,6 @@ from router.auth_router import router as auth_router
 from router.dashboard_router import router as dashboard_router
 from router.admin_router import router as admin_router
 from router.public_router import router as public_router
-from router.agent_router import router as agent_router
-from router.classifier_router import router as classifier_router
 
 # ============================================================
 # CONFIGURAÇÃO DA APLICAÇÃO
@@ -166,8 +164,6 @@ app.include_router(predict_router)
 app.include_router(dashboard_router)
 app.include_router(admin_router)
 app.include_router(public_router)
-app.include_router(agent_router)
-app.include_router(classifier_router)
 
 # ============================================================
 # HEALTH CHECK

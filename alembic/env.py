@@ -11,12 +11,7 @@ from sqlmodel import SQLModel
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 
-from models.model_events import (
-    User,
-    Ticket,
-    Conversation,
-    ConversationMessage,
-)
+from models.model_events import User, Ticket, ConversationMessage
 from data.db import DATABASE_URL
 
 

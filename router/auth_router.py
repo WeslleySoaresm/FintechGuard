@@ -46,7 +46,7 @@ async def login(
     # ---------------------------------------------------------
 
     clean_email = credentials.email.strip().lower()
-    clean_password = credentials.password
+    clean_password = credentials.password.strip()
 
 
     # ---------------------------------------------------------

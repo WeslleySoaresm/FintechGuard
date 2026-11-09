@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -15,9 +16,12 @@
         rel="stylesheet"
         href="{{ url_for('static', path='css/dashboard.css') }}"
     >
+
 </head>
 
+
 <body>
+
 
 <!-- =========================================================
      HEADER
@@ -26,6 +30,7 @@
 <header>
 
     <div>
+
         <h1>
             FintechGuard
         </h1>
@@ -33,19 +38,11 @@
         <p>
             Dashboard de Atendimento Bancário
         </p>
+
     </div>
 
-    <div class="top-actions">
 
-        <!-- ACESSO AO AGENTE IA -->
-        <a
-            href="/agent"
-            class="button button-primary"
-            id="agentButton"
-            style="text-decoration: none;"
-        >
-            Atendimento IA
-        </a>
+    <div class="top-actions">
 
         <button
             type="button"
@@ -54,6 +51,7 @@
         >
             + Novo Ticket
         </button>
+
 
         <button
             type="button"
@@ -74,7 +72,10 @@
 
 <main class="container">
 
-    <!-- ERRO -->
+
+    <!-- =====================================================
+         ERRO
+         ===================================================== -->
 
     <div
         id="errorMessage"
@@ -83,9 +84,12 @@
     ></div>
 
 
-    <!-- CARDS -->
+    <!-- =====================================================
+         CARDS
+         ===================================================== -->
 
     <section class="cards">
+
 
         <div class="card">
 
@@ -102,6 +106,7 @@
 
         </div>
 
+
         <div class="card">
 
             <div class="card-title">
@@ -116,6 +121,7 @@
             </div>
 
         </div>
+
 
         <div class="card">
 
@@ -132,6 +138,7 @@
 
         </div>
 
+
         <div class="card">
 
             <div class="card-title">
@@ -147,10 +154,13 @@
 
         </div>
 
+
     </section>
 
 
-    <!-- FILTROS -->
+    <!-- =====================================================
+         FILTROS
+         ===================================================== -->
 
     <section class="filters">
 
@@ -158,7 +168,9 @@
             Filtros
         </h2>
 
+
         <div class="filter-grid">
+
 
             <div class="filter-group">
 
@@ -173,6 +185,7 @@
                 >
 
             </div>
+
 
             <div class="filter-group">
 
@@ -189,6 +202,7 @@
                 </select>
 
             </div>
+
 
             <div class="filter-group">
 
@@ -218,6 +232,7 @@
 
             </div>
 
+
             <div class="filter-group">
 
                 <label for="filterStatus">
@@ -246,14 +261,18 @@
 
             </div>
 
+
         </div>
 
     </section>
 
 
-    <!-- TABELA -->
+    <!-- =====================================================
+         TABELA
+         ===================================================== -->
 
     <section class="table-container">
+
 
         <div class="table-header">
 
@@ -262,6 +281,7 @@
             </h2>
 
         </div>
+
 
         <div class="table-scroll">
 
@@ -276,6 +296,7 @@
                         <th>Status</th>
                         <th>Prioridade</th>
                         <th>Avaliação</th>
+                        
                     </tr>
                 </thead>
 
@@ -286,21 +307,18 @@
                         </td>
                     </tr>
                 </tbody>
-
             </table>
 
         </div>
+    <!-- =====================================================
+            PAGINAÇÃO
+     ===================================================== -->
 
-
+    
         <!-- PAGINAÇÃO -->
-
-        <div
-            class="pagination-container"
-            id="paginationContainer"
-        >
+        <div class="pagination-container" id="paginationContainer">
 
             <div class="pagination-info">
-
                 <label for="pageSize">
                     Tickets por página:
                 </label>
@@ -315,7 +333,6 @@
                 <span id="paginationInfo">
                     Exibindo tickets
                 </span>
-
             </div>
 
             <div class="pagination-controls">
@@ -346,7 +363,10 @@
 
         </div>
 
+
+    </div>
     </section>
+
 
 </main>
 
@@ -362,6 +382,7 @@
 
     <div class="modal-content">
 
+
         <div class="modal-header">
 
             <div>
@@ -375,6 +396,7 @@
                 </h2>
 
             </div>
+
 
             <button
                 type="button"
@@ -390,7 +412,9 @@
 
         <form id="ticketForm">
 
+
             <div class="form-grid">
+
 
                 <div class="form-group">
 
@@ -406,6 +430,7 @@
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label for="customer_email">
@@ -419,6 +444,7 @@
                     >
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -434,6 +460,7 @@
                     >
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -463,6 +490,7 @@
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label for="product_purchased">
@@ -475,6 +503,7 @@
                     >
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -489,6 +518,7 @@
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label for="ticket_type">
@@ -502,6 +532,7 @@
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label for="ticket_channel">
@@ -514,6 +545,7 @@
                     >
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -538,6 +570,7 @@
                     </select>
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -567,6 +600,7 @@
 
                 </div>
 
+
                 <div class="form-group full-width">
 
                     <label for="ticket_subject">
@@ -581,6 +615,7 @@
 
                 </div>
 
+
                 <div class="form-group full-width">
 
                     <label for="ticket_description">
@@ -592,6 +627,7 @@
                     ></textarea>
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -609,6 +645,7 @@
 
                 </div>
 
+
             </div>
 
 
@@ -622,6 +659,7 @@
                     Cancelar
                 </button>
 
+
                 <button
                     type="submit"
                     class="button button-primary"
@@ -631,6 +669,7 @@
                 </button>
 
             </div>
+
 
         </form>
 
@@ -650,6 +689,7 @@
 
     <div class="modal-content ticket-details-modal">
 
+
         <!-- HEADER -->
 
         <div class="modal-header">
@@ -665,6 +705,7 @@
                 </h2>
 
             </div>
+
 
             <button
                 type="button"
@@ -682,6 +723,7 @@
 
         <div class="ticket-summary">
 
+
             <div class="ticket-id-box">
 
                 <span class="details-label">
@@ -693,6 +735,7 @@
                 </strong>
 
             </div>
+
 
             <div class="ticket-status-box">
 
@@ -709,6 +752,7 @@
 
             </div>
 
+
             <div class="ticket-priority-box">
 
                 <span class="details-label">
@@ -724,6 +768,7 @@
 
             </div>
 
+
             <div class="ticket-rating-box">
 
                 <span class="details-label">
@@ -736,12 +781,14 @@
 
             </div>
 
+
         </div>
 
 
         <!-- CORPO DOS DETALHES -->
 
         <div class="ticket-details-body">
+
 
             <!-- CLIENTE -->
 
@@ -767,7 +814,9 @@
 
                 </div>
 
+
                 <div class="details-grid">
+
 
                     <div class="detail-item">
 
@@ -781,6 +830,7 @@
 
                     </div>
 
+
                     <div class="detail-item">
 
                         <span>
@@ -792,6 +842,7 @@
                         </strong>
 
                     </div>
+
 
                     <div class="detail-item">
 
@@ -805,6 +856,7 @@
 
                     </div>
 
+
                     <div class="detail-item">
 
                         <span>
@@ -816,6 +868,7 @@
                         </strong>
 
                     </div>
+
 
                 </div>
 
@@ -846,7 +899,9 @@
 
                 </div>
 
+
                 <div class="details-grid">
+
 
                     <div class="detail-item">
 
@@ -860,6 +915,7 @@
 
                     </div>
 
+
                     <div class="detail-item">
 
                         <span>
@@ -871,6 +927,7 @@
                         </strong>
 
                     </div>
+
 
                     <div class="detail-item">
 
@@ -884,6 +941,7 @@
 
                     </div>
 
+
                     <div class="detail-item">
 
                         <span>
@@ -895,6 +953,7 @@
                         </strong>
 
                     </div>
+
 
                 </div>
 
@@ -925,6 +984,7 @@
 
                 </div>
 
+
                 <div class="detail-full">
 
                     <span>
@@ -940,6 +1000,7 @@
 
                 </div>
 
+
                 <div class="detail-full">
 
                     <span>
@@ -954,6 +1015,7 @@
                     </div>
 
                 </div>
+
 
             </section>
 
@@ -982,7 +1044,9 @@
 
                 </div>
 
+
                 <div class="details-grid">
+
 
                     <div class="detail-item">
 
@@ -996,6 +1060,7 @@
 
                     </div>
 
+
                     <div class="detail-item">
 
                         <span>
@@ -1008,6 +1073,7 @@
 
                     </div>
 
+
                     <div class="detail-item full-width">
 
                         <span>
@@ -1019,6 +1085,7 @@
                         </strong>
 
                     </div>
+
 
                 </div>
 
@@ -1049,7 +1116,9 @@
 
                 </div>
 
+
                 <div class="details-grid">
+
 
                     <div class="detail-item">
 
@@ -1063,6 +1132,7 @@
 
                     </div>
 
+
                     <div class="detail-item">
 
                         <span>
@@ -1075,9 +1145,11 @@
 
                     </div>
 
+
                 </div>
 
             </section>
+
 
         </div>
 
@@ -1104,6 +1176,7 @@
 
         </div>
 
+
     </div>
 
 </div>
@@ -1114,6 +1187,7 @@
      ========================================================= -->
 
 <script src="{{ url_for('static', path='js/dashboard.js') }}?v=2"></script>
+
 
 </body>
 
