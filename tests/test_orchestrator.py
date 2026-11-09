@@ -1,6 +1,6 @@
 import pytest
 
-from agents.orchestrator import process_message
+from fintechguard_agents.orchestrator import process_message
 
 
 @pytest.mark.parametrize(

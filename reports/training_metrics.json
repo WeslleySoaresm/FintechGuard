@@ -1,0 +1,54 @@
+{
+    "model": "TF-IDF + Logistic Regression",
+    "dataset_size": 8033,
+    "training_size": 6426,
+    "test_size": 1607,
+    "accuracy": 0.19166148102053515,
+    "roc_auc_macro_ovr": 0.49129139518950316,
+    "baseline_accuracy": 0.2059738643434972,
+    "classification_report": {
+        "billing inquiry": {
+            "precision": 0.17883211678832117,
+            "recall": 0.15705128205128205,
+            "f1-score": 0.16723549488054607,
+            "support": 312.0
+        },
+        "cancellation request": {
+            "precision": 0.18618618618618618,
+            "recall": 0.19314641744548286,
+            "f1-score": 0.18960244648318042,
+            "support": 321.0
+        },
+        "product inquiry": {
+            "precision": 0.20205479452054795,
+            "recall": 0.18789808917197454,
+            "f1-score": 0.19471947194719472,
+            "support": 314.0
+        },
+        "refund request": {
+            "precision": 0.2047244094488189,
+            "recall": 0.23564954682779457,
+            "f1-score": 0.21910112359550563,
+            "support": 331.0
+        },
+        "technical issue": {
+            "precision": 0.1834862385321101,
+            "recall": 0.182370820668693,
+            "f1-score": 0.18292682926829268,
+            "support": 329.0
+        },
+        "accuracy": 0.19166148102053515,
+        "macro avg": {
+            "precision": 0.19105674909519685,
+            "recall": 0.1912232312330454,
+            "f1-score": 0.1907170732349439,
+            "support": 1607.0
+        },
+        "weighted avg": {
+            "precision": 0.19112466937635175,
+            "recall": 0.19166148102053515,
+            "f1-score": 0.1909689935623093,
+            "support": 1607.0
+        }
+    }
+}

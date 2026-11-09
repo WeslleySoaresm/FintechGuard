@@ -1,38 +1,38 @@
 import pytest
 
-from agents.security_analyzer import analyze_security
+from fintechguard_agents.security_analyzer import analyze_security
 
 
 @pytest.mark.parametrize(
     "message, expected_risk, expected_human",
     [
         (
-            "Não reconheço essa compra.",
-            "high",
-            True,
-        ),
-        (
-            "Meu cartão foi clonado.",
-            "high",
-            True,
-        ),
-        (
-            "Alguém está pedindo minha senha.",
+            "Minha senha foi roubada.",
             "critical",
             True,
         ),
         (
-            "Tenho uma cobrança indevida.",
+            "Não reconheço essa compra no meu cartão.",
+            "high",
+            True,
+        ),
+        (
+            "Não autorizei essa transferência.",
+            "high",
+            True,
+        ),
+        (
+            "Minha conta foi invadida.",
+            "high",
+            True,
+        ),
+        (
+            "Fui cobrado duas vezes.",
             "medium",
             False,
         ),
         (
-            "Gostaria de saber mais sobre um empréstimo.",
-            "low",
-            False,
-        ),
-        (
-            "Olá, preciso de ajuda.",
+            "Gostaria de saber o horário de atendimento.",
             "low",
             False,
         ),
@@ -46,4 +46,4 @@ def test_analyze_security(
     result = analyze_security(message)
 
     assert result["risk_level"] == expected_risk
-    assert result["requires_human"] is expected_human
+    assert result["requires_human"] == expected_human

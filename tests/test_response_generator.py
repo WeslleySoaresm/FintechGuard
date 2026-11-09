@@ -1,6 +1,6 @@
 import pytest
 
-from agents.response_generator import generate_response
+from fintechguard_agents.response_generator import generate_response
 
 
 def test_critical_risk_response():

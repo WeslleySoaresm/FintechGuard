@@ -1,3 +1,4 @@
+
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -7,6 +8,7 @@ class AgentRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     message: str = Field(min_length=1, max_length=5000)
+    conversation_id: int | None = Field(default=None, gt=0)
     ticket_id: int | None = Field(default=None, gt=0)
 
     @field_validator("message")
@@ -23,7 +25,29 @@ class AgentRequest(BaseModel):
 class AgentResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    conversation_id: int
     intent: str
-    risk_level: Literal["low", "medium", "high", "critical"]
+
+    risk_level: Literal[
+        "low",
+        "medium",
+        "high",
+        "critical",
+    ]
+
     requires_human: bool
+
+    action: Literal[
+        "automated_assistance",
+        "human_escalation",
+        "emergency_escalation",
+    ]
+
+    priority: Literal[
+        "normal",
+        "medium",
+        "high",
+        "urgent",
+    ]
+
     response: str

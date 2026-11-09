@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FintechGuard | Atendimento Inteligente</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/agent.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="agent-layout">
+
+        <!-- HEADER -->
+        <header class="agent-header">
+
+            <a href="/dashboard" class="brand">
+                <span class="brand-icon">F</span>
+                <span>FintechGuard</span>
+            </a>
+
+            <div class="header-center">
+                <span class="status-indicator"></span>
+                Atendimento inteligente
+            </div>
+
+            <div class="header-actions">
+                <button id="historyButton" class="icon-button" title="Histórico">
+                    ◷
+                </button>
+
+                <button id="analysisButton" class="icon-button" title="Análise">
+                    ◈
+                </button>
+
+                <button id="logoutButton" class="icon-button" title="Sair">
+                    ↗
+                </button>
+            </div>
+
+        </header>
+
+
+        <!-- MAIN -->
+        <main class="agent-main">
+
+            <section class="chat-container">
+
+                <div class="chat-heading">
+
+                    <div>
+                        <span class="eyebrow">FINTECHGUARD AI</span>
+                        <h1>Como podemos ajudar?</h1>
+                        <p>Converse com nosso assistente de atendimento seguro.</p>
+                    </div>
+
+                    <button id="newConversationButton" class="new-chat-button">
+                        + Nova conversa
+                    </button>
+
+                </div>
+
+
+                <!-- MENSAGENS -->
+                <div id="chatMessages" class="chat-messages">
+
+                    <div class="welcome-message">
+
+                        <div class="assistant-avatar">F</div>
+
+                        <h2>Olá! Sou o assistente FintechGuard.</h2>
+
+                        <p>
+                            Estou aqui para ajudar com dúvidas bancárias,
+                            segurança e atendimento.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INPUT -->
+                <form id="chatForm" class="chat-input-container">
+
+                    <textarea
+                        id="messageInput"
+                        placeholder="Digite sua mensagem..."
+                        rows="1"
+                        maxlength="5000"
+                        required
+                    ></textarea>
+
+                    <button type="submit" id="sendButton">
+                        Enviar
+                    </button>
+
+                </form>
+
+
+                <footer class="chat-footer">
+
+                    <span>🔒 Conversa protegida</span>
+
+                    <span id="ticketStatus">
+                        Nenhum ticket associado
+                    </span>
+
+                </footer>
+
+            </section>
+
+
+            <!-- PAINEL DE ANÁLISE -->
+            <aside id="analysisPanel" class="analysis-panel hidden">
+
+                <div class="panel-heading">
+                    <h2>Análise da conversa</h2>
+
+                    <button id="closeAnalysisButton" class="icon-button">
+                        ×
+                    </button>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Nível de risco</span>
+                    <strong id="riskValue">Aguardando análise</strong>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Intenção identificada</span>
+                    <strong id="intentValue">Aguardando mensagem</strong>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Escalonamento humano</span>
+                    <strong id="humanValue">Não avaliado</strong>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Prioridade</span>
+                    <strong id="priorityValue">Não avaliada</strong>
+                </div>
+
+                <div class="ticket-association">
+
+                    <h3>Ticket associado</h3>
+
+                    <input
+                        type="number"
+                        id="ticketIdInput"
+                        min="1"
+                        placeholder="ID do ticket"
+                    >
+
+                    <button type="button" id="associateTicketButton">
+                        Associar ticket
+                    </button>
+
+                </div>
+
+            </aside>
+
+        </main>
+
+    </div>
+
+    <script src="{{ url_for('static', path='js/agent.js') }}"></script>
+
+</body>
+</html>

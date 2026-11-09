@@ -1,64 +1,65 @@
+
 import pytest
 
-from agents.intent_classifier import classify_intent
+# Importa a função que utiliza o modelo treinado.
+from fintechguard_agents.predict_intent import predict_intent
+
+
+# Agrupa exemplos de mensagens e suas intenções esperadas.
+@pytest.mark.parametrize(
+    "message, expected_intent",
+    [
+        (
+            "I want to know the details of my last payment.",
+            "billing inquiry"
+        ),
+        (
+            "I want to cancel my subscription.",
+            "cancellation request"
+        ),
+        (
+            "What features does this product offer?",
+            "product inquiry"
+        ),
+        (
+            "I want to request a refund for my payment.",
+            "refund request"
+        ),
+        (
+            "My application keeps crashing when I try to log in.",
+            "technical issue"
+        ),
+    ]
+)
+def test_predict_intent(message, expected_intent):
+    # Executa a previsão utilizando o modelo treinado.
+    result = predict_intent(message)
+
+    # Confirma que a intenção retornada é a esperada.
+    assert result["intent"] == expected_intent
+
+    # Confirma que a confiança está dentro do intervalo permitido.
+    assert 0 <= result["confidence"] <= 1
+
+
+def test_predict_intent_returns_valid_structure():
+    # Verifica se a função retorna os campos necessários.
+    result = predict_intent(
+        "I need help with my account payment."
+    )
+
+    assert "intent" in result
+    assert "confidence" in result
 
 
 @pytest.mark.parametrize(
-    "message, expected",
+    "invalid_message",
     [
-        (
-            "Meu cartão foi clonado.",
-            "Fraud",
-        ),
-        (
-            "Não reconheço essa compra.",
-            "Fraud",
-        ),
-        (
-            "Não consigo acessar minha conta.",
-            "Account Access",
-        ),
-        (
-            "Minha senha não funciona.",
-            "Account Access",
-        ),
-        (
-            "Meu cartão foi recusado.",
-            "Card",
-        ),
-        (
-            "Não consigo realizar um PIX.",
-            "Transaction",
-        ),
-        (
-            "Minha fatura está incorreta.",
-            "Billing",
-        ),
-        (
-            "Quero solicitar um reembolso.",
-            "Refund",
-        ),
-        (
-            "O aplicativo não funciona.",
-            "Technical Issue",
-        ),
-        (
-            "Quero solicitar um empréstimo.",
-            "Loan",
-        ),
-        (
-            "Gostaria de saber o horário de atendimento.",
-            "Other",
-        ),
-    ],
+        "",
+        "   ",
+    ]
 )
-def test_classify_intent(message, expected):
-    assert classify_intent(message) == expected
-
-
-def test_classify_intent_ignores_accents():
-    assert classify_intent("Quero um emprestimo.") == "Loan"
-
-
-def test_classify_intent_ignores_uppercase():
-    assert classify_intent("MEU CARTÃO FOI CLONADO") == "Fraud"
+def test_predict_intent_rejects_empty_message(invalid_message):
+    # Mensagens vazias não devem chegar ao modelo.
+    with pytest.raises(ValueError):
+        predict_intent(invalid_message)
