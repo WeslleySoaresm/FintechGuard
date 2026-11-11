@@ -1,13 +1,17 @@
+import os
+import sys
+from pathlib import Path
 from getpass import getpass
+
+# Adiciona a raiz do projeto ao caminho de importação
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(BASE_DIR))
+
 import bcrypt
 from sqlmodel import Session
 from models.model_events import User
 from data.db import engine
-import sys
-import os
 
-# Adiciona a raiz do projeto ao PYTHONPATH do Python
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 def create_user():
     print("=== Criar usuário FintechGuard ===")
