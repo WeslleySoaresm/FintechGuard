@@ -181,3 +181,13 @@ def render_login(request: Request):
         request=request,
         name="login.html"
     )
+
+
+from diagnostico import diagnostico
+from fastapi import Depends
+
+@app.get("/diagnostico-interno")
+async def diagnostico_interno(
+    current_user=Depends(get_current_user)
+):
+    return diagnostico()
