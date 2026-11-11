@@ -5,21 +5,35 @@ from redis.exceptions import RedisError
 from fastapi import HTTPException, status
 
 
+
 # ============================================================
 # CONFIGURAÇÃO DO REDIS
 # ============================================================
 
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+REDIS_URL = os.getenv("REDIS_URL")
 
+if REDIS_URL:
+    # Produção: utiliza a URL interna do Redis no Render.
+    redis_client = redis.from_url(
+        REDIS_URL,
+        decode_responses=True,
+        socket_timeout=1,
+        socket_connect_timeout=1
+    )
+else:
+    # Desenvolvimento: utiliza o Redis do Docker Compose.
+    REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 
-redis_client = redis.Redis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    db=0,
-    decode_responses=True,
-    socket_timeout=1
-)
+    redis_client = redis.Redis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        db=0,
+        decode_responses=True,
+        socket_timeout=1,
+        socket_connect_timeout=1
+    )
+
 
 
 # ============================================================
