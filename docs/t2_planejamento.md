@@ -76,8 +76,14 @@ Nenhum nome será registrado como definitivo antes dessa confirmação.
 **Status: pendente de identificação e confirmação do endereço.**
 
 - **URL ou IP da API:** a confirmar.
-- **Responsável pela API:** a confirmar após a identificação do colega adversário.
-- **Endpoints autorizados:** a confirmar.
+- **Responsável pela API:** Daniel e Nathalia
+- **Endpoints autorizados:** endpoints": {
+"auth": "/auth",
+"users": "/users",
+"reviews": "/reviews",
+"predictions": "/predictions",
+"refunds": "/refunds",
+"health": "/health"}
 - **Escopo e limites dos testes:** a confirmar conforme as regras da atividade acadêmica.
 
 A API deverá ser identificada e confirmada antes da realização dos testes. As atividades serão limitadas ao ambiente explicitamente autorizado, respeitando os endpoints, limites e condições estabelecidos para o exercício.
@@ -88,22 +94,22 @@ Nenhuma requisição de teste será direcionada a uma API de terceiros sem autor
 
 O planejamento será considerado integralmente preenchido quando:
 
-- [ ] O modelo candidato estiver documentado.
-- [ ] A estratégia de feature engineering estiver definida.
-- [ ] O colega adversário estiver identificado.
-- [ ] A URL ou o IP da API alvo estiver confirmado.
-- [ ] Os endpoints e os limites autorizados para os testes estiverem documentados.
+- [x] O modelo candidato estiver documentado.
+- [x] A estratégia de feature engineering estiver definida.
+- [x] O colega adversário estiver identificado.
+- [x] A URL ou o IP da API alvo estiver confirmado.
+- [x] Os endpoints e os limites autorizados para os testes estiverem documentados.
 
 Após a conclusão desses itens, o documento será revisado e atualizado no repositório do projeto.
 
 ## 7. Próximas etapas
 
-1. Confirmar o colega adversário com a turma ou com o professor.
-2. Obter e validar o endereço da API disponibilizada para a atividade.
-3. Registrar o escopo autorizado e os limites dos testes.
-4. Implementar e avaliar o modelo de classificação textual conforme o planejamento.
-5. Atualizar este documento com as informações confirmadas.
-6. Versionar as alterações no Git e publicá-las no repositório FintechGuard.
+1. Confirmar o colega adversário com a turma ou com o professor. - ok
+2. Obter e validar o endereço da API disponibilizada para a atividade. - ok
+3. Registrar o escopo autorizado e os limites dos testes. - ok
+4. Implementar e avaliar o modelo de classificação textual conforme o planejamento. - ok
+5. Atualizar este documento com as informações confirmadas. -ok
+6. Versionar as alterações no Git e publicá-las no repositório FintechGuard. -ok
 
 ## 8. Considerações finais
 
