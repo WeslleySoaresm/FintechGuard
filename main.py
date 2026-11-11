@@ -91,40 +91,40 @@ app.add_middleware(
 # HEADERS DE SEGURANÇA HTTP
 # ============================================================
 
+
 @app.middleware("http")
-async def security_headers(
-    request: Request,
-    call_next
-):
+async def security_headers(request: Request, call_next):
     response = await call_next(request)
 
-    # --------------------------------------------------------
-    # HSTS: ativado somente em produção com HTTPS
-    # --------------------------------------------------------
+    is_docs = request.url.path in {
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+    }
 
     if ENVIRONMENT == "production":
         response.headers["Strict-Transport-Security"] = (
             "max-age=31536000; includeSubDomains"
         )
 
-    # --------------------------------------------------------
-    # PROTEÇÃO CONTRA CLICKJACKING
-    # --------------------------------------------------------
-
     response.headers["X-Frame-Options"] = "DENY"
-
-    # --------------------------------------------------------
-    # PROTEÇÃO CONTRA MIME SNIFFING
-    # --------------------------------------------------------
-
     response.headers["X-Content-Type-Options"] = "nosniff"
 
-    # --------------------------------------------------------
-    # CONTENT SECURITY POLICY (CSP)
-    # --------------------------------------------------------
-
-    if ENVIRONMENT == "production":
-        # Política restritiva em produção.
+    if is_docs:
+        # Permissões específicas para Swagger UI e ReDoc.
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "img-src 'self' data: https://fastapi.tiangolo.com; "
+            "font-src 'self' data: https://cdn.jsdelivr.net; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none'; "
+            "form-action 'self'; "
+            "base-uri 'self'; "
+            "object-src 'none';"
+        )
+    else:
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self'; "
@@ -132,22 +132,6 @@ async def security_headers(
             "img-src 'self' data:; "
             "font-src 'self' data:; "
             "connect-src 'self'; "
-            "frame-ancestors 'none'; "
-            "form-action 'self'; "
-            "base-uri 'self'; "
-            "object-src 'none';"
-        )
-
-    else:
-        # Desenvolvimento: permite scripts e estilos inline
-        # necessários para o Swagger UI.
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
-            "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
-            "img-src 'self' data: https://fastapi.tiangolo.com; "
-            "font-src 'self' data: https://cdn.jsdelivr.net; "
-            "connect-src 'self' https://cdn.jsdelivr.net; "
             "frame-ancestors 'none'; "
             "form-action 'self'; "
             "base-uri 'self'; "
