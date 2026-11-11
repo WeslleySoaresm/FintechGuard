@@ -1,6 +1,12 @@
+import os
+from pathlib import Path
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "docs/evidencias/eda/graficos"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ==========================================
 # 1. CARREGAR DATASET LIMPO
@@ -35,7 +41,7 @@ plt.ylabel("Quantidade")
 plt.xticks(rotation=30)
 plt.tight_layout()
 
-plt.savefig("graphs/ticket_type.png")
+plt.savefig(OUTPUT_DIR / "ticket_type.png")
 plt.show()
 
 
@@ -57,7 +63,7 @@ plt.ylabel("Quantidade")
 
 plt.tight_layout()
 
-plt.savefig("graphs/ticket_priority.png")
+plt.savefig(OUTPUT_DIR / "ticket_priority.png")
 plt.show()
 
 
@@ -79,7 +85,7 @@ plt.ylabel("Quantidade")
 
 plt.tight_layout()
 
-plt.savefig("graphs/ticket_channel.png")
+plt.savefig(OUTPUT_DIR / "ticket_channel.png")
 plt.show()
 
 
@@ -101,7 +107,7 @@ plt.ylabel("Quantidade")
 
 plt.tight_layout()
 
-plt.savefig("graphs/customer_age.png")
+plt.savefig(OUTPUT_DIR / "customer_age.png")
 plt.show()
 
 
@@ -123,5 +129,5 @@ plt.ylabel("Quantidade")
 
 plt.tight_layout()
 
-plt.savefig("graphs/customer_satisfaction.png")
+plt.savefig(OUTPUT_DIR / "customer_satisfaction.png")
 plt.show()

@@ -7,7 +7,7 @@ import joblib
 logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "intent_classifier_v2.joblib"
+MODEL_PATH = BASE_DIR / "intent_classifier_v3.joblib"
 
 if not MODEL_PATH.is_file():
     raise FileNotFoundError(

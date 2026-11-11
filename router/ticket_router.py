@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
 
 from data.db import get_session
@@ -107,8 +107,8 @@ def create_ticket(
     response_model=list[TicketResponse]
 )
 def read_tickets(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=1000),
     current_user: dict = Depends(verify_token),
     session: Session = Depends(get_session)
     
@@ -123,6 +123,7 @@ def read_tickets(
     statement = (
         select(Ticket)
         .where(Ticket.user_id == user_id)
+        .order_by(Ticket.id)
         .offset(skip)
         .limit(limit)
     )

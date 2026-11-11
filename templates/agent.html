@@ -10,7 +10,7 @@
 
     <link
         rel="stylesheet"
-        href="{{ url_for('static', path='css/agent.css') }}"
+        href="{{ url_for('static', path='css/agent.css') }}?v=3"
     >
 </head>
 
@@ -170,9 +170,24 @@
 
         </main>
 
+        <section id="historyDialog" class="history-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+            <div class="history-card">
+                <div class="history-heading">
+                    <div>
+                        <span class="eyebrow">FINTECHGUARD AI</span>
+                        <h2 id="historyTitle">Histórico de conversas</h2>
+                    </div>
+                    <button type="button" id="closeHistoryButton" class="icon-button" aria-label="Fechar histórico">×</button>
+                </div>
+                <p id="historyStatus" class="history-status" aria-live="polite"></p>
+                <div id="conversationList" class="conversation-list"></div>
+                <button type="button" id="loadMoreHistoryButton" class="load-more-history hidden">Carregar mais conversas</button>
+            </div>
+        </section>
+
     </div>
 
-    <script src="{{ url_for('static', path='js/agent.js') }}"></script>
+    <script src="{{ url_for('static', path='js/agent.js') }}?v=3"></script>
 
 </body>
 </html>

@@ -103,6 +103,11 @@ def test_body_nao_deve_aceitar_campo_extra(client):
     assert response.status_code == 422
 
 
+def test_ticket_limit_acima_do_maximo_retorna_422(client):
+    response = client.get("/tickets?limit=1001")
+    assert response.status_code == 422
+
+
 def test_rate_limiting_behavior():
     """5. Teste de Rate Limiting / Carga sob múltiplos pedidos."""
     responses = []
@@ -112,6 +117,29 @@ def test_rate_limiting_behavior():
             responses.append(response.status_code)
     
     assert all(code in [200, 401, 429] for code in responses)
+
+
+def test_auth_token_retorna_429_apos_cinco_tentativas(monkeypatch):
+    """A sexta requisição é bloqueada quando cinco falhas estão registradas."""
+    from utils.rate_limiter import redis_client
+
+    async def attempts_at_limit(key):
+        return "5"
+
+    async def remaining_ttl(key):
+        return 60
+
+    monkeypatch.setattr(redis_client, "get", attempts_at_limit)
+    monkeypatch.setattr(redis_client, "ttl", remaining_ttl)
+
+    with TestClient(app) as test_client:
+        response = test_client.post(
+            "/auth/token",
+            json={"email": "teste@example.com", "password": "senha-invalida"},
+        )
+
+    assert response.status_code == 429
+    assert "temporariamente" in response.json()["detail"]
     
 
 

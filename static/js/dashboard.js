@@ -101,25 +101,46 @@ async function fetchTickets() {
             return;
         }
 
-        const response = await fetch("/tickets?limit=10000", {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`
+        const pageLimit = 1000;
+        const tickets = [];
+        let skip = 0;
+
+        while (true) {
+            const response = await fetch(
+                `/tickets?skip=${skip}&limit=${pageLimit}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (response.status === 401) {
+                redirectToLogin();
+                return;
             }
-        });
 
-        if (response.status === 401) {
-            redirectToLogin();
-            return;
+            if (!response.ok) {
+                throw new Error(`Erro HTTP ${response.status}`);
+            }
+
+            const page = await response.json();
+
+            if (!Array.isArray(page)) {
+                throw new Error("Resposta inválida ao carregar tickets.");
+            }
+
+            tickets.push(...page);
+
+            if (page.length < pageLimit) {
+                break;
+            }
+
+            skip += pageLimit;
         }
 
-        if (!response.ok) {
-            throw new Error(`Erro HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        allTickets = Array.isArray(data) ? data : [];
+        allTickets = tickets;
 
         updateDashboard();
         populateCategoryFilter();

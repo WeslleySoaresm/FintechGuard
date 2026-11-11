@@ -27,7 +27,7 @@ from scipy.stats import mannwhitneyu
 
 CAMINHO_DATASET = "data/customer_support_tickets.csv"
 CAMINHO_ANOMALIAS = "data/customer_support_tickets_anomalies.csv"
-PASTA_GRAFICOS = "graphs"
+PASTA_GRAFICOS = "docs/evidencias/eda/graficos"
 
 os.makedirs(PASTA_GRAFICOS, exist_ok=True)
 
@@ -793,7 +793,7 @@ def executar_eda():
         if os.path.exists(caminho):
 
             print(
-                f"  ✓ graphs/{arquivo}"
+                f"  ✓ {caminho}"
             )
 
     if os.path.exists(CAMINHO_ANOMALIAS):

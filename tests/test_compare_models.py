@@ -11,12 +11,11 @@ from sklearn.metrics import (
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MODEL_V1_PATH = (
-    BASE_DIR / "fintechguard_agents" / "intent_classifier.joblib"
-)
-
 MODEL_V2_PATH = (
     BASE_DIR / "fintechguard_agents" / "intent_classifier_v2.joblib"
+)
+MODEL_V3_PATH = (
+    BASE_DIR / "fintechguard_agents" / "intent_classifier_v3.joblib"
 )
 
 
@@ -106,16 +105,15 @@ def main():
     X = [case[0] for case in TEST_CASES]
     y_true = [case[1] for case in TEST_CASES]
 
-    result_v1 = evaluate_model(
-        "V1",
-        MODEL_V1_PATH,
-        X,
-        y_true,
-    )
-
     result_v2 = evaluate_model(
         "V2",
         MODEL_V2_PATH,
+        X,
+        y_true,
+    )
+    result_v3 = evaluate_model(
+        "V3",
+        MODEL_V3_PATH,
         X,
         y_true,
     )
@@ -123,32 +121,32 @@ def main():
     print("\n===== COMPARAÇÃO FINAL =====")
 
     print(
-        f"V1 Accuracy: {result_v1['accuracy']:.2%}"
+        f"V2 Accuracy: {result_v2['accuracy']:.2%}"
     )
     print(
-        f"V2 Accuracy: {result_v2['accuracy']:.2%}"
+        f"V3 Accuracy: {result_v3['accuracy']:.2%}"
     )
 
     print(
-        f"V1 F1 Macro: {result_v1['f1_macro']:.2%}"
+        f"V2 F1 Macro: {result_v2['f1_macro']:.2%}"
     )
     print(
-        f"V2 F1 Macro: {result_v2['f1_macro']:.2%}"
+        f"V3 F1 Macro: {result_v3['f1_macro']:.2%}"
     )
 
     print("\n===== MENSAGENS COM RESULTADOS DIFERENTES =====")
 
-    for text, expected, pred_v1, pred_v2 in zip(
+    for text, expected, pred_v2, pred_v3 in zip(
         X,
         y_true,
-        result_v1["predictions"],
         result_v2["predictions"],
+        result_v3["predictions"],
     ):
-        if pred_v1 != pred_v2:
+        if pred_v2 != pred_v3:
             print(f"\nMensagem: {text}")
             print(f"Esperado: {expected}")
-            print(f"V1: {pred_v1}")
             print(f"V2: {pred_v2}")
+            print(f"V3: {pred_v3}")
 
 
 if __name__ == "__main__":

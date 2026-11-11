@@ -11,8 +11,8 @@ from data.db import engine
 from models.model_events import User
 
 
-# Carrega as variáveis do arquivo .env
-load_dotenv(override=True)
+# Carrega valores locais sem sobrepor configurações injetadas pelo ambiente.
+load_dotenv()
 
 
 SECRET_KEY = os.getenv( "SECRET_KEY")

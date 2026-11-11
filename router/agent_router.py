@@ -3,7 +3,7 @@ import logging
 import os
 
 from agents import Runner
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
@@ -52,6 +52,8 @@ async def render_agent(request: Request):
 
 @router.get("/conversations")
 async def list_conversations(
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
     current_user: dict = Depends(verify_token),
     session: Session = Depends(get_session),
 ):
@@ -61,6 +63,8 @@ async def list_conversations(
         select(Conversation)
         .where(Conversation.user_id == user_id)
         .order_by(Conversation.id.desc())
+        .offset(offset)
+        .limit(limit)
     )
 
     conversations = session.exec(statement).all()
@@ -69,6 +73,7 @@ async def list_conversations(
         {
             "id": conversation.id,
             "ticket_id": conversation.ticket_id,
+            "created_at": conversation.created_at,
         }
         for conversation in conversations
     ]
