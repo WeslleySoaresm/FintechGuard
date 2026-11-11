@@ -24,9 +24,10 @@ from data.db import DATABASE_URL
 config = context.config
 
 #Define a Url do banco 
-config.set_main_option("sqlalchemy.url",
-                       DATABASE_URL
-                       )
+config.set_main_option(
+    "sqlalchemy.url",
+    DATABASE_URL.replace("%", "%%")
+)
 
 
 
