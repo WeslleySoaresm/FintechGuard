@@ -155,4 +155,5 @@ webencodings==0.6.1
 websocket-client==1.9.0
 websockets==17.0.1
 widgetsnbextension==4.0.15
-openai-agents
+openai-agents==0.24.0
+openai==3.46.0

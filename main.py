@@ -2,6 +2,10 @@
 from pathlib import Path
 import os
 
+import secrets
+from fastapi import Header
+from fastapi import HTTPException, status
+from diagnostico import diagnostico
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -183,11 +187,29 @@ def render_login(request: Request):
     )
 
 
-from diagnostico import diagnostico
-from fastapi import Depends
+
+
+
+
+
 
 @app.get("/diagnostico-interno")
 async def diagnostico_interno(
-    current_user=Depends(get_current_user)
+    x_diagnostic_token: str | None = Header(default=None)
 ):
+    expected_token = os.getenv("DIAGNOSTIC_TOKEN")
+
+    if (
+        not expected_token
+        or not x_diagnostic_token
+        or not secrets.compare_digest(
+            x_diagnostic_token,
+            expected_token
+        )
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found"
+        )
+
     return diagnostico()
