@@ -1,0 +1,58 @@
+# Validação da Especificação OpenAPI
+
+**Projeto:** FintechGuard  
+**API:** FintechGuard API  
+**Versão:** 1.0.0  
+**Versão OpenAPI:** 3.1.0  
+**Ambiente validado:** Produção (Render)
+
+## 1. Exportação da especificação
+
+A especificação OpenAPI foi obtida diretamente da API publicada:
+
+```bash
+curl -fS https://fintechguard.onrender.com/openapi.json \
+-o docs/openapi/openapi.json
+```
+
+## 2. Ferramenta de validação
+
+Foi utilizada a biblioteca `openapi-spec-validator`.
+
+Comando executado:
+
+```bash
+openapi-spec-validator docs/openapi/openapi.json
+```
+
+## 3. Resultado
+
+```text
+docs/openapi/openapi.json: OK
+```
+
+**Status:** APROVADO.
+
+A especificação passou pela validação estrutural do OpenAPI.
+
+## 4. Testes automatizados
+
+Também foram executados os testes automatizados do projeto:
+
+```bash
+pytest -v
+```
+
+Resultado:
+
+```text
+80 passed, 71 warnings in 13.81s
+```
+
+Todos os 80 testes foram aprovados.
+
+Os avisos identificados estão relacionados à utilização de `datetime.utcnow()`, método depreciado em versões recentes do Python.
+
+## 5. Observação
+
+A validação estrutural confirma que o documento OpenAPI está formalmente válido. A correspondência entre os contratos documentados e o comportamento real dos endpoints deve ser verificada separadamente.
