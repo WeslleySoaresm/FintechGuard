@@ -210,8 +210,12 @@ def main():
 
     SQLModel.metadata.create_all(engine)
 
-    quantidade = 5000
-    user_id = 4
+    quantidade = 500
+    user_id = 6
+    
+    
+    
+    print()
 
     with Session(engine) as session:
         user = session.get(User, user_id)

@@ -31,6 +31,7 @@ As rotas de histórico e a ligação da conversa a tickets validam a identidade 
 - [Planejamento TP2](docs/t2_planejamento.md).
 - [Modelo CIA](docs/CIA_FINTECHGUARD.md).
 - [Evidências e escopo dos testes](docs/evidencias/testes.md).
+- [Pentest na equipe adiversaria](Pentest).
 
 O export de alertas do OWASP ZAP ainda não está no repositório; o CSV de proxy disponível é somente histórico de requisições. Consulte o [índice de evidências](docs/evidencias/README.md) para o estado e os limites dos artefatos.
 
