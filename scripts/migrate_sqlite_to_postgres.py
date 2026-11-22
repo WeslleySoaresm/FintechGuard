@@ -3,7 +3,7 @@ import argparse
 import os
 import sqlite3
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -29,6 +29,8 @@ TABLE_NAMES = [
     "conversation_messages",
 ]
 
+BATCH_SIZE = 500
+
 
 class MigrationError(Exception):
     pass
@@ -41,8 +43,7 @@ def get_database_url():
 
     if not url:
         raise MigrationError(
-            "DATABASE_URL não encontrada. Configure a variável "
-            "no terminal antes de executar."
+            "DATABASE_URL não encontrada."
         )
 
     if url.startswith("postgres://"):
@@ -72,10 +73,7 @@ def read_sqlite_data():
                 f'SELECT * FROM "{name}"'
             ).fetchall()
 
-            data[name] = [
-                dict(row)
-                for row in rows
-            ]
+            data[name] = [dict(row) for row in rows]
 
         return data
 
@@ -109,6 +107,26 @@ def prepare_record(source_record, destination_table):
             )
 
     return record
+
+
+def canonical(value):
+    if isinstance(value, datetime):
+        if value.tzinfo is not None:
+            value = value.astimezone(timezone.utc).replace(tzinfo=None)
+
+        return value.isoformat(timespec="microseconds")
+
+    if isinstance(value, date):
+        return value.isoformat()
+
+    return value
+
+
+def make_signature(record, columns):
+    return tuple(
+        canonical(record.get(column))
+        for column in columns
+    )
 
 
 def validate_source(data):
@@ -199,6 +217,47 @@ def validate_schema(source_data, destination_tables):
                 )
 
 
+def update_sequences(connection):
+    print("\n7. Atualizando sequências...")
+
+    for name in TABLE_NAMES:
+        sequence = connection.execute(
+            text(
+                "SELECT pg_get_serial_sequence("
+                ":table_name, 'id')"
+            ),
+            {"table_name": name},
+        ).scalar()
+
+        if not sequence:
+            continue
+
+        max_id = connection.execute(
+            text(f'SELECT MAX(id) FROM "{name}"')
+        ).scalar()
+
+        if max_id is None:
+            connection.execute(
+                text(
+                    "SELECT setval("
+                    "CAST(:sequence AS regclass), 1, false)"
+                ),
+                {"sequence": sequence},
+            )
+        else:
+            connection.execute(
+                text(
+                    "SELECT setval("
+                    "CAST(:sequence AS regclass), "
+                    ":max_id, true)"
+                ),
+                {
+                    "sequence": sequence,
+                    "max_id": max_id,
+                },
+            )
+
+
 def migrate(execute=False):
     print("\n=== FINTECHGUARD: MIGRAÇÃO SQLITE → POSTGRESQL ===")
 
@@ -236,9 +295,9 @@ def migrate(execute=False):
 
                 validate_schema(data, tables)
 
-                # ---------------------------------------------
+                # =============================================
                 # USUÁRIOS
-                # ---------------------------------------------
+                # =============================================
 
                 print("\n3. Verificando usuários...")
 
@@ -256,12 +315,8 @@ def migrate(execute=False):
                     for row in remote_users
                 }
 
-                remote_user_ids = {
-                    row["id"] for row in remote_users
-                }
-
                 user_id_map = {}
-                users_to_insert = []
+                inserted_users = 0
 
                 for user in data["users"]:
                     email = user["email"].strip().lower()
@@ -270,37 +325,33 @@ def migrate(execute=False):
                         user_id_map[user["id"]] = remote_by_email[email]
 
                         print(
-                            f"   Preservado: {email} "
+                            f"   Existente: {email} "
                             f"(ID {remote_by_email[email]})"
                         )
 
                         continue
 
-                    if user["id"] in remote_user_ids:
-                        raise MigrationError(
-                            f"ID de usuário {user['id']} já existe "
-                            "com outro e-mail no PostgreSQL."
-                        )
+                    record = prepare_record(user, users_table)
+                    record.pop("id", None)
 
-                    users_to_insert.append(
-                        prepare_record(user, users_table)
+                    result = connection.execute(
+                        insert(users_table)
+                        .values(**record)
+                        .returning(users_table.c.id)
                     )
 
-                    user_id_map[user["id"]] = user["id"]
+                    new_id = result.scalar_one()
 
-                if users_to_insert:
-                    connection.execute(
-                        insert(users_table),
-                        users_to_insert,
-                    )
+                    user_id_map[user["id"]] = new_id
+                    remote_by_email[email] = new_id
 
-                print(
-                    f"   Novos usuários: {len(users_to_insert)}"
-                )
+                    inserted_users += 1
 
-                # ---------------------------------------------
+                print(f"   Novos usuários: {inserted_users}")
+
+                # =============================================
                 # TICKETS
-                # ---------------------------------------------
+                # =============================================
 
                 print("\n4. Importando tickets...")
 
@@ -312,14 +363,22 @@ def migrate(execute=False):
                     ).scalars().all()
                 )
 
+                ticket_id_map = {}
+
                 tickets_to_insert = []
 
+                skipped_tickets = 0
+                inserted_tickets = 0
+
                 for ticket in data["tickets"]:
-                    if ticket["id"] in remote_ticket_ids:
-                        raise MigrationError(
-                            f"Ticket ID {ticket['id']} já existe "
-                            "no PostgreSQL."
-                        )
+
+                    old_id = ticket["id"]
+
+                    # Ignora somente tickets cujo ID já existe.
+                    if old_id in remote_ticket_ids:
+                        ticket_id_map[old_id] = old_id
+                        skipped_tickets += 1
+                        continue
 
                     record = prepare_record(
                         ticket,
@@ -330,27 +389,69 @@ def migrate(execute=False):
                         ticket["user_id"]
                     ]
 
+                    # Preserva o ID original do SQLite.
                     tickets_to_insert.append(record)
 
+                    ticket_id_map[old_id] = old_id
+
+                    # Envia os registros em lotes.
+                    if len(tickets_to_insert) >= BATCH_SIZE:
+                        connection.execute(
+                            insert(tickets_table),
+                            tickets_to_insert,
+                        )
+
+                        inserted_tickets += len(tickets_to_insert)
+                        tickets_to_insert.clear()
+
+                        print(
+                            f"   Importados: {inserted_tickets:,}"
+                        )
+
+                # Envia o último lote.
                 if tickets_to_insert:
                     connection.execute(
                         insert(tickets_table),
                         tickets_to_insert,
                     )
 
-                print(
-                    f"   Tickets importados: {len(tickets_to_insert):,}"
-                )
+                    inserted_tickets += len(tickets_to_insert)
 
-                # ---------------------------------------------
+                print(f"   Tickets ignorados: {skipped_tickets:,}")
+                print(f"   Tickets importados: {inserted_tickets:,}")
+
+                # =============================================
                 # CONVERSAS
-                # ---------------------------------------------
+                # =============================================
 
                 print("\n5. Importando conversas...")
 
                 conversations_table = tables["conversations"]
 
+                conversation_columns = [
+                    "user_id",
+                    "ticket_id",
+                    "created_at",
+                ]
+
+                remote_conversations = connection.execute(
+                    select(conversations_table)
+                ).mappings().all()
+
+                conversation_index = {}
+
+                for conversation in remote_conversations:
+                    signature = make_signature(
+                        conversation,
+                        conversation_columns,
+                    )
+
+                    conversation_index[signature] = conversation["id"]
+
                 conversation_id_map = {}
+
+                inserted_conversations = 0
+                matched_conversations = 0
 
                 for conversation in data["conversations"]:
                     record = prepare_record(
@@ -358,13 +459,31 @@ def migrate(execute=False):
                         conversations_table,
                     )
 
-                    old_id = conversation["id"]
-
-                    record.pop("id", None)
-
                     record["user_id"] = user_id_map[
                         conversation["user_id"]
                     ]
+
+                    old_ticket_id = conversation.get("ticket_id")
+
+                    if old_ticket_id is not None:
+                        record["ticket_id"] = ticket_id_map[
+                            old_ticket_id
+                        ]
+
+                    signature = make_signature(
+                        record,
+                        conversation_columns,
+                    )
+
+                    if signature in conversation_index:
+                        conversation_id_map[conversation["id"]] = (
+                            conversation_index[signature]
+                        )
+
+                        matched_conversations += 1
+                        continue
+
+                    record.pop("id", None)
 
                     result = connection.execute(
                         insert(conversations_table)
@@ -372,20 +491,53 @@ def migrate(execute=False):
                         .returning(conversations_table.c.id)
                     )
 
-                    conversation_id_map[old_id] = result.scalar_one()
+                    new_id = result.scalar_one()
+
+                    conversation_id_map[conversation["id"]] = new_id
+                    conversation_index[signature] = new_id
+
+                    inserted_conversations += 1
 
                 print(
-                    f"   Conversas importadas: "
-                    f"{len(conversation_id_map)}"
+                    f"   Conversas existentes: {matched_conversations}"
                 )
 
-                # ---------------------------------------------
+                print(
+                    f"   Novas conversas: {inserted_conversations}"
+                )
+
+                # =============================================
                 # MENSAGENS
-                # ---------------------------------------------
+                # =============================================
 
                 print("\n6. Importando mensagens...")
 
                 messages_table = tables["conversation_messages"]
+
+                message_columns = [
+                    "conversation_id",
+                    "ticket_id",
+                    "sender_type",
+                    "message",
+                    "created_at",
+                ]
+
+                remote_messages = connection.execute(
+                    select(messages_table)
+                ).mappings().all()
+
+                message_index = {}
+
+                for message in remote_messages:
+                    signature = make_signature(
+                        message,
+                        message_columns,
+                    )
+
+                    message_index[signature] = message["id"]
+
+                inserted_messages = 0
+                matched_messages = 0
 
                 for message in data["conversation_messages"]:
                     record = prepare_record(
@@ -393,70 +545,55 @@ def migrate(execute=False):
                         messages_table,
                     )
 
-                    record.pop("id", None)
-
                     record["conversation_id"] = conversation_id_map[
                         message["conversation_id"]
                     ]
 
-                    connection.execute(
-                        insert(messages_table).values(**record)
+                    old_ticket_id = message.get("ticket_id")
+
+                    if old_ticket_id is not None:
+                        record["ticket_id"] = ticket_id_map[
+                            old_ticket_id
+                        ]
+
+                    signature = make_signature(
+                        record,
+                        message_columns,
                     )
 
-                print(
-                    f"   Mensagens importadas: "
-                    f"{len(data['conversation_messages'])}"
-                )
+                    if signature in message_index:
+                        matched_messages += 1
+                        continue
 
-                # ---------------------------------------------
+                    record.pop("id", None)
+
+                    result = connection.execute(
+                        insert(messages_table)
+                        .values(**record)
+                        .returning(messages_table.c.id)
+                    )
+
+                    new_id = result.scalar_one()
+
+                    message_index[signature] = new_id
+
+                    inserted_messages += 1
+
+                print(f"   Mensagens existentes: {matched_messages}")
+                print(f"   Novas mensagens: {inserted_messages}")
+
+                # =============================================
                 # SEQUÊNCIAS
-                # ---------------------------------------------
+                # =============================================
 
                 if execute:
-                    print("\n7. Atualizando sequências...")
+                    update_sequences(connection)
 
-                    for name in TABLE_NAMES:
-                        sequence = connection.execute(
-                            text(
-                                "SELECT pg_get_serial_sequence("
-                                ":table_name, 'id')"
-                            ),
-                            {"table_name": name},
-                        ).scalar()
-
-                        if not sequence:
-                            continue
-
-                        max_id = connection.execute(
-                            text(f'SELECT MAX(id) FROM "{name}"')
-                        ).scalar()
-
-                        if max_id is None:
-                            connection.execute(
-                                text(
-                                    "SELECT setval("
-                                    "CAST(:sequence AS regclass), 1, false)"
-                                ),
-                                {"sequence": sequence},
-                            )
-                        else:
-                            connection.execute(
-                                text(
-                                    "SELECT setval("
-                                    "CAST(:sequence AS regclass), "
-                                    ":max_id, true)"
-                                ),
-                                {
-                                    "sequence": sequence,
-                                    "max_id": max_id,
-                                },
-                            )
-
-                # ---------------------------------------------
+                # =============================================
                 # CONFERÊNCIA
-                # ---------------------------------------------
+                # =============================================
 
-                print("\n8. Conferindo totais...")
+                print("\n8. Conferindo totais no PostgreSQL...")
 
                 for name in TABLE_NAMES:
                     total = connection.execute(
@@ -467,10 +604,12 @@ def migrate(execute=False):
 
                 if execute:
                     transaction.commit()
+
                     print("\nMIGRAÇÃO GRAVADA COM SUCESSO.")
 
                 else:
                     transaction.rollback()
+
                     print(
                         "\nSIMULAÇÃO CONCLUÍDA. "
                         "Nenhuma alteração foi gravada."
