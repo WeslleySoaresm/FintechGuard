@@ -210,8 +210,8 @@ def main():
 
     SQLModel.metadata.create_all(engine)
 
-    quantidade = 500
-    user_id = 6
+    quantidade = 20
+    user_id = 8
     
     
     
